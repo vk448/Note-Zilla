@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="google-site-verification" content="C2-yDbzzyS4qMdBWgM3WARN6saZ1KX7ndHrd_Uc38mg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NoteZilla</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="Images/Favicon.png">
+  <link rel="stylesheet" href="home.css">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6445498877295826"
+     crossorigin="anonymous"></script>
+  <style>
+    body{
+      background: linear-gradient(-130deg, #103e10,#401049, #102d61,  #104f11) ;
+      text-align: center;
+      margin: 0;
+      font-family: "Quicksand", sans-serif;
+    }
+
+    .top-logo {
+      width: 280px;
+      height: 60px;
+      animation:float 4s ease-in-out infinite;  
+      margin-bottom: 10px;
+    }
+
+    @keyframes float {
+      0%   { transform: translate(0px, 0px) rotate(-1deg); }
+      25%  { transform: translate(10px, -5px) rotate(1deg); }
+      50%  { transform: translate(-10px, 15px) rotate(-1deg); }
+      75%  { transform: translate(5px, -5px) rotate(1deg); }
+      100% { transform: translate(0px, 0px) rotate(-1deg); }
+    }
+
+    /* ✅ WhatsApp Alert Overlay */
+    .overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .alert-box {
+      background: linear-gradient(135deg, #ffffff, #f9f9f9);
+      padding: 25px 20px;
+      border-radius: 18px;
+      text-align: center;
+      width: 340px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      animation: pop .4s ease;
+    }
+
+    .alert-box img {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 15px;
+    }
+
+    .alert-box h3 {
+      margin: 0 0 12px;
+      font-size: 22px;
+      font-weight: 600;
+      color: #111;
+    }
+
+    .alert-box p {
+      margin: 0 0 20px;
+      color: #555;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .alert-box a {
+      display: inline-block;
+      padding: 12px 22px;
+      border-radius: 30px;
+      font-weight: bold;
+      text-decoration: none;
+      background: #25d366;
+      color: white;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);
+    }
+
+    .alert-box a:hover {
+      background: #1ebe57;
+      transform: translateY(-2px);
+      box-shadow: 0 7px 18px rgba(37, 211, 102, 0.6);
+    }
+
+    .close-btn {
+      display: block;
+      margin: 18px auto 0;
+      font-size: 13px;
+      color: #777;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .close-btn:hover {
+      color: #000;
+    }
+
+    @keyframes pop {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZVBXWVH73K"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-ZVBXWVH73K');
+  </script>
+  
+<header class="top-header">
+   <a href="#"><img src="Images/Notezilla logo.png" alt="NoteZilla Logo" class="top-logo"></a>
+</header>
+
+<!-- ✅ Join Group Corner Link -->
+<a href="https://chat.whatsapp.com/Du8lV5WBCBL01pZsEm3Kki" target="_blank" class="social-link whatsapp">
+  <img src="Images/Whatsapp.png" alt="WhatsApp">
+</a>
+<a href="login.html" target="_blank" class="social-link instagram">
+  <img src="Images/instagram.jpeg" alt="Instagram">
+</a>
+
+<!-- ✅ Welcome Section -->
+<div class="welcome-section">
+  <h1 class="welcome-text">Welcome to</h1>
+  <img src="Images/Notezilla logo.png" alt="notezilla Logo" class="logo">
+</div>
+<h1>Dr. B.R. Ambedkar School of Specialised Excellence- Surajmal Vihar</h1>
+<br>
+<h1>Class Teacher - Vipin Kaushik</h1>
+<br>
+
+<h2 class="title">Class Work</h2>
+<h3 class="subtitle">All your subjects beautifully organized.</h3>
+
+<div class="section-heading">Choose Your Subject</div>
+<div class="subjects">
+  <a href="Maths/maths.html">Maths</a>
+  <a href="Science/science.html">Science</a>
+  <a href="English/English.html">English</a>
+  <a href="S.ST/S.ST.HTML">Social Science</a>
+  <a href="Sanskrit/Sanskrit.html">Sanskrit</a>
+  <a href="hindi/hindi.html">Hindi</a>
+</div>
+<div>
+  <a class="Syllabus" href="syllabus/SYLLABUS.html"><strong>Syllabus</strong></a>
+  <a class="Time-Table" href="Time-table.html"><strong>Time Table</strong></a>
+</div>
+
+<div class="links-section">
+  <h3>Explore Our Other Links</h3>
+  <div class="link">
+    <a href="credit.html" target="_blank"><strong>See Our Team Member List</strong></a><br>
+  </div>
+</div>
+
+<h1 class="new">New Work Update</h1>
+<div class="informartion">
+  <strong>
+  <div class="content">
+    <img src="Images/New.jpg" class="image">
+    <a href="Sanskrit/Sanskrit.html">Sanskrit Work Added</a>
+  </div>
+    <div class="links"></div>
+  <div class="content">
+    <img src="Images/New.jpg" class="image">
+    <a href="English/English.html">English Online Class Work</a>
+  </div>
+
+  <div class="links"></div>
+  <div class="content">
+    <img src="Images/New.jpg" class="image">
+    <a href="SCIENCE VIDEO TOPIC/">Science Video Topic</a>
+  </div>
+    <div class="links"></div>
+  <div class="content">
+    <img src="Images/New.jpg" class="image">
+    <a href="Science/science.html">Science Chapter 7 Notes</a>
+  </div>
+    <div class="links"></div>
+  </strong>
+</div>
+
+<h2 class="thankyou">Thank you for visiting! </h2>
+<footer id="footer">
+  <p>&copy; 2025 by NoteZilla. All rights reserved.</p>
+  <strong>Crafted by Amarjeet 🚀</strong>
+</footer>
+
+<!-- ✅ WhatsApp Join Popup -->
+<!-- ✅ WhatsApp Join Popup -->
+<div class="overlay" id="overlay">
+  <div class="alert-box">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp Logo">
+    <h3>Join Our WhatsApp Group</h3>
+    <p>Stay connected with us and get instant updates directly on WhatsApp.</p>
+    <a href="https://chat.whatsapp.com/Du8lV5WBCBL01pZsEm3Kki" target="_blank">Join WhatsApp</a>
+    <button class="close-btn" onclick="closeAlert()">Not Now</button>
+  </div>
+</div>
+
+<script>
+  function showAlert() {
+    document.getElementById("overlay").style.display = "flex";
+  }
+  function closeAlert() {
+    document.getElementById("overlay").style.display = "none";
+  }
+  // ✅ Page load होते ही popup show
+  window.onload = showAlert;
+</script>
+
+</body>
+</html>

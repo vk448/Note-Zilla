@@ -1,0 +1,154 @@
+:root {
+            --main-glow: #00fff7;
+            --text-color: #ffffff;
+            --background: linear-gradient(120deg, #0f0c29, #302b63, #24243e);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --blur: blur(12px);
+            --border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Quicksand', sans-serif;
+            text-align: center;
+        }
+
+        body {
+                     background: linear-gradient(-130deg, #103e10,#401049, #102d61,  #104f11) ;
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 30px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: start;
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 38px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            color: var(--main-glow);
+            text-shadow: 0 0 20px var(--main-glow);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .back {
+            color: #00ffea;
+            text-decoration: none;
+            font-size: 16px;
+            margin-bottom: 20px;
+            display: inline-block;
+            transition: 0.3s ease;
+        }
+
+        .back:hover {
+            transform: translateX(-5px);
+            text-shadow: 0 0 10px var(--main-glow);
+        }
+
+        .btn {
+            padding: 12px 30px;
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 8px transparent;
+            margin: 10px auto;
+            display: inline-block;
+            width: 500px;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 0 20px var(--main-glow);
+            color: var(--main-glow);
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .assignment {
+            margin-top: 50px;
+        }
+
+        .assignment h1 {
+            font-size: 28px;
+            color: #adff2f;
+            text-shadow: 0 0 10px #adff2f77;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background: #ffffff33;
+            width: 100%;
+            margin: 30px 0;
+        }
+
+     h3 {
+            color: #f5f5f5;
+            margin-bottom: 10px;
+            text-shadow: 0 0 5px #00fff755;
+        }
+.top-logo {
+  width: 280px;
+  height: 60px;
+  /* Initial animation: entrance */
+  animation:float 4s ease-in-out infinite;  
+  margin-bottom: 10px;
+}
+
+@keyframes float {
+  0%   { transform: translate(0px, 0px) rotate(-1deg); }
+  25%  { transform: translate(10px, -5px) rotate(1deg); }
+  50%  { transform: translate(-10px, 15px) rotate(-1deg); }
+  75%  { transform: translate(5px, -5px) rotate(1deg); }
+  100% { transform: translate(0px, 0px) rotate(-1deg); }
+}
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @media screen and (max-width: 600px) {
+            h1 {
+                font-size: 30px;
+            }
+
+            .btn {
+                width: 300px;
+                font-size: 16px;
+            }
+        }
+         .top-logo {
+      height: 60px;
+      width: auto;
+      filter: drop-shadow(0 0 10px rgba(0,255,247,0.7));
+    }
+ .top-header {
+      width: 100%;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-bottom: 2px solid rgba(0,255,247,0.4);
+      box-shadow: 0 4px 15px rgba(0,255,247,0.2);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .teacher{
+      color: white;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }

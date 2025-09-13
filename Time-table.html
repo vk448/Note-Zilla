@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Class IX A - Time Table</title>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6445498877295826"
+     crossorigin="anonymous"></script>
+       <link rel="icon" href="../Images/Favicon.png">
+  <style>
+    /* Basic Body Styling */
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+       background: linear-gradient(-130deg, #103e10,#401049, #102d61,  #104f11) ;
+      padding: 20px;
+      margin: 0;
+      text-align: center;
+    }
+
+    h2 {
+      text-align: center;
+      color: #dbc4c4;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    /* Table Container */
+    .table-container {
+      width: 100%;
+    overflow-x: hidden;
+      padding-bottom: 10px;
+    }
+
+    table {
+      width: 100%;
+      max-width: none;
+      margin: auto;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 12px;
+      overflow-x: auto;
+      box-shadow: 0px 6px 15px rgba(0,0,0,0.2);
+      min-width: 0;
+    }
+
+    th, td {
+      padding: 14px;
+      text-align: center;
+      font-size: 16px;
+      white-space: nowrap;
+      word-wrap: break-word;
+    }
+
+    th {
+      background: linear-gradient(135deg, #4CAF50, #2e8b57);
+      color: white;
+      text-transform: uppercase;
+      font-size: 15px;
+      letter-spacing: 1px;
+    }
+
+    tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+
+    tr:hover {
+      background: #eafaea;
+      transition: 0.3s;
+    }
+
+    strong {
+      color: #d32f2f;
+    }
+
+    /* Responsive Text */
+    @media (max-width: 768px) {
+      th, td {
+        padding: 10px;
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      th, td {
+        padding: 8px;
+        font-size: 12px;
+      }
+    }
+
+    /* Back Link Styling */
+    a {      
+      text-align: center;    
+      font-family: Georgia, 'Times New Roman', Times, serif;
+      text-decoration: none;
+      transition: 0.3s ease;
+      display: inline-block;
+      color: green;
+      text-shadow:  0 0 10px greenyellow, 0 0 20px green, 0 0 30px yellowgreen;
+    }
+
+    a:hover{
+      transform: translateX(-8px);
+      color: yellow;
+      text-shadow: 0 0 10px yellow, 0 0 20px yellowgreen, 0 0 30px greenyellow;
+    }
+
+    /* Header & Logo */
+    .top-logo {
+      width: auto;
+      height: 60px;
+      filter: drop-shadow(0 0 10px rgba(0,255,247,0.7));
+      animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%   { transform: translate(0px, 0px) rotate(-1deg); }
+      25%  { transform: translate(5px, -3px) rotate(1deg); }
+      50%  { transform: translate(-5px, 8px) rotate(-1deg); }
+      75%  { transform: translate(3px, -3px) rotate(1deg); }
+      100% { transform: translate(0px, 0px) rotate(-1deg); }
+    }
+
+    .top-header {
+      width: 100%;
+      padding-top: 15px  ;
+      padding-bottom:20px ;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-bottom: 2px solid rgba(0,255,247,0.4);
+      box-shadow: 0 4px 15px rgba(0,255,247,0.2);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    
+    </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="top-header">
+    <a href="index.html">
+      <img src="Images/Notezilla logo.png" alt="StudyBuddy Logo" class="top-logo">
+    </a>
+  </header>
+<br>
+  <!-- Back Link -->
+  <a href="index.html">← Back to Home</a>
+
+  <!-- Title -->
+  <h2>Class IX A - Time Table</h2>
+
+  <!-- Table -->
+  <div class="table-container">
+    <table>
+      <tr>
+        <th scope="col">Time</th>
+        <th scope="col">Period</th>
+        <th scope="col">Subject / Teacher</th>
+        <th scope="col">Days</th>
+      </tr>
+      <tr>
+        <td>8:20 - 9:15 AM</td>
+        <td>1</td>
+        <td>Maths - Vipin Kaushik</td>
+        <td>Mon, Tue, Wed, Thu, Fri, Sat</td>
+      </tr>
+      <tr>
+        <td>9:15 - 10:10 AM</td>
+        <td>2</td>
+        <td>Social Science - Rekha Goel</td>
+        <td>Mon, Tue, Wed, Thu, Fri, Sat</td>
+      </tr>
+      <tr>
+        <td>10:10 - 11:00 AM</td>
+        <td>3</td>
+        <td>PET – Ashish Tomar | AI – Pankaj Kumar | Sanskrit – Ritu Misra</td>
+        <td>Mon | Tue–Wed | Thu–Sat</td>
+      </tr>
+      <tr class="Recess">
+        <td>11:00 - 11:20 AM</td>
+        <td>-</td>
+        <td><strong>Recess</strong></td>
+        <td>Mon–Sat</td>
+      </tr>
+      <tr>
+        <td>11:20 - 12:15 PM</td>
+        <td>4</td>
+        <td>Science - Amit Kaushik</td>
+        <td>Mon, Tue, Wed, Thu, Fri, Sat</td>
+      </tr>
+      <tr>
+        <td>12:15 - 1:10 PM</td>
+        <td>5</td>
+        <td>English - Mukta Nagpal | Library – Suman Devi</td>
+        <td>Mon–Wed, Fri, Sat | Thu</td>
+      </tr>
+      <tr>
+        <td>1:10 - 2:00 PM</td>
+        <td>6</td>
+        <td>Hindi – Ajeet | Music – Veermani Trivedi</td>
+        <td>Mon, Tue, Wed, Fri, Sat | Thu</td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>
