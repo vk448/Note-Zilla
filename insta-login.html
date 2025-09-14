@@ -51,26 +51,14 @@
 </head>
 <body>
     <div class="login-box">
-        <h2>Login</h2>
+        <h2>Login To Join Our Instagram Group</h2>
         <input type="text" id="username" placeholder="Username">
         <input type="password" id="password" placeholder="Password">
-        <button onclick="login()">Login</button>
+        <button onclick="login()">Login </button>
         <p class="error" id="error"></p>
     </div>
 
-    <script>
-        function login() {
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
-            const error = document.getElementById('error');
-
-            if(user === 'student' && pass === '1234') {
-                // Redirect to Instagram link
-                window.location.href = 'https://www.instagram.com/j/AbYCf0W1WuZy8ZkS/';
-            } else {
-                error.textContent = 'Invalid username or password!';
-            }
-        }
+    <script src="Login-insta.js">
     </script>
 </body>
 </html>
