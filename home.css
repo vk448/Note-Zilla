@@ -392,6 +392,7 @@
         text-align:left ;
         display: inline-block;
 
+
     }
 .Update{
     color: whitesmoke;
@@ -403,15 +404,50 @@
     display: flex;
     align-items: center; /* vertically center */
     margin: 10px 0;
+  
 }
 
-.image {
+    .content img{
     height: 40px;
     width: 40px;
     margin-right: 10px; /* ab image aur text ke beech gap aayega */
-    margin-left: 0; /* left margin hata diya */
+    margin-left: 10px; /* left margin hata diya */
+   
 }
-
+.Image{
+   animation:glow 2s ease-in-out infinite; 
+  margin-left: 30px;
+}
+@keyframes glow {
+  0% {
+    transform: scale(1.0);
+  }
+  50% {
+    transform: scale(1.4);
+  }
+  100% {
+    transform: scale(1.0);
+  }
+}
+.Support{
+  color: #d7ebcc;
+  padding: 12px 30px;
+  border:2px solid rgb(148, 13, 202) ;
+  background: linear-gradient(to left, rgb(41, 43, 126), rgb(120, 50, 129));
+  text-decoration: none;
+  border-radius: 50px;
+  text-transform: uppercase;
+  font-size: 19px;
+  transition: 0.3s ease;
+ display: inline-block;
+ margin: 10px;
+  text-transform: uppercase;
+}
+.Support:hover{
+  transform: scale(1.04);
+   background: linear-gradient(to right, rgb(41, 43, 126), rgb(120, 50, 129));
+   box-shadow: 0 0 20px palevioletred,0 0 30px rgb(143, 16, 143), 0 0 40px rgb(189, 12, 189);
+}
 
 
     
