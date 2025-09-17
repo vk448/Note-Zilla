@@ -10,7 +10,10 @@
     /* Body Styling */
 body {
   font-family: 'Noto Serif Devanagari', serif;
-  background: linear-gradient(135deg, #f9f9f9, #e0e0e0);
+  background: 
+        linear-gradient( rgba(27, 85, 22,00), rgb(87, 13, 90)), 
+        url("Images/Background.jpg") no-repeat center center fixed;
+      background-size: cover;
   margin: 0;
   padding: 40px 20px;
   color: #333;
@@ -139,4 +142,11 @@ body {
     </div>
   </div>
 </body>
+ <script>
+    // Disable right-click menu
+    document.addEventListener("contextmenu", function(e) {
+      e.preventDefault();
+      alert("Right-click is disabled on this page!");
+    });
+  </script>
 </html>

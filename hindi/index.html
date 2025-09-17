@@ -23,4 +23,11 @@
   <a href="Upsarg.pdf" class="btn">Upsarg</a>
 </header>
 </body>
+ <script>
+    // Disable right-click menu
+    document.addEventListener("contextmenu", function(e) {
+      e.preventDefault();
+      alert("Right-click is disabled on this page!");
+    });
+  </script>
 </html>

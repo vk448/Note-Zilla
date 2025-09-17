@@ -9,11 +9,15 @@
        <link rel="icon" href="Images/Favicon.png">
     <style>
         body {
+            text-align: center;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-           background: linear-gradient(-130deg, #103e10,#401049, #102d61,  #104f11) ;
+          background: 
+        linear-gradient( rgba(27, 85, 22,00), rgb(87, 13, 90)), 
+        url("Images/Background.jpg") no-repeat center center fixed;
+      background-size: cover;
             font-family: Arial, sans-serif;
         }
         .login-box {
@@ -62,7 +66,88 @@
        a:hover{
         text-decoration: underline;
        }
-     
+     .overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      text-align: center;
+    }
+
+    .alert-box {
+      background: linear-gradient(135deg, #ffffff, #f9f9f9);
+      padding: 25px 20px;
+      border-radius: 18px;
+      text-align: center;
+      width: 340px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      animation: pop .4s ease;
+    }
+
+    .alert-box img {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 15px;
+      align-items: center;
+      margin-left:12px ;
+    }
+
+    .alert-box p{
+      margin: 0 0 12px;
+      font-size: 19px;
+      font-weight: 600;
+      color: #111;
+    }
+
+    .alert-box p {
+      margin: 0 0 20px;
+      color: #555;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .alert-box a {
+      display: inline-block;
+      padding: 12px 22px;
+      border-radius: 30px;
+      font-weight: bold;
+      text-decoration: none;
+      background: #25d366;
+      color: white;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);
+    }
+
+    .alert-box a:hover {
+      background: #1ebe57;
+      transform: translateY(-2px);
+      box-shadow: 0 7px 18px rgba(37, 211, 102, 0.6);
+    }
+
+    .close-btn {
+      display: block;
+      margin: 18px auto 0;
+      font-size: 17px;
+      color: #777;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .close-btn:hover {
+      color: #000;
+      background: none;
+    }
+
+    @keyframes pop {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+   
     </style>
 </head>
 <body>
@@ -74,11 +159,33 @@
         <p class="error" id="error"></p>
          <div>
         
-        <p><strong>If You Not Have Username , Password Than <a href="">Join Our WhatsApp Channel</a></strong></p>
+        <p><strong>If You Not Have Username , Password Than <a href="opps!">Join Our WhatsApp Channel</a></strong></p>
     </div>
     </div>
    
+<div class="overlay" id="overlay">
+  <div class="alert-box">
+    <img src="Images/Whatsapp.png" alt="WhatsApp Logo">
+   <p>
+  Why is login important to join our WhatsApp group? 🤔 <br>
+  Because for privacy reasons, only our class students are allowed to join.
+</p>
 
+    
+    
+    <button class="close-btn" onclick="closeAlert()">Close</button>
+  </div>
+</div>
+<script>
+  function showAlert() {
+    document.getElementById("overlay").style.display = "flex";
+  }
+  function closeAlert() {
+    document.getElementById("overlay").style.display = "none";
+  }
+  // ✅ Page load होते ही popup show
+  window.onload = showAlert;
+</script>
      <script>
          function login() {
             const user = document.getElementById('username').value;
@@ -92,5 +199,8 @@
                 error.textContent = 'Invalid username or password!';
             }
         }
+        
     </script>
+    
+
 </html>

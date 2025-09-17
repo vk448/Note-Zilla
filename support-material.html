@@ -17,8 +17,8 @@
       text-align: center;
 
       /* Gradient + Image Overlay */
-      background: 
-        linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+        background: 
+        linear-gradient( rgba(27, 85, 22,00), rgb(87, 13, 90)), 
         url("Images/Background.jpg") no-repeat center center fixed;
       background-size: cover;
       font-family: "Segoe UI", Arial, sans-serif;
@@ -62,12 +62,13 @@
     }
 
     .construction {
-      font-size: 24px;
+      font-size: 28px;
       color: #ffcc00;
       font-weight: bold;
       margin-top: 40px;
       text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
       animation: blink 1.5s infinite;
+      margin-bottom: 20px;
     }
 
     @keyframes blink {
@@ -168,4 +169,11 @@
     </div>
   </div>
 </body>
+ <script>
+    // Disable right-click menu
+    document.addEventListener("contextmenu", function(e) {
+      e.preventDefault();
+      alert("Right-click is disabled on this page!");
+    });
+  </script>
 </html>

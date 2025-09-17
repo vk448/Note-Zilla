@@ -414,7 +414,7 @@
     margin-left: 10px; /* left margin hata diya */
    
 }
-.Image{
+.glow{
    animation:glow 2s ease-in-out infinite; 
   margin-left: 30px;
 }
@@ -448,6 +448,24 @@
    background: linear-gradient(to right, rgb(41, 43, 126), rgb(120, 50, 129));
    box-shadow: 0 0 20px palevioletred,0 0 30px rgb(143, 16, 143), 0 0 40px rgb(189, 12, 189);
 }
-
-
+.text-glow{
+ animation:glow1 2s ease-in-out infinite; 
+}
+@keyframes glow1 {
+  0% {
+    transform: scale(1.0);
+    color: rgb(212, 0, 255);
+    text-shadow: 0 0 10px red, 0 0 20px red, 0 0 30px red;
+  }
+  50% {
+    transform: scale(1.1);
+    color: rgb(140, 0, 255);
+      text-shadow: 0 0 10px  rgb(19, 152, 192), 0 0 20px  rgb(41, 43, 126), 0 0 30px  rgb(24, 173, 184);
+  }
+  100% {
+    transform: scale(1.0);
+    color: rgb(98, 0, 255);
+      text-shadow: 0 0 10px red, 0 0 20px red, 0 0 30px red;
+  }
     
+}

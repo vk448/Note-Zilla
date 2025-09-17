@@ -28,7 +28,10 @@
     }
 
     body {
-       background: linear-gradient(-130deg, #103e10,#401049, #102d61,  #104f11) ;
+       background: 
+        linear-gradient( rgba(27, 85, 22,00), rgb(87, 13, 90)), 
+        url("Images/Background.jpg") no-repeat center center fixed;
+      background-size: cover;
       padding: 20px;
       color: var(--text-color);
       min-height: 100vh;
@@ -197,4 +200,11 @@
     </footer>
 
 </body>
+ <script>
+    // Disable right-click menu
+    document.addEventListener("contextmenu", function(e) {
+      e.preventDefault();
+      alert("Right-click is disabled on this page!");
+    });
+  </script>
 </html>

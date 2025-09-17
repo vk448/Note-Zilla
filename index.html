@@ -12,10 +12,14 @@
      crossorigin="anonymous"></script>
   <style>
     body{
-      background: linear-gradient(-130deg, #103e10,#401049, #102d61,  #104f11) ;
+      background: linear-gradient(-130deg,#103e10,#401049, #102d61,  #104f11 ) ;
       text-align: center;
       margin: 0;
       font-family: "Quicksand", sans-serif;
+         background: 
+        linear-gradient( rgba(27, 85, 22,00), rgb(87, 13, 90)), 
+        url("Images/Background.jpg") no-repeat center center fixed;
+      background-size: cover;
      
     }
 
@@ -178,7 +182,7 @@
 <div class="informartion">
   <strong>
     <div class="content">
-      <img src="Images/New.jpg"  class="Image">
+      <img src="Images/New.jpg"  class="glow">
       <a href="support-material.html"> Support Material Is Now Available</a>
     </div>
     <div class="links"></div>
@@ -237,6 +241,12 @@
   // ✅ Page load होते ही popup show
   window.onload = showAlert;
 </script>
-
+ <script>
+    // Disable right-click menu
+    document.addEventListener("contextmenu", function(e) {
+      e.preventDefault();
+      alert("Right-click is disabled on this page!");
+    });
+  </script>
 </body>
 </html>
