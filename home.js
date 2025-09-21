@@ -6,8 +6,6 @@
   }
   // ✅ Page load होते ही popup show
   window.onload = showAlert;
-</script>
- <script>
     // Disable right-click menu
     document.addEventListener("contextmenu", function(e) {
       e.preventDefault();
