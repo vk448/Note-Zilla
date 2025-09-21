@@ -350,7 +350,7 @@
     }
     .new{
         color: white;
-        margin-top: 50px;
+        margin: 50px 0 50px 0 ;
         font-size: 30px;
         font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
@@ -360,7 +360,7 @@
     overflow-y: auto;
     width: 500px;
     height: 300px;
-    margin-top: 50px;
+    margin-top: 5px;
     background-color: rgb(255, 255, 255);
     text-align: left;
     border-radius: 20px;
@@ -472,4 +472,9 @@
       text-shadow: 0 0 10px red, 0 0 20px red, 0 0 30px red;
   }
     
+}
+.Update{
+  padding: 5px 10px 15px 15px ;
+  background-color: white;
+  border-radius: 10px;
 }
