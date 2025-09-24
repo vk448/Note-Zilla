@@ -16,7 +16,8 @@
         }
 
         body {
-                     background: linear-gradient(-130deg, #103e10,#401049, #102d61,  #104f11) ;
+       
+            
             color: var(--text-color);
             min-height: 100vh;
             padding: 30px 15px;

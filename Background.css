@@ -1,0 +1,11 @@
+Body{
+  background:  linear-gradient( rgba(27, 85, 22,00), rgb(87, 13, 90)), 
+        url("Images/background.jpg") no-repeat center center fixed;
+      background-size: cover;
+      text-align: center;
+        animation: fadeIn 2s 1;
+}
+ @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(-20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }

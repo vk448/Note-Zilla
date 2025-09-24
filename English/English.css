@@ -31,7 +31,7 @@
   100% { transform: translate(0px, 0px) rotate(-1deg); }
 }
         body {
-                 background: linear-gradient(-130deg, #103e10,#401049, #102d61,  #104f11) ;
+               
             min-height: 100vh;
             padding: 30px 15px;
             display: flex;
