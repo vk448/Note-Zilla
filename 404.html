@@ -1,76 +1,132 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Page Not Found</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Site Under Maintenance</title>
+  <meta name="description" content="We are performing scheduled maintenance. We'll be back soon." />
   <style>
+    :root{
+      --bg-1: #0f1724;
+      --bg-2: #081125;
+      --accent: #7c3aed;
+      --accent-2: #06b6d4;
+      --muted: #a8b3c2;
+      --glass: rgba(255,255,255,0.04);
+      color-scheme: dark;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
     body{
-    
-    display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      font-family: "Poppins", sans-serif;
-      color: white;
-      text-align: center;
-      text-decoration: none;
-  background: 
-        linear-gradient( rgba(27, 85, 22,00), rgb(87, 13, 90)), 
-        url("Images/Background.jpg") no-repeat center center fixed;
-      background-size: cover;
-      
+      margin:0;
+      background: radial-gradient(800px 400px at 10% 10%, rgba(124,58,237,0.12), transparent),
+                  radial-gradient(600px 300px at 90% 90%, rgba(6,182,212,0.06), transparent),
+                  linear-gradient(180deg,var(--bg-1),var(--bg-2));
+      display:flex;align-items:center;justify-content:center;padding:24px;color:#eef6ff;
     }
-    H1{
-     
-      font-size: 22px;
-      font-weight: bold;
-      padding: 25px 30px;
-      border-radius: 50px;
-      cursor: pointer;
-      background: linear-gradient(45deg, #ff4e50, #f9d423);
-      color: white;
-      letter-spacing: 2px;
-      box-shadow: 0 0 20px rgba(255, 78, 80, 0.6);
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-      animation: glow 2s infinite;
-      margin-bottom: 30px;
-       transform: scale(1.15) rotate(-2deg);
-      box-shadow: 0 0 35px rgba(249, 212, 35, 0.9);
+
+    .card{
+      width:100%;max-width:900px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:16px;padding:32px;
+      display:grid;gap:24px;
+      box-shadow: 0 12px 40px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+      border:1px solid rgba(255,255,255,0.03);
     }
-    a{
-      margin-top: 25px;
-      font-size: 22px;
-      font-weight: bold;
-      padding: 10px 20px;
-      border-radius: 50px;
-      cursor: pointer;
-      background: linear-gradient(45deg, #e5ff00, #f9d423);
-      color: rgb(255, 255, 255);
-      letter-spacing: 2px;
-      box-shadow: 0 0 20px rgba(255, 78, 80, 0.6);
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-      animation: glow 2s infinite;
-      margin-bottom: 30px;
-    text-decoration: none;
+
+    .logo{
+      display:flex;align-items:center;gap:10px;margin-bottom:8px;font-weight:800;font-size:15px;
     }
-    a:hover{
-       transform: scale(1.15) rotate(-2deg);
-      box-shadow: 0 0 35px rgba(249, 212, 35, 0.9);
+    .logo svg{width:44px;height:44px}
+
+    h1{font-size:clamp(22px,4vw,36px);margin:6px 0 12px 0}
+    p.lead{color:var(--muted);font-size:15px;margin:0 0 18px 0}
+
+    .contact{display:flex;gap:12px;flex-wrap:wrap}
+    .mail{background:var(--glass);padding:10px 14px;border-radius:10px;font-weight:700;color:#fff;text-decoration:none}
+
+    .btn{
+      padding:10px 14px;border-radius:10px;border:0;
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;font-weight:700;cursor:pointer
     }
+
+    .clock{font-variant-numeric:tabular-nums;font-weight:800;font-size:28px;margin-top:16px}
+    small{color:var(--muted);font-size:13px}
+
+    footer{margin-top:18px;color:var(--muted);font-size:13px}
   </style>
 </head>
 <body>
-  <h1>Opps! Page Not Found Error 404</h1>
-  <a href="/">Back To Home</a>
+  <main class="card" role="main" aria-labelledby="maint-heading">
+    <div class="logo">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#7c3aed"/><stop offset="1" stop-color="#06b6d4"/></linearGradient>
+        </defs>
+        <rect x="2" y="2" width="44" height="44" rx="10" fill="url(#g)" opacity="0.95"/>
+        <path d="M14 30 L20 20 L28 26 L34 16" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
+      </svg>
+      Maintenance Notice
+    </div>
 
-</body>
- <script src="All.js">
+    <h1 id="maint-heading">Our site is currently under maintenance</h1>
+    <p class="lead">We're making improvements to serve you better. We expect to be back shortly — thanks for your patience. If you need urgent help, contact us:</p>
+
+    <div class="contact">
+      <a class="mail" href="mailto:ak6339575@gmail.com">ak6339575@gmail.com</a>
+      <button class="btn" onclick="copyMail()">Copy email</button>
+    </div>
+
+    <div class="clock" id="countdown">Loading...</div>
+    <small>Estimated time until site returns</small>
+
+    <footer>
+      &copy; <span id="year"></span> NoteZilla — All rights reserved.
+    </footer>
+  </main>
+
+  <script>
+    // Countdown: 1 month + 20 days from now
+    const now = new Date();
+    const target = new Date();
+    target.setMonth(target.getMonth() + 1);
+    target.setDate(target.getDate() + 20);
+
+    function updateCountdown() {
+      const nowTime = new Date().getTime();
+      const distance = target.getTime() - nowTime;
+
+      if (distance <= 0) {
+        document.getElementById("countdown").textContent = "00d 00h 00m 00s";
+        clearInterval(timer);
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      document.getElementById("countdown").textContent =
+        `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    }
+
+    const timer = setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // Copy email
+    function copyMail(){
+      const mail = "ak6339575@gmail.com";
+      navigator.clipboard?.writeText(mail).then(()=>{
+        alert("Email copied to clipboard!");
+      }).catch(()=>{
+        prompt("Copy this email:", mail);
+      });
+    }
+
+    document.getElementById("year").textContent = new Date().getFullYear();
   </script>
+</body>
 </html>
