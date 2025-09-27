@@ -32,8 +32,8 @@
     .label{color:var(--muted);font-size:13px}
     .value{font-weight:700;font-size:14px}
 
-    .resultBox{margin-top:14px;padding:12px;border-radius:8px;background:#fff4f6;border:1px solid #ffd6e0}
-    .notselected{color:#b91c1c;font-weight:800;font-size:16px}
+    .resultBox{margin-top:14px;padding:12px;border-radius:8px;background:#f0fff4;border:1px solid #bbf7d0}
+    .selected{color:#166534;font-weight:800;font-size:16px}
 
     .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}
     button{background:var(--accent);color:#fff;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
@@ -87,7 +87,7 @@
 
                   <div class="resultBox">
                     <div class="label">Result</div>
-                    <div class="notselected">Not Selected</div>
+                    <div class="selected">Selected</div>
                   </div>
                 </div>
                 <div class="photo" id="photoResult">
@@ -144,7 +144,6 @@
       document.getElementById('father').textContent = sample.father;
       document.getElementById('mother').textContent = sample.mother;
 
-      // show result area
       document.getElementById('resultArea').style.display = 'block';
       document.getElementById('photoWrap').style.display = 'flex';
       document.getElementById('photoResult').style.display = 'flex';
