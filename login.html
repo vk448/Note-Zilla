@@ -5,49 +5,45 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>CM SHRI Schools Admissions - 2025 — Result Slip</title>
   <style>
-    :root{--bg:#f7f9fc;--card:#ffffff;--accent:#0f4c81;--muted:#6b7280}
-    *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
-    body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+    :root { --bg:#f7f9fc; --card:#ffffff; --accent:#0f4c81; --muted:#6b7280; }
+    * { box-sizing:border-box; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial; }
+    body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--bg); }
+    .container { width:820px; max-width:95%; position:relative; }
 
-    .container{width:820px;max-width:95%;position:relative}
+    .watermark { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; opacity:0.08; font-size:88px; font-weight:800; color:#0f4c81; transform:rotate(-15deg); user-select:none; }
 
-    /* Watermark */
-    .watermark{
-      position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0.06;font-size:88px;font-weight:800;color:#0f4c81;transform:rotate(-15deg);user-select:none}
+    .card { background:var(--card); padding:18px; border-radius:10px; box-shadow:0 8px 30px rgba(11,18,32,0.06); position:relative; overflow:hidden; }
 
-    .card{background:var(--card);padding:18px;border-radius:10px;box-shadow:0 8px 30px rgba(11,18,32,0.06);position:relative;overflow:hidden}
+    header { display:flex; align-items:center; justify-content:space-between; }
+    .logo { display:flex; align-items:center; gap:12px; }
+    .logo img { height:56px; width:auto; }
+    .title { font-size:18px; font-weight:700; color:var(--accent); }
+    .sub { font-size:12px; color:var(--muted); }
 
-    header{display:flex;align-items:center;justify-content:space-between}
-    .logo{display:flex;align-items:center;gap:12px}
-    .logo img{height:56px;width:auto}
-    .title{font-size:18px;font-weight:700;color:var(--accent)}
-    .sub{font-size:12px;color:var(--muted)}
+    .photo { width:100px; height:110px; border:2px solid #e6eef9; border-radius:6px; overflow:hidden; display:none; align-items:center; justify-content:center; }
+    .photo img { width:100%; height:100%; object-fit:cover; }
 
-    .photo{width:100px;height:110px;border:2px solid #e6eef9;border-radius:6px;overflow:hidden;display:none;align-items:center;justify-content:center}
-    .photo img{width:100%;height:100%;object-fit:cover}
+    .body { display:grid; grid-template-columns:1fr 180px; gap:18px; margin-top:18px; align-items:start; }
+    .fields { padding:12px; }
+    .row { display:flex; justify-content:space-between; padding:8px 6px; }
+    .label { color:var(--muted); font-size:13px; }
+    .value { font-weight:700; font-size:14px; }
 
-    .body{display:grid;grid-template-columns:1fr 180px;gap:18px;margin-top:18px;align-items:start}
-    .fields{padding:12px}
-    .row{display:flex;justify-content:space-between;padding:8px 6px}
-    .label{color:var(--muted);font-size:13px}
-    .value{font-weight:700;font-size:14px}
+    .resultBox { margin-top:14px; padding:12px; border-radius:8px; background:#f0fff4; border:1px solid #bbf7d0; }
+    .selected { font-weight:800; font-size:16px; }
 
-    .resultBox{margin-top:14px;padding:12px;border-radius:8px;background:#f0fff4;border:1px solid #bbf7d0}
-    .selected{color:#166534;font-weight:800;font-size:16px}
+    .actions { display:flex; gap:10px; justify-content:flex-end; margin-top:12px; }
+    button { background:var(--accent); color:#fff; border:0; padding:8px 12px; border-radius:8px; cursor:pointer; }
+    button.secondary { background:transparent; border:1px solid #d1d9e6; color:var(--accent); }
 
-    .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}
-    button{background:var(--accent);color:#fff;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
-    button.secondary{background:transparent;border:1px solid #d1d9e6;color:var(--accent)}
+    form { margin-bottom:6px; }
+    input[type=text] { width:100%; padding:10px; border:1px solid #e6e9ef; border-radius:8px; font-size:14px; }
 
-    form{margin-bottom:6px}
-    input[type=text]{width:100%;padding:10px;border:1px solid #e6e9ef;border-radius:8px;font-size:14px}
-
-    @media (max-width:720px){.body{grid-template-columns:1fr}}
+    @media (max-width:720px){ .body{ grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
   <div class="container">
-
     <div class="watermark">CM SHRI SCHOOL</div>
 
     <div class="card" id="card">
@@ -59,7 +55,6 @@
             <div class="sub">Directorate of Education, Govt. of NCT of Delhi</div>
           </div>
         </div>
-
         <div class="photo" id="photoWrap">
           <img src="image.png" alt="Student Photo" id="photoImg" onerror="this.style.display='none'"/>
         </div>
@@ -75,9 +70,11 @@
                 <button type="submit">View</button>
               </div>
             </form>
+
             <div id="resultArea" style="display:none">
               <div class="body">
                 <div class="fields">
+                    <div class="watermark">CM SHRI SCHOOL</div>
                   <div class="row"><div class="label">Name</div><div class="value" id="cname">-</div></div>
                   <div class="row"><div class="label">Class</div><div class="value" id="classApplied">-</div></div>
                   <div class="row"><div class="label">Roll Number</div><div class="value" id="roll">-</div></div>
@@ -87,7 +84,7 @@
 
                   <div class="resultBox">
                     <div class="label">Result</div>
-                    <div class="selected">Selected</div>
+                    <div class="selected" id="resultText">-</div>
                   </div>
                 </div>
                 <div class="photo" id="photoResult">
@@ -104,45 +101,60 @@
         </div>
       </main>
     </div>
-
   </div>
 
   <script>
-    // Single-sample demo record
-    const sample = {
-      reg: '25060024046',
-      name: 'POORNIMA SHARMA',
-      roll: '5612029014915',
-      classApplied: 'Class VI',
-      father: 'MAHESH SHARMA',
-      mother: 'INDU DEVI'
-    };
-
-    document.addEventListener('DOMContentLoaded',()=>{
-      document.getElementById('regId').value = sample.reg;
-      document.getElementById('name').value = sample.name;
-    });
+    const students = [
+      {
+        reg: '25070061218',
+        name: 'SURAJ KUMAR',
+        roll: '5711010900159',
+        classApplied: 'Class VII',
+        father: 'JITENDRA THAKUR',
+        mother: 'PUNAM DEVI',
+        photo: 'image1.png',
+        result: 'Not Selected'
+      },
+      {
+        reg: '25060024046',
+        name: 'POORNIMA SHARMA',
+        roll: '5612029014915',
+        classApplied: 'Class VI',
+        father: 'MAHESH SHARMA',
+        mother: 'INDU DEVI',
+        photo: 'image.png',
+        result: 'Selected'
+      }
+    ];
 
     function handleLogin(e){
       e.preventDefault();
       const regId = document.getElementById('regId').value.trim();
       const name = document.getElementById('name').value.trim().toUpperCase();
 
-      if(regId !== sample.reg){
-        alert('No record found for this Registration ID in the demo. Use sample ID: ' + sample.reg);
-        return false;
-      }
-      if(name !== sample.name){
-        alert('Name does not match the record for this Registration ID. Enter: ' + sample.name);
+      const student = students.find(s => s.reg === regId && s.name === name);
+      if(!student){
+        alert('No record found or name does not match.');
         return false;
       }
 
-      document.getElementById('cname').textContent = sample.name;
-      document.getElementById('classApplied').textContent = sample.classApplied;
-      document.getElementById('roll').textContent = sample.roll;
-      document.getElementById('reg').textContent = sample.reg;
-      document.getElementById('father').textContent = sample.father;
-      document.getElementById('mother').textContent = sample.mother;
+      document.getElementById('cname').textContent = student.name;
+      document.getElementById('classApplied').textContent = student.classApplied;
+      document.getElementById('roll').textContent = student.roll;
+      document.getElementById('reg').textContent = student.reg;
+      document.getElementById('father').textContent = student.father;
+      document.getElementById('mother').textContent = student.mother;
+
+      document.getElementById('photoImg').src = student.photo;
+      document.getElementById('photoResult').querySelector('img').src = student.photo;
+
+      const resultText = document.getElementById('resultText');
+      resultText.textContent = student.result;
+      if(student.result === 'Selected'){
+        resultText.style.color = '#166534'; // green
+      } else {
+        resultText.style.color = '#b91c1c'; // red
+      }
 
       document.getElementById('resultArea').style.display = 'block';
       document.getElementById('photoWrap').style.display = 'flex';
@@ -157,13 +169,10 @@
       document.getElementById('resultArea').style.display = 'none';
       document.getElementById('photoWrap').style.display = 'none';
       document.getElementById('photoResult').style.display = 'none';
-      const ids=['cname','classApplied','roll','reg','father','mother'];
-      ids.forEach(id=>document.getElementById(id).textContent='-');
+      ['cname','classApplied','roll','reg','father','mother','resultText'].forEach(id => document.getElementById(id).textContent='-');
     }
 
-    function printSlip(){
-      window.print();
-    }
+    function printSlip(){ window.print(); }
   </script>
 </body>
 </html>
