@@ -1,69 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Science</title>
-    <link rel="icon" href="../Images/Favicon.png">
-     <link rel="stylesheet" href="../Background.css">
-    <link rel="stylesheet" href="science.css">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6445498877295826"
-     crossorigin="anonymous"></script>
-    <link rel="icon" href="Logo.png">
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZVBXWVH73K"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Syllabus - Note Zilla</title>
+<link rel="icon" href="../Images/Favicon.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap');
 
-  gtag('config', 'G-ZVBXWVH73K');
-</script>
+/* General Reset */
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins', sans-serif; }
+body { background:#f5f6fa; color:#333; line-height:1.6; text-align:center; }
+
+/* Header */
+header {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:15px 50px; background:#fff;
+  box-shadow:0 4px 6px rgba(0,0,0,0.1);
+  position:sticky; top:0; z-index:100;
+}
+.logo { font-weight:900; font-size:1.8rem; background:linear-gradient(90deg, #4e73df, #1cc88a); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+nav { display:flex; align-items:center; gap:15px; }
+nav a { text-decoration:none; color:#333; font-weight:500; transition:color 0.2s; }
+nav a:hover { color:#4e73df; }
+.login-btn { background:#1cc88a; color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:bold; transition:background 0.2s; }
+.login-btn:hover { background:#17a673; }
+
+/* Hamburger Menu */
+.hamburger { display:none; flex-direction:column; cursor:pointer; gap:5px; }
+.hamburger div { width:25px; height:3px; background-color:#333; transition:all 0.3s; }
+
+/* Back Link */
+.back { color:#4e73df; text-decoration:none; font-weight:bold; display:inline-block; margin:20px auto; }
+.back:hover { text-decoration:underline; }
+
+/* Titles */
+h1 { font-size:2.5rem; margin:20px 0; color:#4e73df; }
+h2 { font-size:2rem; margin-bottom:30px; color:#1cc88a; }
+
+/* Notes Container */
+.notes-container {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:20px;
+  max-width:900px;
+  margin:0 auto 50px auto;
+}
+
+/* Note Cards for Syllabus */
+.note-card {
+  background: #ffffff;
+  padding:25px;
+  border-radius:15px;
+  box-shadow:0 6px 15px rgba(0,0,0,0.1);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  transition:all 0.3s;
+}
+.note-card h4 { margin-bottom:15px; color:#4e73df; font-weight:700; }
+.note-card a {
+  text-decoration:none;
+  padding:12px 25px;
+  background:#1cc88a;
+  color:white;
+  border-radius:50px;
+  font-weight:bold;
+  transition:all 0.3s;
+}
+.note-card a:hover {
+  background:#4e73df;
+  transform:scale(1.05);
+  box-shadow:0 8px 20px rgba(0,0,0,0.2);
+}
+
+/* Footer */
+footer {
+  text-align:center;
+  padding:20px;
+  background:#fff;
+  box-shadow:0 -4px 6px rgba(0,0,0,0.05);
+  margin-top:50px;
+  border-radius:12px;
+}
+footer p { color:#555; }
+
+/* Responsive */
+@media(max-width:768px){
+  nav { display:none; flex-direction:column; width:100%; gap:10px; margin-top:10px; }
+  nav.active { display:flex; }
+  .hamburger { display:flex; }
+}
+@media(max-width:480px){
+  .note-card { padding:15px; }
+}
+</style>
 </head>
 <body>
-   <header class="top-header">
-    <a href="index.html"><img src="../Images/Notezilla logo.png" alt="StudyBuddy Logo" class="top-logo"></a>
+
+<header>
+  <div class="logo">Note Zilla</div>
+  <div class="hamburger" onclick="toggleMenu(this)"><div></div><div></div><div></div></div>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="#notes">Syllabus</a>
+    <a href="../credit.html">About</a>
+    <a href="../Contact.html">Contact</a>
+   <button class="login-btn"><a href="login.html">Login</a></button>
+  </nav>
 </header>
-<br>
-    <a href="../index.html" class="back">← Back to Home</a>
-  <br>
-  <h1><strong class="teacher">Science Teacher - Amit Kaushik</strong></h1>
-<br>
-  <h2>Science Portfolio</h2>
-  <a class="btn" href="Portfolio Work (Updated).pdf" target="_blank">Portfolio</a>
 
+<a href="../index.html" class="back">← Back to Home</a>
 
-  <hr>
+<h1>Syllabus All Subjects</h1>
+<h2>Subjects</h2>
 
-  <div class="section">
-    <h2>Science Notes</h2>
-    <!-- Add more buttons or content here -->
-     <a href="ch-1.pdf" class="btn">Chapter 1 </a>
-     <br>
-     <a href="Science Ch-2.pdf" class="btn">Chapter 2</a>
-     <br>
-     <a href="Science Ch-5.pdf" class="btn">Chapter 5</a>
-    <br>
-     <a href="Sci Ch-7 Motion .pdf" class="btn">Chapter 7</a>
-     <br>
-     <a href="Science Ch-8.pdf" class="btn">Chapter 8</a>
-     
-     </div>
-      <br>
-     <hr>
-    
-     <div class="section">
-      <h2>Science Video Topic</h2>
-      <a href="../SCIENCE VIDEO TOPIC/" class="btn">Science Video Topic</a>
-     </div>
+<div class="notes-container" id="notes">
+  <div class="note-card"><h4>Maths</h4><a href="9_Maths_EM.pdf" target="_blank">Open PDF</a></div>
+  <div class="note-card"><h4>Science</h4><a href="9_Science_EM.pdf" target="_blank">Open PDF</a></div>
+  <div class="note-card"><h4>Social Science</h4><a href="9_sst_EM.pdf" target="_blank">Open PDF</a></div>
+  <div class="note-card"><h4>Hindi</h4><a href="9_Hindi_HM.pdf" target="_blank">Open PDF</a></div>
+  <div class="note-card"><h4>English</h4><a href="9_English_EM.pdf" target="_blank">Open PDF</a></div>
+  <div class="note-card"><h4>Sanskrit</h4><a href="9_Sanskrit_HM.pdf" target="_blank">Open PDF</a></div>
+  <div class="note-card"><h4>Punjabi</h4><a href="9_Punjabi_HM.pdf" target="_blank">Open PDF</a></div>
+</div>
+
+<footer>
+  <p>&copy; 2025 Note Zilla. All rights reserved.</p>
+</footer>
+
+<script>
+function toggleMenu(element){
+  const nav = document.querySelector('header nav');
+  nav.classList.toggle('active');
+  element.classList.toggle('open');
+}
+</script>
 
 </body>
- <script src="../All.js">
-  </script>
-<script>
-    // After 5 seconds, go to index.html
-    setTimeout(function() {
-      window.location.href = "index.html";
-    }, 5000);
-  </script>
 </html>

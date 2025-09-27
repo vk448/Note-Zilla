@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Site Under Maintenance</title>
-  <meta name="description" content="We are performing scheduled maintenance. We'll be back soon." />
+  <title>Oops! Page Not Found</title>
+  <meta name="description" content="The page you are looking for does not exist." />
   <style>
     :root{
       --bg-1: #0f1724;
@@ -31,10 +31,12 @@
     }
 
     .card{
-      width:100%; max-width:900px;
+      width:100%; max-width:600px;
       background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:16px; padding:32px;
-      display:grid; gap:24px;
+      border-radius:16px;
+      padding:32px;
+      display:grid;
+      gap:24px;
       box-shadow: 0 12px 40px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
       border:1px solid rgba(255,255,255,0.03);
       text-align:center;
@@ -42,25 +44,32 @@
 
     .logo{
       display:flex; align-items:center; justify-content:center; gap:10px;
-      margin-bottom:8px; font-weight:800; font-size:20px;
+      margin-bottom:12px; font-weight:800; font-size:24px;
     }
     .logo svg{width:44px; height:44px;}
 
-    h1{font-size:clamp(22px,4vw,36px); margin:6px 0 12px;}
-    p.lead{color:var(--muted); font-size:15px; margin:0 0 18px 0;}
-    .contact{display:flex; gap:12px; flex-wrap:wrap; justify-content:center;}
-    .mail{background:var(--glass); padding:10px 14px; border-radius:10px; font-weight:700; color:#fff; text-decoration:none;}
-    .btn{
-      padding:10px 14px; border-radius:10px; border:0;
-      background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:white; font-weight:700; cursor:pointer;
+    h1{font-size:clamp(26px,5vw,40px); margin:0;}
+    p.lead{color:var(--muted); font-size:16px; margin:0;}
+    
+    .btn-home{
+      display:inline-block;
+      padding:12px 24px;
+      background:linear-gradient(90deg, var(--accent), var(--accent-2));
+      color:white;
+      font-weight:700;
+      text-decoration:none;
+      border-radius:10px;
+      transition:0.3s;
     }
-    .clock{font-variant-numeric:tabular-nums; font-weight:800; font-size:28px; margin-top:16px;}
-    small{color:var(--muted); font-size:13px;}
-    footer{margin-top:18px; color:var(--muted); font-size:13px;}
+    .btn-home:hover{
+      opacity:0.85;
+    }
+
+    footer{margin-top:24px; color:var(--muted); font-size:13px;}
   </style>
 </head>
 <body>
-  <main class="card" role="main" aria-labelledby="maint-heading">
+  <main class="card" role="main" aria-labelledby="error-heading">
     <div class="logo">
       <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -69,19 +78,13 @@
         <rect x="2" y="2" width="44" height="44" rx="10" fill="url(#g)" opacity="0.95"/>
         <path d="M14 30 L20 20 L28 26 L34 16" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
       </svg>
-      Maintenance Notice
+      Oops!
     </div>
 
-    <h1 id="maint-heading">Our site is currently under maintenance</h1>
-    <p class="lead">We're making improvements to serve you better. We expect to be back shortly — thanks for your patience. If you need urgent help, contact us:</p>
+    <h1 id="error-heading">404 - Page Not Found</h1>
+    <p class="lead">The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.</p>
 
-    <div class="contact">
-      <a class="mail" href="mailto:ak6339575@gmail.com">ak6339575@gmail.com</a>
-      <button class="btn" onclick="copyMail()">Copy email</button>
-    </div>
-
-    <div class="clock" id="countdown">Loading...</div>
-    <small>Estimated time until site returns</small>
+    <a class="btn-home" href="/">Back to Home</a>
 
     <footer>
       &copy; <span id="year"></span> NoteZilla — All rights reserved.
@@ -89,50 +92,6 @@
   </main>
 
   <script>
-    const homePage = "index1.html"; // Your homepage file
-    const TIMER_KEY = "maintenanceEndTime";
-
-    // Persistent end time
-    let endTime = localStorage.getItem(TIMER_KEY);
-    if(!endTime){
-      // 50 days from now
-      endTime = new Date().getTime() + 50*24*60*60*1000;
-      localStorage.setItem(TIMER_KEY, endTime);
-    } else {
-      endTime = parseInt(endTime);
-    }
-
-    function updateCountdown(){
-      const now = new Date().getTime();
-      const distance = endTime - now;
-
-      if(distance <= 0){
-        localStorage.removeItem(TIMER_KEY);
-        window.location.href = homePage;
-        return;
-      }
-
-      const days = Math.floor(distance / (1000*60*60*24));
-      const hours = Math.floor((distance % (1000*60*60*24)) / (1000*60*60));
-      const minutes = Math.floor((distance % (1000*60*60)) / (1000*60));
-      const seconds = Math.floor((distance % (1000*60)) / 1000);
-
-      document.getElementById("countdown").textContent = 
-        `${days}d ${hours}h ${minutes}m ${seconds}s`;
-    }
-
-    setInterval(updateCountdown, 1000);
-    updateCountdown();
-
-    function copyMail(){
-      const mail = "ak6339575@gmail.com";
-      navigator.clipboard?.writeText(mail).then(()=>{
-        alert("Email copied to clipboard!");
-      }).catch(()=>{
-        prompt("Copy this email:", mail);
-      });
-    }
-
     document.getElementById("year").textContent = new Date().getFullYear();
   </script>
 </body>
