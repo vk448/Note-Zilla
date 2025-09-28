@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register & Login</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Register</h2>
+    <form id="registerForm">
+      <input type="text" name="name" placeholder="Name" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <button type="submit">Register</button>
+    </form>
+
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <button type="submit">Login</button>
+    </form>
+
+    <div id="message"></div>
+    <div id="studentInfo" style="display:none;">
+      <h2>Student Info</h2>
+      <p id="sName"></p>
+      <p id="sClass"></p>
+      <p id="sRoll"></p>
+      <p id="sFather"></p>
+      <p id="sMother"></p>
+      <p id="sResult"></p>
+      <img id="sPhoto" src="" alt="Student Photo" width="150">
+    </div>
+  </div>
+
+<script>
+const messageDiv = document.getElementById('message');
+const studentDiv = document.getElementById('studentInfo');
+
+document.getElementById('registerForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(e.target));
+  const res = await fetch('/.netlify/functions/register', { method:'POST', body:JSON.stringify(data) });
+  messageDiv.textContent = await res.text();
+});
+
+document.getElementById('loginForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(e.target));
+  const res = await fetch('/.netlify/functions/login', { method:'POST', body:JSON.stringify(data) });
+  const text = await res.text();
+  if(res.ok){
+    const user = JSON.parse(text);
+    messageDiv.textContent = `Welcome, ${user.name}`;
+
+    // Fetch student info
+    const studentRes = await fetch('/.netlify/functions/getStudent', { method:'POST', body:JSON.stringify({email:user.email}) });
+    const studentData = await studentRes.json();
+    studentDiv.style.display = 'block';
+    document.getElementById('sName').textContent = 'Name: '+studentData.name;
+    document.getElementById('sClass').textContent = 'Class: '+studentData.class;
+    document.getElementById('sRoll').textContent = 'Roll: '+studentData.roll;
+    document.getElementById('sFather').textContent = 'Father: '+studentData.father_name;
+    document.getElementById('sMother').textContent = 'Mother: '+studentData.mother_name;
+    document.getElementById('sResult').textContent = 'Result: '+studentData.result;
+    document.getElementById('sPhoto').src = studentData.photo_url;
+  }else{
+    messageDiv.textContent = text;
+  }
+});
+</script>
+</body>
+</html>
