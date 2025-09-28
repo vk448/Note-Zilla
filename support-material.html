@@ -6,6 +6,12 @@
 <title>Support Material - Note Zilla</title>
 <link rel="icon" href="Images/Favicon.png">
 <style>
+  footer img{
+  height: 30px;
+  width: 30px;
+  border-radius: 50px;
+  margin: 10px 5px;
+}
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap');
 
 /* ============================ General Reset =========================== */
@@ -69,7 +75,13 @@ nav a:hover { color: #4e73df; }
 .emergency-card .icon { font-size: 20px; line-height:1; }
 .emergency-card a { color:#b71c1c; font-weight:600; text-decoration:underline; }
 .emergency-card:hover { transform: translateY(-2px); box-shadow:0 12px 30px rgba(183,28,28,0.08); }
-
+footer {
+  text-align: center;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 -4px 6px rgba(0,0,0,0.05);
+  margin-top: 50px;
+}
 /* Responsive */
 @media(max-width:768px){ nav{display:none; flex-direction:column;width:100%;gap:10px;margin-top:10px} nav.active{display:flex} .hamburger{display:flex} }
 </style>
@@ -107,7 +119,12 @@ nav a:hover { color: #4e73df; }
     </div>
   </div>
 </section>
-
+<footer>
+  <p>&copy; 2025 Note Zilla All Right Are Reserved</p>
+  <a href="https://whatsapp.com/channel/0029Vb7CpvgAzNbwokB7KV0y"><img src="Images/Whatsapp.png"></a>
+  <a href=""><img src="Images/instagram.jpeg"></a>
+  <a href="https://t.me/+gxvgPedurnMyNTA1"><img src="Images/telegram.png"></a>
+</footer>
 <script>
 function toggleMenu(element){
   const nav = document.querySelector('header nav');
