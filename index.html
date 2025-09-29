@@ -229,6 +229,36 @@ footer a{
   text-decoration: none;
   color: #4e73df;
 }
+/* Classic, Subtle Button */
+.app {
+  display: inline-block;                    /* Needed for transform */
+  padding: 12px 25px;                       /* Comfortable, classic size */
+  background-color: #007bff;                /* Classic blue */
+  color: #ffffff;                            /* White text */
+  text-decoration: none;                     /* Remove underline */
+  text-align: center;
+  border-radius: 6px;                        /* Slightly rounded corners */
+  font-size: 15px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  transition: all 0.2s ease;                /* Smooth hover & scale */
+  cursor: pointer;
+  border: 1px solid #007bff;                /* Classic border */
+}
+
+/* Hover State */
+.app:hover {
+  background-color: #0056b3;                /* Slightly darker blue */
+  transform: scale(1.02);                   /* Subtle scaling */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Slightly deeper shadow */
+}
+
+/* Active/Pressed State */
+.app:active {
+  transform: scale(1);                       /* Press effect */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 </style>
 </head>
 <body>
@@ -257,6 +287,7 @@ footer a{
   <h1>Welcome to Note Zilla</h1>
   <p>Your personal digital notebook. Organize, create, and manage notes easily.</p>
   <button class="cta-btn">Get Started</button>
+  <a href="https://median.co/share/pwxbldw#apk"><strong>Download Our App For Android | IOS</strong></a>
 </section>
 
 <!-- Recent Notes Section -->
