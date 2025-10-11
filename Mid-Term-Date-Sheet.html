@@ -202,6 +202,12 @@
     </footer>
   </div>
   <script>
+// Toggle mobile menu
+function toggleMenu(element) {
+  const nav = document.querySelector('header nav');
+  nav.classList.toggle('active');
+  element.classList.toggle('open');
+}
     // favicon.js
 const link = document.createElement('link');
 link.rel = 'icon';
