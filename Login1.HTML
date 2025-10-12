@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Login</title>
+  <link rel="icon" href="download.png">
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #FDEB71, #F8D800);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    form {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    button {
+      background: #FF9800;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #FB8C00;
+    }
+    #message {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    #downloadContainer {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <form id="loginForm">
+    <h2>Student Login</h2>
+    <input type="text" name="Full Name" placeholder="Full Name" required>
+    <input type="email" name="Email" placeholder="Email" required>
+    <button type="submit">Login</button>
+    <div id="message"></div>
+    <div id="downloadContainer"></div>
+  </form>
+
+  <script>
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbwCArlGh4LVJ-5MNwfVF8trSqlrb-ZjOjyn3ufyc6h4EY97YLLWLGdXYl9TZ7sGNAI-/exec'; // Replace with your Google Apps Script URL
+
+    document.getElementById("loginForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const name = formData.get("Full Name");
+      const email = formData.get("Email");
+
+      const messageEl = document.getElementById("message");
+      const downloadEl = document.getElementById("downloadContainer");
+      messageEl.textContent = "";
+      downloadEl.innerHTML = "";
+
+      fetch(`${scriptUrl}?action=login&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === "success") {
+            // Show welcome message
+            messageEl.style.color = "green";
+            messageEl.textContent = `✅ Welcome, ${data.name}! Login Successful!`;
+
+            // Create download button
+            const link = data.link; 
+            const a = document.createElement('a');
+            a.href = link;
+            a.download = ''; // force download
+            const btn = document.createElement('button');
+            btn.type = "button";
+            btn.textContent = "⬇️ Download Your File";
+            btn.onclick = () => a.click();
+            downloadEl.appendChild(btn);
+
+          } else if (data.status === "fail") {
+            messageEl.style.color = "red";
+            messageEl.textContent = "❌ Invalid Name or Email";
+          } else {
+            messageEl.style.color = "red";
+            messageEl.textContent = "❌ " + (data.message || "Unknown error");
+          }
+        })
+        .catch(err => {
+          messageEl.style.color = "red";
+          messageEl.textContent = "❌ Error: " + err.message;
+        });
+    });
+  </script>
+</body>
+</html>

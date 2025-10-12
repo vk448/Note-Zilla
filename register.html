@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Registration</title>
+<style>
+body {
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(135deg,#74ebd5,#ACB6E5);
+  display:flex; justify-content:center; align-items:center; height:100vh; margin:0;
+}
+form {
+  background:#fff; padding:35px 30px; border-radius:15px; box-shadow:0 5px 20px rgba(0,0,0,0.2);
+  width:100%; max-width:400px;
+}
+h2 { text-align:center; color:#333; margin-bottom:25px; font-size:26px; }
+input, button { width:100%; padding:12px; margin:8px 0; border:1px solid #ccc; border-radius:10px; font-size:14px; transition:0.3s; }
+input:focus { border-color:#4CAF50; outline:none; box-shadow:0 0 5px rgba(76,175,80,0.5); }
+button { background:#4CAF50; color:#fff; border:none; font-weight:bold; cursor:pointer; }
+button:hover { background:#45a049; transform:scale(1.03); }
+#success { display:none; color:green; font-weight:bold; text-align:center; margin-top:15px; }
+#loginLink { display:none; text-align:center; margin-top:10px; }
+#loginLink a { color:#4CAF50; font-weight:bold; text-decoration:none; }
+#loginLink a:hover { text-decoration:underline; }
+</style>
+</head>
+<body>
+<form id="myForm">
+  <h2>Student Registration</h2>
+  <input type="text" name="Full Name" placeholder="Full Name" required>
+  <input type="text" name="Phone Number" placeholder="Phone Number" required>
+  <input type="email" name="Email" placeholder="Email" required>
+  <input type="text" name="School Name" placeholder="School Name" required>
+  <input type="text" name="School Area" placeholder="School Area" required>
+  <input type="text" name="Class" placeholder="Class" required>
+  <input type="text" name="City" placeholder="City" required>
+  <button type="submit">Register</button>
+  <div id="success">✅ Form Submitted Successfully!</div>
+  <div id="loginLink">➡️ Go to <a href="Login1.HTML">Login Page</a></div>
+</form>
+
+<script>
+const scriptUrl='https://script.google.com/macros/s/AKfycbwCArlGh4LVJ-5MNwfVF8trSqlrb-ZjOjyn3ufyc6h4EY97YLLWLGdXYl9TZ7sGNAI-/exec';
+
+document.getElementById("myForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  const form=new FormData(e.target);
+  fetch(scriptUrl,{ method:"POST", body:form })
+  .then(res=>res.text())
+  .then(txt=>{
+    if(txt.includes("Success")){
+      document.getElementById("success").style.display="block";
+      document.getElementById("loginLink").style.display="block";
+      e.target.reset();
+    }else{
+      alert("Error: "+txt);
+    }
+  })
+  .catch(err=>alert("Something went wrong: "+err.message));
+});
+</script>
+</body>
+</html>
