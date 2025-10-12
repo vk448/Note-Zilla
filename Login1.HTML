@@ -6,6 +6,9 @@
   <title>Student Login</title>
   <link rel="icon" href="download.png">
   <style>
+    *{
+    text-transform: uppercase;
+  }
     body {
       font-family: "Poppins", sans-serif;
       background: linear-gradient(135deg, #FDEB71, #F8D800);
@@ -14,6 +17,7 @@
       align-items: center;
       height: 100vh;
       margin: 0;
+      text-transform: uppercase;
     }
     form {
       background: white;
@@ -54,6 +58,20 @@
     #downloadContainer {
       margin-top: 20px;
     }
+    .notice{
+      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+      font-size: 18px;
+      font-weight: 200;
+      gap: 1px;
+      text-decoration: none;
+    }
+    .notice a{
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+      font-size: 18px;
+      font-weight: 200;
+      gap: 1px;
+      text-decoration: none;
+    }
   </style>
 </head>
 <body>
@@ -64,6 +82,8 @@
     <button type="submit">Login</button>
     <div id="message"></div>
     <div id="downloadContainer"></div>
+    <br>
+    <div class="notice">If not Register please <a href="register.html">Register</a> First</div>
   </form>
 
   <script>
@@ -101,7 +121,7 @@
 
           } else if (data.status === "fail") {
             messageEl.style.color = "red";
-            messageEl.textContent = "❌ Invalid Name or Email";
+            messageEl.textContent = "❌ Email Or Username Not Found Please Register First";
           } else {
             messageEl.style.color = "red";
             messageEl.textContent = "❌ " + (data.message || "Unknown error");
