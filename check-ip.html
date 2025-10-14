@@ -1,179 +1,362 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Visitor Dashboard — Login</title>
 <style>
-/* ===== Body & Wrapper ===== */
-body{
-  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
-  background: linear-gradient(135deg,#ff9a9e,#fad0c4);
-  margin:0;
-  padding:0;
-  min-height:100vh;
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Exo+2:wght@400;600&display=swap');
+
+/* ===== Animated Gradient Background ===== */
+@keyframes gradientMove {
+  0% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+  100% {background-position: 0% 50%;}
 }
-.wrap{
-  max-width:900px;
-  margin:40px auto;
-  padding:25px 30px;
-  background:#fff;
-  border-radius:16px;
-  box-shadow:0 12px 35px rgba(0,0,0,0.1);
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(270deg, #0f2027, #203a43, #2c5364, #121f3e);
+  background-size: 800% 800%;
+  animation: gradientMove 20s ease infinite;
+  font-family: 'Exo 2', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 24px;  /* top/bottom 60px, left/right 24px for balanced spacing */
+  color: #c3d0ff;
+  overflow-x: hidden;
+  user-select: none;
 }
 
-/* ===== Headers ===== */
-h1{
-  text-align:center;
-  margin-bottom:20px;
-  font-size:2rem;
-  color:#ff6ec7;
+/* Removed .wrap:hover selector completely */
+
+.wrap {
+  background: rgba(28, 37, 56, 0.75);
+  border-radius: 25px;
+  box-shadow:
+    inset 4px 4px 10px rgba(42, 54, 84, 0.8),
+    inset -4px -4px 14px rgba(78, 104, 162, 0.7),
+    0 20px 40px rgba(7, 27, 68, 0.6);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1.8px solid rgba(108, 138, 255, 0.25);
+  max-width: 720px;
+  width: 100%;
+  padding: 45px 60px 55px; /* increased padding for more spacious feel */
+  transition: box-shadow 0.4s ease;
+  position: relative;
+  perspective: 1400px;
 }
 
-/* ===== Labels & Inputs ===== */
-label{
-  display:block;
-  font-weight:600;
-  margin-top:12px;
-  color:#555;
+/* Removed .wrap:hover selector completely */
+
+
+.wrap {
+  background: rgba(28, 37, 56, 0.75);
+  border-radius: 25px;
+  box-shadow:
+    inset 4px 4px 10px rgba(42, 54, 84, 0.8),
+    inset -4px -4px 14px rgba(78, 104, 162, 0.7),
+    0 20px 40px rgba(7, 27, 68, 0.6);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1.8px solid rgba(108, 138, 255, 0.25);
+  max-width: 720px;
+  width: 100%;
+  padding: 45px 60px 55px; /* increased padding for more spacious feel */
+  transition: box-shadow 0.4s ease;
+  position: relative;
+  perspective: 1400px;
 }
-input,select,button{
-  width:100%;
-  padding:12px 14px;
-  margin-top:6px;
-  font-size:1rem;
-  border-radius:10px;
-  border:1px solid #ccc;
+
+/* Removed .wrap:hover selector completely */
+
+
+/* ===== Heading - Orbitron font for tech vibe ===== */
+h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 3rem;
+  text-align: center;
+  color: #85a8ff;
+  margin-bottom: 40px;
+  text-shadow:
+    0 0 8px #85a8ff, 
+    0 0 20px #5d7dff,
+    0 0 40px #4a6bff;
+  letter-spacing: 0.35em;
+  user-select: text;
+}
+
+/* ===== Labels with Neon Glow ===== */
+label {
+  display: block;
+  font-weight: 600;
+  margin-top: 18px;
+  color: #b8c6ff;
+  font-size: 1.1rem;
+  text-shadow: 0 0 6px #3a53a0aa;
+  letter-spacing: 0.02em;
+}
+
+/* ===== Inputs with glowing border and subtle inner shadows ===== */
+input, select {
+  width: 100%;
+  padding: 15px 20px;
+  font-size: 1.1rem;
+  border-radius: 18px;
+  border: none;
+  background: rgba(31, 39, 69, 0.85);
+  color: #c3d0ff;
+  box-shadow:
+    inset 1px 1px 3px #4e5d9c,
+    inset -1px -1px 5px #2e3c71;
+  transition: box-shadow 0.4s ease, background-color 0.4s ease;
+  font-family: 'Exo 2', sans-serif;
+  letter-spacing: 0.05em;
+  user-select: text;
+  outline: none;
+  position: relative;
+  z-index: 1;
+}
+
+/* Placeholder styling */
+input::placeholder, select::placeholder {
+  color: #7b89c1cc;
+  font-style: italic;
+}
+
+/* Input focus glow effect */
+input:focus, select:focus {
+  background: rgba(55, 70, 140, 0.9);
+  box-shadow:
+    0 0 15px #6b8cff,
+    inset 0 0 14px #789cff;
+  color: #e0e9ff;
+  caret-color: #a4d1ff;
   transition: all 0.3s ease;
-}
-input:focus, select:focus{
-  outline:none;
-  border:2px solid #ff6ec7;
-  box-shadow:0 0 8px rgba(255,110,199,0.35);
+  z-index: 2;
 }
 
-/* ===== Buttons ===== */
-button{
-  background:linear-gradient(90deg,#ff6ec7,#ffc107);
-  color:#fff;
-  font-weight:600;
-  cursor:pointer;
-  border:none;
-  border-radius:10px;
-  transition: all 0.2s ease;
+/* Ripple effect for inputs on focus */
+input:focus::after {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  background: #6b8cff55;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: ripple 0.6s ease forwards;
+  z-index: 0;
 }
-button:hover{
-  transform: translateY(-2px);
-  box-shadow:0 8px 16px rgba(0,0,0,0.15);
-}
-
-/* ===== Result Box ===== */
-.result{
-  margin-top:18px;
-  padding:18px;
-  background:linear-gradient(120deg,#fef9ff,#f0f0ff);
-  border-radius:14px;
-  max-height:450px;
-  overflow-y:auto;
-  box-shadow:0 6px 15px rgba(0,0,0,0.08);
+@keyframes ripple {
+  to {
+    width: 200%;
+    height: 200%;
+    opacity: 0;
+  }
 }
 
-/* ===== Device Items ===== */
-.device-item{
-  padding:10px 14px;
-  margin:6px 0;
-  border-radius:12px;
-  background:linear-gradient(135deg,#a1c4fd,#c2e9fb);
-  border:1px solid #e0e0e0;
-  font-weight:500;
+/* ===== Buttons with animated neon glow ===== */
+button {
+  margin-top: 25px;
+  padding: 14px 36px; /* reduced vertical padding slightly and increased horizontal for better shape */
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #407AFF, #3BB5FF);
+  color: #e7f0ff;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  box-shadow:
+    0 0 10px #3bb5ff,
+    0 0 40px #407aff,
+    inset 0 0 25px #3bb5ff;
+  transition: all 0.3s ease;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
 }
 
-/* ===== Rows ===== */
-.row{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  align-items:center;
+/* Neon pulse glow animation */
+button:hover {
+  animation: neonPulse 1.5s infinite alternate ease-in-out;
+  transform: scale(1.07) translateY(-3px);
+  box-shadow:
+    0 0 16px #3bb5ff,
+    0 0 60px #59a4ff,
+    inset 0 0 30px #3bb5ff;
 }
 
-/* ===== Small text ===== */
-.small{
-  font-size:0.85rem;
-  color:#777;
-  margin-top:4px;
+@keyframes neonPulse {
+  0% {
+    box-shadow:
+      0 0 10px #3bb5ff,
+      0 0 40px #407aff,
+      inset 0 0 25px #3bb5ff;
+  }
+  100% {
+    box-shadow:
+      0 0 20px #67aaff,
+      0 0 70px #59ccff,
+      inset 0 0 40px #55b2ff;
+  }
 }
 
-/* ===== Hidden class ===== */
-.hidden{display:none !important;}
+/* ===== Result box with layered shadows and slight motion on show ===== */
+.result {
+  margin-top: 28px;
+  background: rgba(17, 26, 48, 0.9);
+  border-radius: 22px;
+  padding: 25px 30px;
+  max-height: 480px;
+  overflow-y: auto;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.03em;
+  box-shadow:
+    0 0 35px rgba(24, 80, 220, 0.9),
+    inset 0 0 20px rgba(20, 45, 99, 0.75);
+  color: #b9cdfd;
+  user-select: text;
+  transition: transform 0.3s ease;
+}
+
+/* ===== Device Items with neon edges and glow ===== */
+.device-item {
+  margin: 12px 0;
+  padding: 16px 20px;
+  border-radius: 20px;
+  background: rgba(58, 77, 115, 0.8);
+  color: #a2bdff;
+  font-weight: 700;
+  box-shadow:
+    0 0 10px #3b5affaa,
+    inset 0 0 12px #3059e8cc;
+  text-shadow: 0 0 10px #5a7fffcc;
+  user-select: none;
+  transition: box-shadow 0.3s ease;
+}
+.device-item:hover {
+  box-shadow:
+    0 0 18px #4d7fffdd,
+    inset 0 0 20px #3a5dffdd;
+}
+
+/* ===== Rows layout ===== */
+.row {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ===== Small text styling ===== */
+.small {
+  font-size: 0.9rem;
+  color: #7a89a3cc;
+  margin-top: 10px;
+  font-style: italic;
+  user-select: none;
+}
+
+/* ===== Hidden utility ===== */
+.hidden {
+  display: none !important;
+}
 
 /* ===== Responsive ===== */
-@media (max-width:768px){
-  .wrap{padding:20px;}
-  h1{font-size:1.7rem;}
-  input,select,button{font-size:0.95rem;padding:10px;}
+@media (max-width: 768px) {
+  .wrap {
+    padding: 30px 30px 40px 30px;
+  }
+  h1 {
+    font-size: 2.6rem;
+    letter-spacing: 0.3em;
+  }
+  input, select {
+    font-size: 1rem;
+    padding: 12px 16px;
+  }
+  button {
+    font-size: 1.1rem;
+  }
 }
-@media (max-width:480px){
-  .wrap{padding:15px;}
-  h1{font-size:1.4rem;}
-  .row{flex-direction:column;gap:8px;}
-  input,select,button{font-size:0.9rem;padding:8px;}
+@media (max-width: 480px) {
+
+  h1 {
+    font-size: 2rem;
+    letter-spacing: 0.2em;
+  }
+
+  .row {
+    flex-direction: column;
+  }
+
+  input, select {
+    padding: 10px 12px;
+  }
 }
 </style>
 </head>
 <body>
-<div class="wrap" id="app">
-<h1>Visitor Dashboard</h1>
+<div class="wrap" id="app" role="main" aria-label="Visitor Dashboard Login">
+  <h1>Visitor Dashboard</h1>
 
-<!-- LOGIN -->
-<div id="loginBox">
-<p class="small">Login to view visitor stats. (Client-side demo login)</p>
-<label>Username</label>
-<input id="username" placeholder="admin" value="">
-<label>Password</label>
-<input id="password" type="password" placeholder="password">
-<div style="margin-top:10px">
-<button id="loginBtn">Login</button>
-</div>
-<p class="small">Tip: This is a simple client-side login — not production secure. Use a strong password.</p>
-</div>
+  <!-- LOGIN -->
+  <div id="loginBox">
+    <p class="small" aria-live="polite">Login to view visitor stats. (Client-side demo login)</p>
+    <label for="username">Username</label>
+    <input id="username" placeholder="admin" autocomplete="username" />
+    <label for="password">Password</label>
+    <input id="password" type="password" placeholder="password" autocomplete="current-password" />
+    <button id="loginBtn" type="button" aria-label="Login to the dashboard">Login</button>
+    <p class="small">Tip: This is a client-side demo login — not secure for production. Use a strong password.</p>
+  </div>
 
-<!-- DASHBOARD -->
-<div id="dash" class="hidden">
-<div style="display:flex;justify-content:space-between;align-items:center">
-<div>
-<strong>Logged in as</strong> <span id="who"></span>
-</div>
-<div>
-<button id="logoutBtn">Logout</button>
-</div>
-</div>
+  <!-- DASHBOARD -->
+  <div id="dash" class="hidden">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+      <div><strong>Logged in as</strong> <span id="who"></span></div>
+      <button id="logoutBtn" type="button" aria-label="Logout from the dashboard">Logout</button>
+    </div>
 
-<hr style="margin:12px 0">
+    <hr style="margin: 12px 0; border-top: 1px solid rgba(68, 84, 150, 0.5);" />
 
-<label>Apps Script URL</label>
-<input id="gasUrl" style="width:100%" value="https://script.google.com/macros/s/AKfycbyrlHaixyn8xHACdX7R6yvbi2XSKhDnUQxjhM9G0B6hZjmTFt2kE46xMz44M9PN0wlO/exec">
+    <label for="gasUrl">Apps Script URL</label>
+    <br>
+    <input id="gasUrl" value="https://script.google.com/macros/s/AKfycbyrlHaixyn8xHACdX7R6yvbi2XSKhDnUQxjhM9G0B6hZjmTFt2kE46xMz44M9PN0wlO/exec" />
 
-<label>Secret Key</label>
-<input id="secretKey" style="width:100%" value="mySecret123">
+    <label for="secretKey">Secret Key</label>
+    <br>
+    <input id="secretKey" value="mySecret123" />
 
-<div style="margin-top:12px" class="row">
-<button id="loadIps">Load IPs</button>
-<button id="refreshBtn">Refresh</button>
-<div style="margin-left:auto;color:#666" id="ipsCount"></div>
-</div>
+    <div class="row" style="margin-top: 20px;">
+      <button id="loadIps" type="button">Load IPs</button>
+      <button id="refreshBtn" type="button">Refresh</button>
+      <div style="margin-left:auto; color:#85a7ff; font-weight: 600;" id="ipsCount">0 IPs</div>
+    </div>
 
-<div style="margin-top:10px">
-<label>Select IP</label>
-<select id="ipSelect" style="width:100%;padding:10px"></select>
-</div>
+    <div style="margin-top: 20px;">
+      <label for="ipSelect">Select IP</label>
+      <select id="ipSelect" style="padding: 14px 18px;"></select>
+    </div>
 
-<div style="margin-top:8px" class="row">
-<button id="showBtn">Show</button>
-<button id="showAllBtn">Show All Details</button>
-</div>
+    <div class="row" style="margin-top: 18px;">
+      <button id="showBtn" type="button">Show</button>
+      <button id="showAllBtn" type="button">Show All Details</button>
+    </div>
 
-<div id="result" class="result hidden"></div>
-</div>
+    <div id="result" class="result hidden" aria-live="polite"></div>
+  </div>
 </div>
 
 <script>
