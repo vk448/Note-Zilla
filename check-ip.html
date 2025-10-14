@@ -3,242 +3,266 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Visitor Dashboard — Login</title>
+<title>Visitor Dashboard</title>
 <style>
-/* ================== General layout ================== */
-body {
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f0f2f7;
-  color: #333;
+/* ================= RESET ================= */
+*{margin:0;padding:0;box-sizing:border-box;}
+body,html{height:100%;font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;transition:background 0.3s,color 0.3s ease;}
+
+/* ================= BODY & WRAP ================= */
+body{
+  background: linear-gradient(135deg,#ffe0f0,#f0f0ff);
+  color:#222;
+}
+.wrap{
+  max-width:950px;
+  margin:30px auto;
+  padding:25px;
+  background:#fff;
+  border-radius:16px;
+  box-shadow:0 12px 35px rgba(0,0,0,0.12);
+  border-top:6px solid #ff6ec7;
+  transition:all 0.3s ease;
+}
+h1{
+  font-size:2rem;
+  margin-bottom:20px;
+  color:#ff6ec7;
+  text-align:center;
+  letter-spacing:1px;
+  text-shadow:1px 1px 2px rgba(0,0,0,0.1);
+  animation: colorShift 6s linear infinite;
+}
+@keyframes colorShift{
+  0%{color:#ff6ec7;}
+  25%{color:#ffc107;}
+  50%{color:#ff4081;}
+  75%{color:#42a5f5;}
+  100%{color:#ff6ec7;}
 }
 
-.wrap {
-  max-width: 900px;
-  margin: 30px auto;
-  padding: 20px 25px;
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+/* ================= FORM ELEMENTS ================= */
+input,select,button{
+  width:100%;
+  padding:14px 16px;
+  margin-top:8px;
+  font-size:1rem;
+  border-radius:12px;
+  border:1px solid #ccc;
+  transition:all 0.3s ease;
+}
+input:focus,select:focus{
+  outline:none;
+  border:2px solid #ff6ec7;
+  box-shadow:0 0 8px rgba(255,110,199,0.35);
+}
+button{
+  background:linear-gradient(90deg,#ff6ec7 0%,#ffc107 100%);
+  color:#fff;
+  cursor:pointer;
+  border:none;
+  font-weight:600;
+  box-shadow:0 6px 12px rgba(0,0,0,0.1);
+  transition:all 0.3s ease;
+  background-size:200% 200%;
+  animation: gradientShift 5s ease infinite;
+}
+button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 16px rgba(0,0,0,0.15);
+}
+@keyframes gradientShift{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
 }
 
-h1 {
-  font-size: 1.8rem;
-  margin-bottom: 16px;
-  color: #1a1a1a;
+/* ================= SECTIONS ================= */
+.result{
+  margin-top:18px;
+  padding:18px;
+  background: linear-gradient(120deg,#fef9ff,#f0f0ff);
+  border:1px solid #e0e0e0;
+  border-radius:14px;
+  max-height:450px;
+  overflow-y:auto;
+  transition:all 0.3s ease;
+  scrollbar-width:thin;
+  scrollbar-color:#ff6ec7 #eee;
+}
+.result::-webkit-scrollbar{
+  width:10px;
+}
+.result::-webkit-scrollbar-track{
+  background:#eee;
+  border-radius:10px;
+}
+.result::-webkit-scrollbar-thumb{
+  background:#ff6ec7;
+  border-radius:10px;
 }
 
-/* ================== Form elements ================== */
-input, select, button {
-  width: 100%;
-  padding: 12px 14px;
-  margin-top: 8px;
-  font-size: 1rem;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-  transition: all 0.2s ease;
+.device-item{
+  padding:10px 14px;
+  margin:6px 0;
+  border-radius:12px;
+  background:linear-gradient(135deg,#ff9a9e 0%,#fad0c4 100%);
+  color:#333;
+  font-weight:500;
+  border:1px solid #f8c8d8;
+  transition:all 0.3s ease;
+}
+.device-item:hover{
+  transform:translateX(5px);
+  box-shadow:0 6px 12px rgba(0,0,0,0.1);
 }
 
-input:focus, select:focus, button:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 6px rgba(0,123,255,0.35);
+.row{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
 }
+label{display:block;font-weight:600;margin-top:12px;color:#ff6ec7;}
+.small{font-size:0.85rem;color:#ff4081;margin-top:4px;}
+.hidden{display:none !important;}
 
-button {
-  background-color: #007bff;
-  color: #fff;
-  cursor: pointer;
-  border: none;
-  font-weight: 600;
+/* ================== RESPONSIVE ================= */
+@media (max-width:768px){
+  .wrap{padding:20px;margin:20px 12px;}
+  h1{font-size:1.7rem;}
+  input,select,button{font-size:0.95rem;padding:12px 14px;}
 }
-
-button:hover {
-  background-color: #0056b3;
-}
-
-/* ================== Sections / Divs ================== */
-.result {
-  margin-top: 18px;
-  padding: 16px;
-  background: #f9f9f9;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  max-height: 420px;
-  overflow-y: auto;
-}
-
-.device-item {
-  padding: 10px 12px;
-  margin: 6px 0;
-  border-radius: 10px;
-  background-color: #fff;
-  border: 1px solid #e6e6e6;
-}
-
-.row {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-/* ================== Labels & Small text ================== */
-label {
-  display: block;
-  font-weight: 500;
-  margin-top: 12px;
-  color: #555;
-}
-
-.small {
-  font-size: 0.85rem;
-  color: #777;
-  margin-top: 4px;
-}
-
-/* ================== Hidden ================== */
-.hidden {
-  display: none !important;
-}
-
-/* ================== Responsive adjustments ================== */
-@media (max-width: 768px) {
-  .wrap {
-    padding: 18px 20px;
-    margin: 20px 12px;
-  }
-  h1 {
-    font-size: 1.5rem;
-  }
-  input, select, button {
-    font-size: 0.95rem;
-    padding: 10px 12px;
-  }
-}
-
-@media (max-width: 480px) {
-  .wrap {
-    padding: 14px 12px;
-    margin: 15px 8px;
-  }
-  .row {
-    flex-direction: column;
-    gap: 6px;
-  }
-  h1 {
-    font-size: 1.3rem;
-  }
-  input, select, button {
-    font-size: 0.9rem;
-    padding: 8px 10px;
-  }
+@media (max-width:480px){
+  .wrap{padding:16px 12px;margin:15px 8px;}
+  .row{flex-direction:column;gap:6px;}
+  h1{font-size:1.4rem;}
+  input,select,button{font-size:0.9rem;padding:10px 12px;}
 }
 </style>
 </head>
 <body>
 <div class="wrap" id="app">
-  <h1>Visitor Dashboard</h1>
+<h1>Visitor Dashboard</h1>
 
-  <!-- LOGIN -->
-  <div id="loginBox">
-    <p class="small">Login to view visitor stats. (Client-side demo login)</p>
-    <label>Username</label>
-    <input id="username" placeholder="admin" value="">
-    <label>Password</label>
-    <input id="password" type="password" placeholder="password">
-    <div style="margin-top:12px">
-      <button id="loginBtn">Login</button>
-    </div>
-    <p class="small">Tip: This is a simple client-side login — not production secure. Use a strong password.</p>
+<!-- LOGIN -->
+<div id="loginBox">
+  <p class="small">Login to view visitor stats.</p>
+  <label>Username</label>
+  <input id="username" placeholder="admin">
+  <label>Password</label>
+  <input id="password" type="password" placeholder="password">
+  <div style="margin-top:12px"><button id="loginBtn">Login</button></div>
+  <p class="small">Tip: Client-side login only. Not secure for production.</p>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dash" class="hidden">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <div><strong>Logged in as</strong> <span id="who"></span></div>
+    <div><button id="logoutBtn">Logout</button></div>
   </div>
-
-  <!-- DASHBOARD -->
-  <div id="dash" class="hidden">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <div>
-        <strong>Logged in as</strong> <span id="who"></span>
-      </div>
-      <div>
-        <button id="logoutBtn">Logout</button>
-      </div>
-    </div>
-
-    <hr style="margin:12px 0">
-
-    <label>Apps Script URL</label>
-    <input id="gasUrl" style="width:100%" value="https://script.google.com/macros/s/AKfycbyrlHaixyn8xHACdX7R6yvbi2XSKhDnUQxjhM9G0B6hZjmTFt2kE46xMz44M9PN0wlO/exec">
-
-    <label>Secret Key</label>
-    <input id="secretKey" style="width:100%" value="mySecret123">
-
-    <div style="margin-top:12px" class="row">
-      <button id="loadIps">Load IPs</button>
-      <button id="refreshBtn">Refresh</button>
-      <div style="margin-left:auto;color:#666" id="ipsCount"></div>
-    </div>
-
-    <div style="margin-top:10px">
-      <label>Select IP</label>
-      <select id="ipSelect" style="width:100%;padding:10px"></select>
-    </div>
-
-    <div style="margin-top:8px" class="row">
-      <button id="showBtn">Show</button>
-      <button id="showAllBtn">Show All Details</button>
-    </div>
-
-    <div id="result" class="result hidden"></div>
+  <hr style="margin:12px 0">
+  <label>Apps Script URL</label>
+  <input id="gasUrl" value="https://script.google.com/macros/s/AKfycbyrlHaixyn8xHACdX7R6yvbi2XSKhDnUQxjhM9G0B6hZjmTFt2kE46xMz44M9PN0wlO/exec">
+  <label>Secret Key</label>
+  <input id="secretKey" value="mySecret123">
+  <div style="margin-top:12px" class="row">
+    <button id="loadIps">Load IPs</button>
+    <button id="refreshBtn">Refresh</button>
+    <div style="margin-left:auto;color:#666" id="ipsCount"></div>
   </div>
+  <div style="margin-top:10px">
+    <label>Select IP</label>
+    <select id="ipSelect" style="width:100%;padding:10px"></select>
+  </div>
+  <div style="margin-top:8px" class="row">
+    <button id="showBtn">Show</button>
+    <button id="showAllBtn">Show All Details</button>
+  </div>
+  <div id="result" class="result hidden"></div>
+</div>
 </div>
 
 <script>
-const loginBtn = document.getElementById('loginBtn');
-const logoutBtn = document.getElementById('logoutBtn');
-const loginBox = document.getElementById('loginBox');
-const dash = document.getElementById('dash');
-const who = document.getElementById('who');
+// ===== LOGIN LOGIC =====
+const loginBtn=document.getElementById('loginBtn');
+const logoutBtn=document.getElementById('logoutBtn');
+const loginBox=document.getElementById('loginBox');
+const dash=document.getElementById('dash');
+const who=document.getElementById('who');
 
-// Demo credentials (change if needed)
-const DEMO_USER = 'Amarjeet';
-const DEMO_PASS = 'Vikash9873547858';
+const DEMO_USER='Amarjeet';
+const DEMO_PASS='Vikash9873547858';
 
-function showDashboard(user){
-  who.textContent = user;
-  loginBox.classList.add('hidden');
-  dash.classList.remove('hidden');
-}
-function showLogin(){
-  loginBox.classList.remove('hidden');
-  dash.classList.add('hidden');
-  who.textContent = '';
-}
+function showDashboard(user){who.textContent=user;loginBox.classList.add('hidden');dash.classList.remove('hidden');}
+function showLogin(){loginBox.classList.remove('hidden');dash.classList.add('hidden');who.textContent='';}
 
-loginBtn.addEventListener('click', ()=>{
-  const u = document.getElementById('username').value.trim();
-  const p = document.getElementById('password').value;
-  if(u===DEMO_USER && p===DEMO_PASS){
-    localStorage.setItem('vd_user', u);
-    showDashboard(u);
-  } else { alert('Invalid credentials'); }
+loginBtn.addEventListener('click',()=>{
+  const u=document.getElementById('username').value.trim();
+  const p=document.getElementById('password').value;
+  if(u===DEMO_USER && p===DEMO_PASS){localStorage.setItem('vd_user',u);showDashboard(u);}
+  else alert('Invalid credentials');
 });
-
-logoutBtn.addEventListener('click', ()=>{
+logoutBtn.addEventListener('click',()=>{
   localStorage.removeItem('vd_user');
-  setTimeout(showLogin, 50); // small delay to ensure DOM updates
+  setTimeout(showLogin,50);
 });
+window.addEventListener('load',()=>{const s=localStorage.getItem('vd_user');if(s) showDashboard(s);});
 
-// auto login if session exists
-window.addEventListener('load', ()=>{
-  const s = localStorage.getItem('vd_user');
-  if(s) showDashboard(s);
-});
+// ===== DASHBOARD LOGIC =====
+const loadIpsBtn=document.getElementById('loadIps');
+const refreshBtn=document.getElementById('refreshBtn');
+const gasUrlInput=document.getElementById('gasUrl');
+const secretInput=document.getElementById('secretKey');
+const ipSelect=document.getElementById('ipSelect');
+const resultBox=document.getElementById('result');
+const ipsCount=document.getElementById('ipsCount');
 
-// --------- Dashboard JS same as before ---------
-// (Copy your fetch/loadIps/showIpDetails functions from previous script)
-// For brevity, they remain unchanged. CSS+Logout fixed here.
+loadIpsBtn.addEventListener('click',loadIps);
+refreshBtn.addEventListener('click',loadIps);
+
+async function loadIps(){
+  const gas=gasUrlInput.value.trim();
+  const key=secretInput.value.trim();
+  if(!gas||!key)return alert('Enter Apps Script URL and Secret Key');
+
+  ipSelect.innerHTML='';
+  resultBox.classList.remove('hidden');
+  resultBox.textContent='Loading IPs…';
+
+  try{
+    const url=new URL(gas);
+    url.searchParams.set('action','list');
+    url.searchParams.set('key',key);
+    const res=await fetch(url.toString());
+    if(!res.ok)throw new Error("HTTP error: "+res.status);
+    const data=await res.json();
+    if(!data||!data.ips)throw new Error("No IPs in response");
+
+    const ips=data.ips;
+    if(ips.length===0){
+      ipSelect.innerHTML='<option value="">No IPs found</option>';
+      ipsCount.textContent='0 IPs';
+      resultBox.innerHTML='<i>No visitors logged yet</i>';
+      return;
+    }
+
+    ipSelect.innerHTML='<option value="">-- Select an IP --</option>';
+    ips.forEach(item=>{
+      const lastSeen=item.lastSeen?new Date(item.lastSeen).toLocaleString():'N/A';
+      const opt=document.createElement('option');
+      opt.value=item.ip;
+      opt.textContent=`${item.ip} — ${item.count} views — last: ${lastSeen}`;
+      ipSelect.appendChild(opt);
+    });
+    ipsCount.textContent=ips.length+' IPs';
+    resultBox.classList.add('hidden');
+  }catch(err){
+    console.error(err);
+    resultBox.innerHTML='<b>Error loading IPs:</b> '+err.message;
+  }
+}
 </script>
 </body>
 </html>
