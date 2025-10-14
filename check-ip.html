@@ -3,141 +3,120 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Visitor Dashboard</title>
+<title>Visitor Dashboard — Login</title>
 <style>
-/* ================= RESET ================= */
-*{margin:0;padding:0;box-sizing:border-box;}
-body,html{height:100%;font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;transition:background 0.3s,color 0.3s ease;}
-
-/* ================= BODY & WRAP ================= */
+/* ===== Body & Wrapper ===== */
 body{
-  background: linear-gradient(135deg,#ffe0f0,#f0f0ff);
-  color:#222;
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  background: linear-gradient(135deg,#ff9a9e,#fad0c4);
+  margin:0;
+  padding:0;
+  min-height:100vh;
 }
 .wrap{
-  max-width:950px;
-  margin:30px auto;
-  padding:25px;
+  max-width:900px;
+  margin:40px auto;
+  padding:25px 30px;
   background:#fff;
   border-radius:16px;
-  box-shadow:0 12px 35px rgba(0,0,0,0.12);
-  border-top:6px solid #ff6ec7;
-  transition:all 0.3s ease;
-}
-h1{
-  font-size:2rem;
-  margin-bottom:20px;
-  color:#ff6ec7;
-  text-align:center;
-  letter-spacing:1px;
-  text-shadow:1px 1px 2px rgba(0,0,0,0.1);
-  animation: colorShift 6s linear infinite;
-}
-@keyframes colorShift{
-  0%{color:#ff6ec7;}
-  25%{color:#ffc107;}
-  50%{color:#ff4081;}
-  75%{color:#42a5f5;}
-  100%{color:#ff6ec7;}
+  box-shadow:0 12px 35px rgba(0,0,0,0.1);
 }
 
-/* ================= FORM ELEMENTS ================= */
+/* ===== Headers ===== */
+h1{
+  text-align:center;
+  margin-bottom:20px;
+  font-size:2rem;
+  color:#ff6ec7;
+}
+
+/* ===== Labels & Inputs ===== */
+label{
+  display:block;
+  font-weight:600;
+  margin-top:12px;
+  color:#555;
+}
 input,select,button{
   width:100%;
-  padding:14px 16px;
-  margin-top:8px;
+  padding:12px 14px;
+  margin-top:6px;
   font-size:1rem;
-  border-radius:12px;
+  border-radius:10px;
   border:1px solid #ccc;
-  transition:all 0.3s ease;
+  transition: all 0.3s ease;
 }
-input:focus,select:focus{
+input:focus, select:focus{
   outline:none;
   border:2px solid #ff6ec7;
   box-shadow:0 0 8px rgba(255,110,199,0.35);
 }
+
+/* ===== Buttons ===== */
 button{
-  background:linear-gradient(90deg,#ff6ec7 0%,#ffc107 100%);
+  background:linear-gradient(90deg,#ff6ec7,#ffc107);
   color:#fff;
+  font-weight:600;
   cursor:pointer;
   border:none;
-  font-weight:600;
-  box-shadow:0 6px 12px rgba(0,0,0,0.1);
-  transition:all 0.3s ease;
-  background-size:200% 200%;
-  animation: gradientShift 5s ease infinite;
+  border-radius:10px;
+  transition: all 0.2s ease;
 }
 button:hover{
-  transform:translateY(-2px);
+  transform: translateY(-2px);
   box-shadow:0 8px 16px rgba(0,0,0,0.15);
 }
-@keyframes gradientShift{
-  0%{background-position:0% 50%;}
-  50%{background-position:100% 50%;}
-  100%{background-position:0% 50%;}
-}
 
-/* ================= SECTIONS ================= */
+/* ===== Result Box ===== */
 .result{
   margin-top:18px;
   padding:18px;
-  background: linear-gradient(120deg,#fef9ff,#f0f0ff);
-  border:1px solid #e0e0e0;
+  background:linear-gradient(120deg,#fef9ff,#f0f0ff);
   border-radius:14px;
   max-height:450px;
   overflow-y:auto;
-  transition:all 0.3s ease;
-  scrollbar-width:thin;
-  scrollbar-color:#ff6ec7 #eee;
-}
-.result::-webkit-scrollbar{
-  width:10px;
-}
-.result::-webkit-scrollbar-track{
-  background:#eee;
-  border-radius:10px;
-}
-.result::-webkit-scrollbar-thumb{
-  background:#ff6ec7;
-  border-radius:10px;
+  box-shadow:0 6px 15px rgba(0,0,0,0.08);
 }
 
+/* ===== Device Items ===== */
 .device-item{
   padding:10px 14px;
   margin:6px 0;
   border-radius:12px;
-  background:linear-gradient(135deg,#ff9a9e 0%,#fad0c4 100%);
-  color:#333;
+  background:linear-gradient(135deg,#a1c4fd,#c2e9fb);
+  border:1px solid #e0e0e0;
   font-weight:500;
-  border:1px solid #f8c8d8;
-  transition:all 0.3s ease;
-}
-.device-item:hover{
-  transform:translateX(5px);
-  box-shadow:0 6px 12px rgba(0,0,0,0.1);
 }
 
+/* ===== Rows ===== */
 .row{
   display:flex;
   gap:10px;
-  align-items:center;
   flex-wrap:wrap;
+  align-items:center;
 }
-label{display:block;font-weight:600;margin-top:12px;color:#ff6ec7;}
-.small{font-size:0.85rem;color:#ff4081;margin-top:4px;}
+
+/* ===== Small text ===== */
+.small{
+  font-size:0.85rem;
+  color:#777;
+  margin-top:4px;
+}
+
+/* ===== Hidden class ===== */
 .hidden{display:none !important;}
 
-/* ================== RESPONSIVE ================= */
+/* ===== Responsive ===== */
 @media (max-width:768px){
-  .wrap{padding:20px;margin:20px 12px;}
+  .wrap{padding:20px;}
   h1{font-size:1.7rem;}
-  input,select,button{font-size:0.95rem;padding:12px 14px;}
+  input,select,button{font-size:0.95rem;padding:10px;}
 }
 @media (max-width:480px){
-  .wrap{padding:16px 12px;margin:15px 8px;}
-  .row{flex-direction:column;gap:6px;}
+  .wrap{padding:15px;}
   h1{font-size:1.4rem;}
-  input,select,button{font-size:0.9rem;padding:10px 12px;}
+  .row{flex-direction:column;gap:8px;}
+  input,select,button{font-size:0.9rem;padding:8px;}
 }
 </style>
 </head>
@@ -147,121 +126,253 @@ label{display:block;font-weight:600;margin-top:12px;color:#ff6ec7;}
 
 <!-- LOGIN -->
 <div id="loginBox">
-  <p class="small">Login to view visitor stats.</p>
-  <label>Username</label>
-  <input id="username" placeholder="admin">
-  <label>Password</label>
-  <input id="password" type="password" placeholder="password">
-  <div style="margin-top:12px"><button id="loginBtn">Login</button></div>
-  <p class="small">Tip: Client-side login only. Not secure for production.</p>
+<p class="small">Login to view visitor stats. (Client-side demo login)</p>
+<label>Username</label>
+<input id="username" placeholder="admin" value="">
+<label>Password</label>
+<input id="password" type="password" placeholder="password">
+<div style="margin-top:10px">
+<button id="loginBtn">Login</button>
+</div>
+<p class="small">Tip: This is a simple client-side login — not production secure. Use a strong password.</p>
 </div>
 
 <!-- DASHBOARD -->
 <div id="dash" class="hidden">
-  <div style="display:flex;justify-content:space-between;align-items:center">
-    <div><strong>Logged in as</strong> <span id="who"></span></div>
-    <div><button id="logoutBtn">Logout</button></div>
-  </div>
-  <hr style="margin:12px 0">
-  <label>Apps Script URL</label>
-  <input id="gasUrl" value="https://script.google.com/macros/s/AKfycbyrlHaixyn8xHACdX7R6yvbi2XSKhDnUQxjhM9G0B6hZjmTFt2kE46xMz44M9PN0wlO/exec">
-  <label>Secret Key</label>
-  <input id="secretKey" value="mySecret123">
-  <div style="margin-top:12px" class="row">
-    <button id="loadIps">Load IPs</button>
-    <button id="refreshBtn">Refresh</button>
-    <div style="margin-left:auto;color:#666" id="ipsCount"></div>
-  </div>
-  <div style="margin-top:10px">
-    <label>Select IP</label>
-    <select id="ipSelect" style="width:100%;padding:10px"></select>
-  </div>
-  <div style="margin-top:8px" class="row">
-    <button id="showBtn">Show</button>
-    <button id="showAllBtn">Show All Details</button>
-  </div>
-  <div id="result" class="result hidden"></div>
+<div style="display:flex;justify-content:space-between;align-items:center">
+<div>
+<strong>Logged in as</strong> <span id="who"></span>
+</div>
+<div>
+<button id="logoutBtn">Logout</button>
+</div>
+</div>
+
+<hr style="margin:12px 0">
+
+<label>Apps Script URL</label>
+<input id="gasUrl" style="width:100%" value="https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec">
+
+<label>Secret Key</label>
+<input id="secretKey" style="width:100%" value="mySecret123">
+
+<div style="margin-top:12px" class="row">
+<button id="loadIps">Load IPs</button>
+<button id="refreshBtn">Refresh</button>
+<div style="margin-left:auto;color:#666" id="ipsCount"></div>
+</div>
+
+<div style="margin-top:10px">
+<label>Select IP</label>
+<select id="ipSelect" style="width:100%;padding:10px"></select>
+</div>
+
+<div style="margin-top:8px" class="row">
+<button id="showBtn">Show</button>
+<button id="showAllBtn">Show All Details</button>
+</div>
+
+<div id="result" class="result hidden"></div>
 </div>
 </div>
 
 <script>
-// ===== LOGIN LOGIC =====
-const loginBtn=document.getElementById('loginBtn');
-const logoutBtn=document.getElementById('logoutBtn');
-const loginBox=document.getElementById('loginBox');
-const dash=document.getElementById('dash');
-const who=document.getElementById('who');
+// ---------- Simple client-side login ----------
+const loginBtn = document.getElementById('loginBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const loginBox = document.getElementById('loginBox');
+const dash = document.getElementById('dash');
+const who = document.getElementById('who');
 
-const DEMO_USER='Amarjeet';
-const DEMO_PASS='Vikash9873547858';
+// CHANGE THESE if you want:
+const DEMO_USER = 'admin';
+const DEMO_PASS = 'admin123';
 
-function showDashboard(user){who.textContent=user;loginBox.classList.add('hidden');dash.classList.remove('hidden');}
-function showLogin(){loginBox.classList.remove('hidden');dash.classList.add('hidden');who.textContent='';}
+function showDashboard(user) {
+  who.textContent = user;
+  loginBox.classList.add('hidden');
+  dash.classList.remove('hidden');
+}
+function showLogin() {
+  loginBox.classList.remove('hidden');
+  dash.classList.add('hidden');
+}
 
-loginBtn.addEventListener('click',()=>{
-  const u=document.getElementById('username').value.trim();
-  const p=document.getElementById('password').value;
-  if(u===DEMO_USER && p===DEMO_PASS){localStorage.setItem('vd_user',u);showDashboard(u);}
-  else alert('Invalid credentials');
+loginBtn.addEventListener('click', () => {
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value;
+  if (u === DEMO_USER && p === DEMO_PASS) {
+    localStorage.setItem('vd_user', u);
+    showDashboard(u);
+  } else {
+    alert('Invalid credentials');
+  }
 });
-logoutBtn.addEventListener('click',()=>{
+
+logoutBtn.addEventListener('click', () => {
   localStorage.removeItem('vd_user');
-  setTimeout(showLogin,50);
+  showLogin();
 });
-window.addEventListener('load',()=>{const s=localStorage.getItem('vd_user');if(s) showDashboard(s);});
 
-// ===== DASHBOARD LOGIC =====
-const loadIpsBtn=document.getElementById('loadIps');
-const refreshBtn=document.getElementById('refreshBtn');
-const gasUrlInput=document.getElementById('gasUrl');
-const secretInput=document.getElementById('secretKey');
-const ipSelect=document.getElementById('ipSelect');
-const resultBox=document.getElementById('result');
-const ipsCount=document.getElementById('ipsCount');
+// On load, check session
+window.addEventListener('load', () => {
+  const s = localStorage.getItem('vd_user');
+  if (s) showDashboard(s);
+});
 
-loadIpsBtn.addEventListener('click',loadIps);
-refreshBtn.addEventListener('click',loadIps);
+// ---------- Dashboard logic ----------
+const loadIpsBtn = document.getElementById('loadIps');
+const gasUrlInput = document.getElementById('gasUrl');
+const secretInput = document.getElementById('secretKey');
+const ipSelect = document.getElementById('ipSelect');
+const showBtn = document.getElementById('showBtn');
+const showAllBtn = document.getElementById('showAllBtn');
+const resultBox = document.getElementById('result');
+const ipsCount = document.getElementById('ipsCount');
+const refreshBtn = document.getElementById('refreshBtn');
 
-async function loadIps(){
-  const gas=gasUrlInput.value.trim();
-  const key=secretInput.value.trim();
-  if(!gas||!key)return alert('Enter Apps Script URL and Secret Key');
+loadIpsBtn.addEventListener('click', loadIps);
+refreshBtn.addEventListener('click', loadIps);
 
-  ipSelect.innerHTML='';
+async function loadIps() {
+  const gas = gasUrlInput.value.trim();
+  const key = secretInput.value.trim();
+  if (!gas || !key) return alert('Enter Apps Script URL and Secret Key');
+
+  ipSelect.innerHTML = '';
+  resultBox.classList.add('hidden');
+  resultBox.textContent = 'Loading IPs…';
   resultBox.classList.remove('hidden');
-  resultBox.textContent='Loading IPs…';
 
-  try{
-    const url=new URL(gas);
-    url.searchParams.set('action','list');
-    url.searchParams.set('key',key);
-    const res=await fetch(url.toString());
-    if(!res.ok)throw new Error("HTTP error: "+res.status);
-    const data=await res.json();
-    if(!data||!data.ips)throw new Error("No IPs in response");
+  try {
+    const url = new URL(gas);
+    url.searchParams.set('action', 'list');
+    url.searchParams.set('key', key);
+    const res = await fetch(url.toString());
+    const data = await res.json();
 
-    const ips=data.ips;
-    if(ips.length===0){
-      ipSelect.innerHTML='<option value="">No IPs found</option>';
-      ipsCount.textContent='0 IPs';
-      resultBox.innerHTML='<i>No visitors logged yet</i>';
+    if (data.error) {
+      resultBox.innerHTML = '<b>Error:</b> ' + data.error;
       return;
     }
 
-    ipSelect.innerHTML='<option value="">-- Select an IP --</option>';
-    ips.forEach(item=>{
-      const lastSeen=item.lastSeen?new Date(item.lastSeen).toLocaleString():'N/A';
-      const opt=document.createElement('option');
-      opt.value=item.ip;
-      opt.textContent=`${item.ip} — ${item.count} views — last: ${lastSeen}`;
+    const ips = data.ips || [];
+    if (ips.length === 0) {
+      ipSelect.innerHTML = '<option value="">No IPs found</option>';
+      ipsCount.textContent = '0 IPs';
+      resultBox.innerHTML = '<i>No visitors logged yet</i>';
+      return;
+    }
+
+    // Fill select options: show IP + count + lastSeen
+    ipSelect.innerHTML = '<option value="">-- Select an IP --</option>';
+    ips.forEach(item => {
+      const lastSeen = item.lastSeen ? new Date(item.lastSeen).toLocaleString() : 'N/A';
+      const opt = document.createElement('option');
+      opt.value = item.ip;
+      opt.textContent = `${item.ip} — ${item.count} views — last: ${lastSeen}`;
       ipSelect.appendChild(opt);
     });
-    ipsCount.textContent=ips.length+' IPs';
+
+    ipsCount.textContent = ips.length + ' IPs';
     resultBox.classList.add('hidden');
-  }catch(err){
-    console.error(err);
-    resultBox.innerHTML='<b>Error loading IPs:</b> '+err.message;
+
+  } catch (err) {
+    resultBox.innerHTML = '<b>Error loading IPs:</b> ' + err.message;
   }
+}
+
+showBtn.addEventListener('click', async () => {
+  const ip = ipSelect.value;
+  if (!ip) return alert('Select an IP');
+  await showIpDetails(ip);
+});
+
+showAllBtn.addEventListener('click', async () => {
+  const ip = ipSelect.value;
+  if (!ip) return alert('Select an IP');
+  await showIpDetails(ip, true);
+});
+
+async function showIpDetails(ip, showAll=false) {
+  const gas = gasUrlInput.value.trim();
+  const key = secretInput.value.trim();
+  if (!gas || !key) return alert('Enter Apps Script URL and Secret Key');
+
+  resultBox.classList.remove('hidden');
+  resultBox.innerHTML = '<b>Loading details…</b>';
+
+  try {
+    const url = new URL(gas);
+    url.searchParams.set('action', 'count');
+    url.searchParams.set('ip', ip);
+    url.searchParams.set('key', key);
+    const res = await fetch(url.toString());
+    const data = await res.json();
+
+    if (data.error) {
+      resultBox.innerHTML = '<b>Error:</b> ' + data.error;
+      return;
+    }
+
+    let html = `<h3>IP: ${data.ip}</h3><p><strong>Total views:</strong> ${data.count}</p>`;
+    html += '<div><h4>Device breakdown</h4>';
+    const byDevice = data.byDevice || {};
+    const types = ['Mobile','Desktop','Tablet','Unknown'];
+    const extra = Object.keys(byDevice).filter(k=>!types.includes(k));
+    const all = types.concat(extra);
+    all.forEach(t => {
+      const c = byDevice[t] || 0;
+      html += `<div class="device-item"><strong>${t}:</strong> ${c}</div>`;
+    });
+    html += '</div>';
+
+    if (showAll) {
+      html += '<div style="margin-top:12px"><h4>Recent visits (last 100)</h4><div id="rawRows">Loading rows…</div></div>';
+      resultBox.innerHTML = html;
+      await loadRawRows(ip);
+    } else {
+      resultBox.innerHTML = html;
+    }
+
+  } catch (err) {
+    resultBox.innerHTML = '<b>Error:</b> ' + err.message;
+  }
+}
+
+async function loadRawRows(ip) {
+  const gas = gasUrlInput.value.trim();
+  const key = secretInput.value.trim();
+  const container = document.getElementById('rawRows');
+  container.innerHTML = 'Loading…';
+
+  try {
+    const url = new URL(gas);
+    url.searchParams.set('action', 'list');
+    url.searchParams.set('key', key);
+    const res = await fetch(url.toString());
+    const data = await res.json();
+    if (data.error) { container.innerHTML = 'Error: ' + data.error; return; }
+    const ips = data.ips || [];
+    const item = ips.find(x => x.ip === ip);
+    if (!item) { container.innerHTML = 'No rows found'; return; }
+
+    let html = `<div><strong>Last seen:</strong> ${item.lastSeen ? new Date(item.lastSeen).toLocaleString() : 'N/A'}</div>`;
+    html += '<div style="margin-top:8px"><strong>Devices:</strong></div>';
+    Object.keys(item.devices || {}).forEach(k => {
+      html += `<div class="device-item">${k}: ${item.devices[k]}</div>`;
+    });
+    container.innerHTML = html;
+
+  } catch (err) {
+    container.innerHTML = 'Error: ' + err.message;
+  }
+}
+
+// optional: auto-load if logged in
+if (localStorage.getItem('vd_user')) {
+  // auto-load IPs if needed
+  // loadIps();
 }
 </script>
 </body>
