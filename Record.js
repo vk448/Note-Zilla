@@ -1,4 +1,4 @@
-<script>
+
   (function() {
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbw9Udgwil6iDkZrE9IulBz0tlZ5DVZtk0J9id1SJ5_HD5aK3oL6tRtdgmGuBASulnzT/exec';
 
@@ -27,4 +27,3 @@
         fetch(url).catch(() => {});
       });
   })();
-</script>
