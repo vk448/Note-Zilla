@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Computer Notes - Note Zilla</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap');
+    * {margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+    body {background:#f5f6fa;color:#333;line-height:1.6;}
+    header {display:flex;justify-content:space-between;align-items:center;padding:15px 50px;background:#fff;box-shadow:0 4px 6px rgba(0,0,0,0.1);position:sticky;top:0;z-index:100;}
+    .logo {font-weight:900;font-size:1.8rem;background:linear-gradient(90deg,#4e73df,#1cc88a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    nav {display:flex;align-items:center;gap:15px;}
+    nav a {text-decoration:none;color:#333;font-weight:500;transition:color 0.2s;}
+    nav a:hover {color:#4e73df;}
+    .login-btn {background:#1cc88a;color:white;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;transition:background 0.2s;}
+    .login-btn:hover {background:#17a673;}
+    .hamburger {display:none;flex-direction:column;cursor:pointer;gap:5px;}
+    .hamburger div {width:25px;height:3px;background-color:#333;transition:all 0.3s;}
+    .hero {text-align:center;padding:80px 20px;background:#eef2f7;border-radius:12px;margin:20px;}
+    .hero h1 {font-size:3rem;font-weight:900;background:linear-gradient(90deg,#4e73df,#1cc88a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px;}
+    .hero p {font-size:1.2rem;margin-bottom:30px;color:#555;}
+    .cta-btn {padding:12px 30px;background:#4e73df;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:bold;transition:all 0.3s;text-decoration:none;display:inline-block;}
+    .cta-btn:hover {background:#1cc88a;transform:scale(1.05);}
+    .notes-preview {max-width:1200px;margin:0 auto;padding:50px 20px;}
+    .notes-preview h2 {text-align:center;font-size:2rem;margin-bottom:40px;color:#4e73df;}
+    .notes-container {display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;}
+    .note-card {background:linear-gradient(135deg,#ffffff,#e0f7fa);padding:25px;border-radius:15px;box-shadow:0 6px 15px rgba(0,0,0,0.1);transition:transform 0.3s,box-shadow 0.3s;background 0.3s;text-align:center;}
+    .note-card h4 {margin-bottom:15px;color:#4e73df;font-weight:700;}
+    .note-card p {font-size:0.9rem;color:#555;margin-bottom:10px;}
+    .note-card a {text-decoration:none;padding:10px 20px;background:#1cc88a;color:white;border-radius:8px;font-weight:bold;transition:all 0.3s;}
+    .note-card a:hover {background:#4e73df;transform:scale(1.05);box-shadow:0 8px 20px rgba(0,0,0,0.2);}
+    footer {text-align:center;padding:20px;background:#fff;box-shadow:0 -4px 6px rgba(0,0,0,0.05);margin-top:50px;border-radius:12px;}
+    footer p {color:#555;}
+    @media(max-width:768px){nav{display:none;flex-direction:column;width:100%;gap:10px;margin-top:10px;}nav.active{display:flex;}.hamburger{display:flex;}}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Note Zilla</div>
+  <div class="hamburger" onclick="toggleMenu(this)"><div></div><div></div><div></div></div>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="#notes">Computer Notes</a>
+    <a href="../credit.html">About</a>
+    <a href="../contact.html">Contact</a>
+    <button class="login-btn"><a href="../login.html" style="color:white;text-decoration:none;">Login</a></button>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>Computer Teacher - Vipin Kaushik</h1>
+  <p>All Class 9 Computer PDFs in one place, fetched live from Google Sheets.</p>
+  <a href="../index.html" class="cta-btn">Back to Home</a>
+</section>
+
+<section class="notes-preview" id="notes">
+  <h2>Computer Chapter PDFs</h2>
+  <div class="notes-container" id="notesContainer">
+    <p style="text-align:center;">Loading notes...</p>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2025 Note Zilla. All rights reserved.</p>
+</footer>
+
+<script>
+function toggleMenu(el){document.querySelector('nav').classList.toggle('active');el.classList.toggle('open');}
+
+// =============== FETCH SHEET DATA ===============
+const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzBI7zgSRLPW0N_o6U5HiuA7Ot2PFJHrKDwM4WWkTrwfdkeFJ9Ftd_KwbG1G7FqZ2lJ/exec";
+
+fetch(SHEET_API_URL)
+  .then(res => res.json())
+  .then(data => {
+    const container = document.getElementById('notesContainer');
+    container.innerHTML = '';
+    data.forEach(item => {
+      container.innerHTML += `
+        <div class="note-card">
+          <h4>${item["Chapter Name"]}</h4>
+          <p>${item["Description"] || ''}</p>
+          <a href="${item["PDF Link"]}" target="_blank">Download PDF</a>
+        </div>`;
+    });
+  })
+  .catch(err => {
+    document.getElementById('notesContainer').innerHTML = `<p style="color:red;">Error loading notes.</p>`;
+    console.error(err);
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upload Computer Notes URL</title>
+<style>
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #4e73df, #1cc88a);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.container {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  width: 90%;
+  max-width: 420px;
+}
+h2 { text-align:center; color:#4e73df; margin-bottom:15px; }
+input,button { width:100%; padding:10px; margin:10px 0; border-radius:8px; border:1px solid #ccc; }
+button { background:#1cc88a; color:white; font-weight:bold; cursor:pointer; border:none; }
+button:hover { background:#4e73df; }
+#msg { text-align:center; margin-top:10px; }
+#linkBox { text-align:center; margin-top:15px; display:none; }
+#linkBox a { color:#4e73df; text-decoration:none; font-weight:bold; }
+label { font-weight:bold; color:#333; display:block; margin-top:10px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Upload Computer Notes URL</h2>
+  
+  <label>Chapter Name</label>
+  <input type="text" id="chapter" placeholder="Enter Chapter Name" required>
+  
+  <label>PDF URL</label>
+  <input type="text" id="fileUrl" placeholder="Enter full PDF URL" required>
+  
+  <button id="submitBtn">Submit</button>
+  <p id="msg"></p>
+  <div id="linkBox">
+    <p>📎 Entry added successfully!</p>
+    <a id="fileLink" href="#" target="_blank">Open PDF Link</a>
+  </div>
+</div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzeKtGoI2gBLOFql2VywelN-_O9EgpMIvL_pJTdFbLF_X-W3PYgGuZgCBR0ib_EZWQK/exec"; // Replace with your /exec URL
+
+document.getElementById("submitBtn").addEventListener("click", async () => {
+  const chapter = document.getElementById("chapter").value.trim();
+  const fileUrl = document.getElementById("fileUrl").value.trim();
+  const msg = document.getElementById("msg");
+  const linkBox = document.getElementById("linkBox");
+  const fileLink = document.getElementById("fileLink");
+
+  if(!chapter || !fileUrl){
+    msg.textContent = "⚠️ Please enter both chapter name and URL!";
+    return;
+  }
+
+  msg.textContent = "⏳ Saving...";
+  linkBox.style.display="none";
+
+  try{
+    const payload = {chapter: chapter, link: fileUrl};
+    const res = await fetch(SCRIPT_URL,{
+      method:"POST",
+      body: JSON.stringify(payload),
+      headers: {"Content-Type":"application/json"}
+    });
+    const data = await res.json();
+    if(data.status==="Success"){
+      msg.textContent="✅ Entry added!";
+      fileLink.href=fileUrl;
+      fileLink.textContent="📄 Open PDF Link";
+      linkBox.style.display="block";
+      document.getElementById("chapter").value="";
+      document.getElementById("fileUrl").value="";
+    } else {
+      msg.textContent="⚠️ Failed! " + (data.message || "");
+    }
+  } catch(err){
+    msg.textContent="❌ Error: " + err.message;
+  }
+});
+</script>
+
+</body>
+</html>
