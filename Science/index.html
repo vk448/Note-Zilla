@@ -1,101 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Syllabus - Note Zilla</title>
-<link rel="icon" href="../Images/Favicon.png">
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Science Notes - NoteZilla</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap');
+    :root {
+      --primary:#4e73df;
+      --secondary:#1cc88a;
+      --accent:#f6ad55;
+      --bg:#f5f6fa;
+      --text:#333;
+    }
 
-/* General Reset */
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins', sans-serif; }
-body { background:#f5f6fa; color:#333; line-height:1.6; text-align:center; }
+    * {margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+    body {background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
 
-/* Header */
-header {
-  display:flex; justify-content:space-between; align-items:center;
-  padding:15px 50px; background:#fff;
-  box-shadow:0 4px 6px rgba(0,0,0,0.1);
-  position:sticky; top:0; z-index:100;
-}
-.logo { font-weight:900; font-size:1.8rem; background:linear-gradient(90deg, #4e73df, #1cc88a); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-nav { display:flex; align-items:center; gap:15px; }
-nav a { text-decoration:none; color:#333; font-weight:500; transition:color 0.2s; }
-nav a:hover { color:#4e73df; }
-.login-btn { background:#1cc88a; color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:bold; transition:background 0.2s; }
-.login-btn:hover { background:#17a673; }
+    /* HEADER (from Computer Notes style) */
+    header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:15px 50px;
+      background:#fff;
+      box-shadow:0 4px 6px rgba(0,0,0,0.1);
+      position:sticky;top:0;z-index:100;
+    }
+    .logo {
+      font-weight:900;
+      font-size:1.8rem;
+      background:linear-gradient(90deg,var(--primary),var(--secondary));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    nav {display:flex;align-items:center;gap:15px;}
+    nav a {text-decoration:none;color:#333;font-weight:500;transition:color 0.2s;}
+    nav a:hover {color:var(--primary);}
+    .login-btn {
+      background:var(--secondary);
+      color:white;
+      border:none;
+      padding:8px 16px;
+      border-radius:6px;
+      cursor:pointer;
+      font-weight:bold;
+      transition:background 0.2s;
+    }
+    .login-btn:hover {background:#17a673;}
+    .hamburger {display:none;flex-direction:column;cursor:pointer;gap:5px;}
+    .hamburger div {width:25px;height:3px;background-color:#333;transition:all 0.3s;}
+    @media(max-width:768px){
+      nav{display:none;flex-direction:column;width:100%;gap:10px;margin-top:10px;}
+      nav.active{display:flex;}
+      .hamburger{display:flex;}
+    }
 
-/* Hamburger Menu */
-.hamburger { display:none; flex-direction:column; cursor:pointer; gap:5px; }
-.hamburger div { width:25px; height:3px; background-color:#333; transition:all 0.3s; }
+    /* HERO */
+    header h1 {
+      font-size:2.5rem;
+      font-weight:700;
+      color:var(--primary);
+    }
 
-/* Back Link */
-.back { color:#4e73df; text-decoration:none; font-weight:bold; display:inline-block; margin:20px auto; }
-.back:hover { text-decoration:underline; }
+    .hero {
+      text-align:center;
+      padding:60px 20px;
+      background:#eef2f7;
+      border-radius:12px;
+      margin:20px;
+      box-shadow:0 4px 15px rgba(0,0,0,0.1);
+    }
+    .hero h1 {
+      font-size:2.8rem;
+      font-weight:900;
+      background:linear-gradient(90deg,var(--primary),var(--secondary));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      margin-bottom:10px;
+    }
+    .hero p {
+      font-size:1.1rem;
+      color:#555;
+      margin-bottom:20px;
+    }
 
-/* Titles */
-h1 { font-size:2.5rem; margin:20px 0; color:#4e73df; }
-h2 { font-size:2rem; margin-bottom:30px; color:#1cc88a; }
+    /* SEARCH BAR */
+    .search-container {
+      display:flex;
+      justify-content:center;
+      margin:2rem auto;
+      width:90%;
+      max-width:600px;
+    }
+    .search-container input {
+      width:100%;
+      padding:12px 16px;
+      border:2px solid var(--primary);
+      border-radius:30px;
+      font-size:1rem;
+      outline:none;
+      transition:0.3s;
+    }
+    .search-container input:focus {
+      border-color:var(--secondary);
+      box-shadow:0 0 8px var(--secondary);
+    }
 
-/* Notes Container */
-.notes-container {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:20px;
-  max-width:900px;
-  margin:0 auto 50px auto;
-}
+    /* CHAPTER CARDS */
+    .subject-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+      gap:2rem;
+      width:90%;
+      margin:1rem auto 4rem;
+    }
+    .subject-card {
+      background:#fff;
+      border-radius:20px;
+      box-shadow:0 5px 20px rgba(0,0,0,0.1);
+      text-align:center;
+      padding:2rem 1rem;
+      transition:all 0.3s ease;
+      cursor:pointer;
+      position:relative;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      height:150px;
+    }
+    .subject-card::before {
+      content:"";
+      position:absolute;
+      top:-50%;left:-50%;
+      width:200%;height:200%;
+      background:linear-gradient(120deg,var(--primary),var(--secondary));
+      transform:rotate(45deg);
+      opacity:0;
+      transition:0.4s;
+    }
+    .subject-card:hover::before {opacity:0.15;}
+    .subject-card:hover {
+      transform:translateY(-5px) scale(1.03);
+      box-shadow:0 8px 25px rgba(0,0,0,0.15);
+    }
 
-/* Note Cards for Syllabus */
-.note-card {
-  background: #ffffff;
-  padding:25px;
-  border-radius:15px;
-  box-shadow:0 6px 15px rgba(0,0,0,0.1);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  text-align:center;
-  transition:all 0.3s;
-}
-.note-card h4 { margin-bottom:15px; color:#4e73df; font-weight:700; }
-.note-card a {
-  text-decoration:none;
-  padding:12px 25px;
-  background:#1cc88a;
-  color:white;
-  border-radius:50px;
-  font-weight:bold;
-  transition:all 0.3s;
-}
-.note-card a:hover {
-  background:#4e73df;
-  transform:scale(1.05);
-  box-shadow:0 8px 20px rgba(0,0,0,0.2);
-}
+    .subject-card h2 {font-size:1.3rem;font-weight:700;color:var(--primary);z-index:1;}
+    .subject-card p {font-size:0.9rem;color:#555;margin-top:0.5rem;z-index:1;}
+    .loader {
+      border:4px solid #f3f3f3;
+      border-top:4px solid var(--primary);
+      border-radius:50%;
+      width:40px;height:40px;
+      animation:spin 1s linear infinite;
+      margin:0 auto;
+    }
+    @keyframes spin {0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
 
-/* Footer */
-footer {
-  text-align:center;
-  padding:20px;
-  background:#fff;
-  box-shadow:0 -4px 6px rgba(0,0,0,0.05);
-  margin-top:50px;
-  border-radius:12px;
-}
-footer p { color:#555; }
-
-/* Responsive */
-@media(max-width:768px){
-  nav { display:none; flex-direction:column; width:100%; gap:10px; margin-top:10px; }
-  nav.active { display:flex; }
-  .hamburger { display:flex; }
-}
-@media(max-width:480px){
-  .note-card { padding:15px; }
-}
-</style>
+    /* FOOTER */
+    footer {
+      background:#fff;
+      color:#555;
+      text-align:center;
+      padding:1rem;
+      font-size:0.9rem;
+      box-shadow:0 -4px 6px rgba(0,0,0,0.05);
+      border-radius:12px;
+      margin-top:auto;
+    }
+    footer span {color:var(--primary);font-weight:600;}
+  </style>
 </head>
 <body>
 
@@ -104,38 +181,74 @@ footer p { color:#555; }
   <div class="hamburger" onclick="toggleMenu(this)"><div></div><div></div><div></div></div>
   <nav>
     <a href="../index.html">Home</a>
-    <a href="#notes">Syllabus</a>
+    <a href="#notes">Science Notes</a>
     <a href="../credit.html">About</a>
-    <a href="../Contact.html">Contact</a>
-   <button class="login-btn"><a href="login.html">Login</a></button>
+    <a href="../contact.html">Contact</a>
+    <button class="login-btn"><a href="../login.html" style="color:white;text-decoration:none;">Login</a></button>
   </nav>
 </header>
 
-<a href="../index.html" class="back">← Back to Home</a>
+<section class="hero">
+  <h1>Science Notes</h1>
+  <p>All chapters and study materials for Science</p>
+</section>
 
-<h1>Syllabus All Subjects</h1>
-<h2>Subjects</h2>
-
-<div class="notes-container" id="notes">
-  <div class="note-card"><h4>Maths</h4><a href="9_Maths_EM.pdf" target="_blank">Open PDF</a></div>
-  <div class="note-card"><h4>Science</h4><a href="9_Science_EM.pdf" target="_blank">Open PDF</a></div>
-  <div class="note-card"><h4>Social Science</h4><a href="9_sst_EM.pdf" target="_blank">Open PDF</a></div>
-  <div class="note-card"><h4>Hindi</h4><a href="9_Hindi_HM.pdf" target="_blank">Open PDF</a></div>
-  <div class="note-card"><h4>English</h4><a href="9_English_EM.pdf" target="_blank">Open PDF</a></div>
-  <div class="note-card"><h4>Sanskrit</h4><a href="9_Sanskrit_HM.pdf" target="_blank">Open PDF</a></div>
-  <div class="note-card"><h4>Punjabi</h4><a href="9_Punjabi_HM.pdf" target="_blank">Open PDF</a></div>
+<div class="search-container">
+  <input type="text" id="searchBar" placeholder="🔍 Search chapters...">
 </div>
 
+<section class="subject-grid" id="subjectGrid">
+  <div class="subject-card"><div class="loader"></div></div>
+  <div class="subject-card"><div class="loader"></div></div>
+  <div class="subject-card"><div class="loader"></div></div>
+</section>
+
 <footer>
-  <p>&copy; 2025 Note Zilla. All rights reserved.</p>
+  © 2025 <span>NoteZilla</span> | Made by Amarjeet Kumar
 </footer>
 
 <script>
-function toggleMenu(element){
-  const nav = document.querySelector('header nav');
-  nav.classList.toggle('active');
-  element.classList.toggle('open');
+function toggleMenu(el){
+  document.querySelector('nav').classList.toggle('active');
+  el.classList.toggle('open');
 }
+
+const sheetURL = "https://script.google.com/macros/s/AKfycbx6Yi6nb-biO1Qw9pz3_1FvCwOQNLEQvi-TUIjdgsF7b9kf8FPgqsH9fIZ4n-neAVhn/exec";
+const subjectName = "Science";
+
+fetch(sheetURL)
+  .then(res => res.json())
+  .then(data => {
+    const subjectGrid = document.getElementById("subjectGrid");
+    subjectGrid.innerHTML = '';
+    const filtered = data.filter(d => d.Subject === subjectName);
+    filtered.forEach(chap => {
+      const card = document.createElement("div");
+      card.className = "subject-card";
+      card.innerHTML = `<h2>${chap["Chapter Name"]}</h2><p>${chap.Date}</p>`;
+      card.addEventListener("click", () => {
+        if(chap.Link && chap.Link.trim()!=="") window.open(chap.Link, "_blank");
+        else alert("Link not available for this chapter.");
+      });
+      subjectGrid.appendChild(card);
+    });
+  })
+  .catch(err => {
+    const subjectGrid = document.getElementById("subjectGrid");
+    subjectGrid.innerHTML = `<p style="text-align:center;color:red;">Failed to load chapters. Try again later.</p>`;
+    console.error(err);
+  });
+
+const searchBar = document.getElementById("searchBar");
+searchBar.addEventListener("keyup", () => {
+  const value = searchBar.value.toLowerCase();
+  document.querySelectorAll(".subject-card").forEach(card => {
+    const text = card.querySelector("h2")?.innerText.toLowerCase() || "";
+    card.style.display = text.includes(value) ? "flex" : "none";
+  });
+});
+</script>
+<script src="../favicon.js">
 </script>
 <script src="../Record.js"></script>
 </body>

@@ -1,122 +1,255 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Science Notes - Note Zilla</title>
-<link rel="icon" href="../Images/Favicon.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Science Notes - NoteZilla</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap');
+    :root {
+      --primary:#4e73df;
+      --secondary:#1cc88a;
+      --accent:#f6ad55;
+      --bg:#f5f6fa;
+      --text:#333;
+    }
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap');
+    * {margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+    body {background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
 
-/* ============================ General Reset =========================== */
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins', sans-serif; }
-body { background:#f5f6fa; color:#333; line-height:1.6; }
+    /* HEADER (from Computer Notes style) */
+    header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:15px 50px;
+      background:#fff;
+      box-shadow:0 4px 6px rgba(0,0,0,0.1);
+      position:sticky;top:0;z-index:100;
+    }
+    .logo {
+      font-weight:900;
+      font-size:1.8rem;
+      background:linear-gradient(90deg,var(--primary),var(--secondary));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    nav {display:flex;align-items:center;gap:15px;}
+    nav a {text-decoration:none;color:#333;font-weight:500;transition:color 0.2s;}
+    nav a:hover {color:var(--primary);}
+    .login-btn {
+      background:var(--secondary);
+      color:white;
+      border:none;
+      padding:8px 16px;
+      border-radius:6px;
+      cursor:pointer;
+      font-weight:bold;
+      transition:background 0.2s;
+    }
+    .login-btn:hover {background:#17a673;}
+    .hamburger {display:none;flex-direction:column;cursor:pointer;gap:5px;}
+    .hamburger div {width:25px;height:3px;background-color:#333;transition:all 0.3s;}
+    @media(max-width:768px){
+      nav{display:none;flex-direction:column;width:100%;gap:10px;margin-top:10px;}
+      nav.active{display:flex;}
+      .hamburger{display:flex;}
+    }
 
-/* ============================ Header =========================== */
-header {
-  display:flex; justify-content:center; align-items:center;
-  padding:15px 50px; background:#fff;
-  box-shadow:0 4px 6px rgba(0,0,0,0.1);
-  position:sticky; top:0; z-index:100;
-}
-header .logo { font-weight:900; font-size:1.8rem; text-align: left; margin-left: 0; background:linear-gradient(90deg, #4e73df, #1cc88a); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-nav { display:flex; align-items:center; gap:15px; margin-left:50px; }
-nav a { text-decoration:none; color:#333; font-weight:500; transition:color 0.2s; }
-nav a:hover { color:#4e73df; }
-.login-btn { background:#1cc88a; color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:bold; transition:background 0.2s; }
-.login-btn:hover { background:#17a673; }
+    /* HERO */
+    header h1 {
+      font-size:2.5rem;
+      font-weight:700;
+      color:var(--primary);
+    }
 
-/* ============================ Hero Section =========================== */
-.hero { text-align:center; padding:60px 20px; background:#eef2f7; border-radius:12px; margin:20px; }
-.hero h1 { font-size:2.5rem; font-weight:900; color:#4e73df; margin-bottom:15px; }
-.hero p { font-size:1.2rem; color:#555; margin-bottom:20px; }
-.cta-btn { padding:12px 30px; background:#4e73df; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; text-decoration:none; transition:all 0.3s; display:inline-block; }
-.cta-btn:hover { background:#1cc88a; transform:scale(1.05); }
+    .hero {
+      text-align:center;
+      padding:60px 20px;
+      background:#eef2f7;
+      border-radius:12px;
+      margin:20px;
+      box-shadow:0 4px 15px rgba(0,0,0,0.1);
+    }
+    .hero h1 {
+      font-size:2.8rem;
+      font-weight:900;
+      background:linear-gradient(90deg,var(--primary),var(--secondary));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      margin-bottom:10px;
+    }
+    .hero p {
+      font-size:1.1rem;
+      color:#555;
+      margin-bottom:20px;
+    }
 
-/* ============================ Notes Section =========================== */
-.notes-preview { max-width:1200px; margin:0 auto; padding:50px 20px; }
-.notes-preview h2 { text-align:center; font-size:2rem; margin-bottom:40px; color:#4e73df; }
-.notes-container { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px; }
+    /* SEARCH BAR */
+    .search-container {
+      display:flex;
+      justify-content:center;
+      margin:2rem auto;
+      width:90%;
+      max-width:600px;
+    }
+    .search-container input {
+      width:100%;
+      padding:12px 16px;
+      border:2px solid var(--primary);
+      border-radius:30px;
+      font-size:1rem;
+      outline:none;
+      transition:0.3s;
+    }
+    .search-container input:focus {
+      border-color:var(--secondary);
+      box-shadow:0 0 8px var(--secondary);
+    }
 
-.note-card {
-  background: linear-gradient(135deg, #ffffff, #e0f7fa);
-  padding:25px; border-radius:15px; box-shadow:0 6px 15px rgba(0,0,0,0.1);
-  transition: transform 0.3s, box-shadow 0.3s;
-  text-align:center;
-}
-.note-card h4 { margin-bottom:15px; color:#4e73df; font-weight:700; }
-.note-card a {
-  text-decoration:none; 
-  padding:10px 20px; 
-  background:#1cc88a; 
-  color:white; 
-  border-radius:8px; 
-  font-weight:bold; 
-  transition:all 0.3s;
-}
-.note-card a:hover {
-  background:#4e73df;
-  transform:scale(1.05);
-  box-shadow:0 8px 20px rgba(0,0,0,0.2);
-}
+    /* CHAPTER CARDS */
+    .subject-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+      gap:2rem;
+      width:90%;
+      margin:1rem auto 4rem;
+    }
+    .subject-card {
+      background:#fff;
+      border-radius:20px;
+      box-shadow:0 5px 20px rgba(0,0,0,0.1);
+      text-align:center;
+      padding:2rem 1rem;
+      transition:all 0.3s ease;
+      cursor:pointer;
+      position:relative;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      height:150px;
+    }
+    .subject-card::before {
+      content:"";
+      position:absolute;
+      top:-50%;left:-50%;
+      width:200%;height:200%;
+      background:linear-gradient(120deg,var(--primary),var(--secondary));
+      transform:rotate(45deg);
+      opacity:0;
+      transition:0.4s;
+    }
+    .subject-card:hover::before {opacity:0.15;}
+    .subject-card:hover {
+      transform:translateY(-5px) scale(1.03);
+      box-shadow:0 8px 25px rgba(0,0,0,0.15);
+    }
 
-/* Back link */
-.back { color:#4e73df; text-decoration:none; font-weight:bold; display:inline-block; margin:20px; }
-.back:hover { text-decoration:underline; }
+    .subject-card h2 {font-size:1.3rem;font-weight:700;color:var(--primary);z-index:1;}
+    .subject-card p {font-size:0.9rem;color:#555;margin-top:0.5rem;z-index:1;}
+    .loader {
+      border:4px solid #f3f3f3;
+      border-top:4px solid var(--primary);
+      border-radius:50%;
+      width:40px;height:40px;
+      animation:spin 1s linear infinite;
+      margin:0 auto;
+    }
+    @keyframes spin {0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
 
-/* ============================ Footer =========================== */
-footer { text-align:center; padding:20px; background:#fff; box-shadow:0 -4px 6px rgba(0,0,0,0.05); margin-top:50px; border-radius:12px; }
-footer p { color:#555; }
-
-/* ============================ Responsive =========================== */
-@media(max-width:768px){
-  .hero h1 { font-size:2.2rem; }
-  .hero p { font-size:1rem; }
-}
-@media(max-width:480px){
-  .hero h1 { font-size:1.8rem; }
-  .hero p { font-size:0.9rem; }
-  .note-card { padding:15px; }
-  nav { flex-direction: column; gap:10px; margin-left:0; }
-}
-</style>
+    /* FOOTER */
+    footer {
+      background:#fff;
+      color:#555;
+      text-align:center;
+      padding:1rem;
+      font-size:0.9rem;
+      box-shadow:0 -4px 6px rgba(0,0,0,0.05);
+      border-radius:12px;
+      margin-top:auto;
+    }
+    footer span {color:var(--primary);font-weight:600;}
+  </style>
 </head>
 <body>
 
-<!-- Header -->
 <header>
   <div class="logo">Note Zilla</div>
+  <div class="hamburger" onclick="toggleMenu(this)"><div></div><div></div><div></div></div>
   <nav>
     <a href="../index.html">Home</a>
     <a href="#notes">Science Notes</a>
     <a href="../credit.html">About</a>
-   <a href="../Contact.html">Contact</a>
-    <button class="login-btn"><a href="login.html">Login</a></button>
+    <a href="../contact.html">Contact</a>
+    <button class="login-btn"><a href="../login.html" style="color:white;text-decoration:none;">Login</a></button>
   </nav>
 </header>
 
-<!-- Hero Section -->
 <section class="hero">
-  <h1>Sanskrit Teacher - Ritu Mam</h1>
-  <p>Access all Class 9 Science PDFs in one place</p>
-  <a href="../index.html" class="cta-btn">Back to Home</a>
+  <h1>Sanskrit Notes</h1>
+  <p>All chapters and study materials for Science</p>
 </section>
 
-<!-- Notes Section -->
-<section class="notes-preview" id="notes">
-  <h2>Science PDFs</h2>
-  <div class="notes-container">
-    <div class="note-card">
-      <h4>It Available Soon !</h4>
-    </div>
-  </div>
+<div class="search-container">
+  <input type="text" id="searchBar" placeholder="🔍 Search chapters...">
+</div>
+
+<section class="subject-grid" id="subjectGrid">
+  <div class="subject-card"><div class="loader"></div></div>
+  <div class="subject-card"><div class="loader"></div></div>
+  <div class="subject-card"><div class="loader"></div></div>
 </section>
 
-<!-- Footer -->
 <footer>
-  <p>&copy; 2025 Note Zilla. All rights reserved.</p>
+  © 2025 <span>NoteZilla</span> | Made by Amarjeet Kumar
 </footer>
+
+<script>
+function toggleMenu(el){
+  document.querySelector('nav').classList.toggle('active');
+  el.classList.toggle('open');
+}
+
+const sheetURL = "https://script.google.com/macros/s/AKfycbx6Yi6nb-biO1Qw9pz3_1FvCwOQNLEQvi-TUIjdgsF7b9kf8FPgqsH9fIZ4n-neAVhn/exec";
+const subjectName = "Sanskrit";
+
+fetch(sheetURL)
+  .then(res => res.json())
+  .then(data => {
+    const subjectGrid = document.getElementById("subjectGrid");
+    subjectGrid.innerHTML = '';
+    const filtered = data.filter(d => d.Subject === subjectName);
+    filtered.forEach(chap => {
+      const card = document.createElement("div");
+      card.className = "subject-card";
+      card.innerHTML = `<h2>${chap["Chapter Name"]}</h2><p>${chap.Date}</p>`;
+      card.addEventListener("click", () => {
+        if(chap.Link && chap.Link.trim()!=="") window.open(chap.Link, "_blank");
+        else alert("Link not available for this chapter.");
+      });
+      subjectGrid.appendChild(card);
+    });
+  })
+  .catch(err => {
+    const subjectGrid = document.getElementById("subjectGrid");
+    subjectGrid.innerHTML = `<p style="text-align:center;color:red;">Failed to load chapters. Try again later.</p>`;
+    console.error(err);
+  });
+
+const searchBar = document.getElementById("searchBar");
+searchBar.addEventListener("keyup", () => {
+  const value = searchBar.value.toLowerCase();
+  document.querySelectorAll(".subject-card").forEach(card => {
+    const text = card.querySelector("h2")?.innerText.toLowerCase() || "";
+    card.style.display = text.includes(value) ? "flex" : "none";
+  });
+});
+</script>
+<script src="../favicon.js">
+</script>
 <script src="../Record.js"></script>
 </body>
 </html>
