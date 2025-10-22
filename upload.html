@@ -6,113 +6,227 @@
   <title>Note-Zilla Entry Form</title>
   <style>
     :root {
-      --bg: #f4f6fb;
-      --card: #ffffff;
-      --accent: #0067c5;
-      --muted: #6b6f76;
-      --success: #15803d;
-    }
-    body {
-      margin: 0;
-      font-family: Inter, "Segoe UI", Arial, sans-serif;
-      background: linear-gradient(180deg, #eef3ff 0%, var(--bg) 100%);
-      padding: 28px;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-    }
-    .container {
-      width: 100%;
-      max-width: 760px;
-      background: var(--card);
-      border-radius: 12px;
-      box-shadow: 0 8px 30px rgba(16,24,40,0.08);
-      padding: 22px;
-    }
-    h1 {
-      font-size: 20px;
-      margin: 0 0 8px 0;
-    }
-    p.lead {
-      margin: 0 0 18px 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
-    label {
-      display:block;
-      font-weight: 600;
-      margin-top: 12px;
-      font-size: 13px;
-      color: #111827;
-    }
-    .row {
-      display: flex;
-      gap: 12px;
-    }
-    input[type="text"], select {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: 1px solid #e6e9ef;
-      font-size: 14px;
-      box-sizing: border-box;
-    }
-    .controls {
-      margin-top: 16px;
-      display:flex;
-      gap: 10px;
-      align-items:center;
-    }
-    button.primary {
-      background: var(--accent);
-      color: white;
-      border: none;
-      padding: 10px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    button.ghost {
-      background: transparent;
-      border: 1px solid #e6e9ef;
-      padding: 8px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .status {
-      margin-top: 12px;
-      font-size: 14px;
-      color: var(--muted);
-    }
-    .link-box {
-      margin-top: 14px;
-      padding: 10px;
-      background: #f3faf7;
-      border-radius: 8px;
-      display:flex;
-      gap: 8px;
-      align-items:center;
-      justify-content:space-between;
-      border: 1px solid #e6f4ea;
-    }
-    .link-box .url {
-      font-size: 13px;
-      color: var(--success);
-      word-break: break-all;
-    }
-    .small {
-      font-size: 12px;
-      color: var(--muted);
-    }
-    .flex-right { margin-left: auto; display:flex; gap:8px; }
-    .hidden { display:none; }
+  --bg: #f4f6fb;
+  --card: #ffffff;
+  --accent: #0067c5;
+  --accent-hover: #0053a3;
+  --muted: #6b6f76;
+  --success: #15803d;
+  --error: #d9534f;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', "Segoe UI", Arial, sans-serif;
+  background: linear-gradient(180deg, #eef3ff 0%, var(--bg) 100%);
+  padding: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+}
+
+.container {
+  width: 100%;
+  max-width: 780px;
+  background: var(--card);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(16,24,40,0.12);
+  padding: 32px;
+  transition: transform 0.2s;
+}
+.container:hover {
+  transform: translateY(-3px);
+}
+
+h1 {
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 16px;
+  color: #111827;
+}
+
+p.lead {
+  margin: 0 0 20px 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-top: 14px;
+  font-size: 14px;
+  color: #111827;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+input[type="text"], select {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #e6e9ef;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+input[type="text"]:focus, select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 8px rgba(0,103,197,0.2);
+  outline: none;
+}
+
+.controls {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+button.primary {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.1s;
+}
+button.primary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+}
+
+button.ghost {
+  background: transparent;
+  border: 1px solid #e6e9ef;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.1s;
+}
+button.ghost:hover {
+  background: #f1f5f9;
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.status {
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.link-box {
+  margin-top: 16px;
+  padding: 12px 14px;
+  background: #f3faf7;
+  border-radius: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #e6f4ea;
+}
+
+.link-box .url {
+  font-size: 14px;
+  color: var(--success);
+  word-break: break-all;
+}
+
+.small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.flex-right { 
+  margin-left: auto; 
+  display:flex; 
+  gap:8px; 
+}
+
+/* ADMIN WARNING TEXT */
+.span {
+  color: #ff3b3b;
+  font-weight: 700;
+  font-size: 22px;
+  padding: 40px 0;
+  text-align: center;
+  display: block;
+  line-height: 1.4;
+  animation: glowPulse 3s ease-in-out infinite;
+  border-radius: 8px;
+  background: rgba(255,59,59,0.05);
+}
+
+@keyframes glowPulse {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+    text-shadow: 0 0 5px #ff3b3b;
+  }
+  25% {
+    opacity: 0.85;
+    transform: scale(1.02);
+    text-shadow: 0 0 12px #ff4d4d, 0 0 20px #ff3b3b;
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+    text-shadow: 0 0 20px #ff6666, 0 0 30px #ff4d4d;
+  }
+  75% {
+    opacity: 0.85;
+    transform: scale(1.02);
+    text-shadow: 0 0 12px #ff4d4d, 0 0 20px #ff3b3b;
+  }
+  100% {
+    opacity: 0.7;
+    transform: scale(1);
+    text-shadow: 0 0 5px #ff3b3b;
+  }
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .row { flex-direction: column; }
+  h1 { font-size: 24px; }
+  .span { font-size: 20px; padding: 30px 0; }
+}
+
+
+
+
   </style>
 </head>
 <body>
 
   <div class="container" role="main">
-    <h1>Note-Zilla — Chapter Entry</h1>
+    <h1>Note-Zilla — Chapter Data Base Entry </h1>
+    <br>
+  
+  <span class="span">
+  <strong>
+    ⚠️ Admin Access Only! ⚠️<br>
+    This page is restricted to Admins and Co-Admins.<br>
+    Regular users are not authorized to view or modify this page.
+  </strong>
+</span>
+
+    <br>
+    <br>
     <p class="lead">Fill chapter details below. The form will generate a link (or use the direct link you paste) and save it to your Google Sheet.</p>
 
     <label for="chapter">Chapter Name</label>
