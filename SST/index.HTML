@@ -20,7 +20,7 @@
     * {margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
     body {background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
 
-    /* HEADER (from Computer Notes style) */
+    /* HEADER */
     header {
       display:flex;
       justify-content:space-between;
@@ -60,12 +60,6 @@
     }
 
     /* HERO */
-    header h1 {
-      font-size:2.5rem;
-      font-weight:700;
-      color:var(--primary);
-    }
-
     .hero {
       text-align:center;
       padding:80px 20px 50px;
@@ -110,7 +104,7 @@
       box-shadow:0 0 8px var(--secondary);
     }
 
-    /* CHAPTER CARDS */
+    /* SUBJECT CARDS */
     .subject-grid {
       display:grid;
       grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
@@ -152,6 +146,7 @@
 
     .subject-card h2 {font-size:1.3rem;font-weight:700;color:var(--primary);z-index:1;}
     .subject-card p {font-size:0.9rem;color:#555;margin-top:0.5rem;z-index:1;}
+
     .loader {
       border:4px solid #f3f3f3;
       border-top:4px solid var(--primary);
@@ -160,7 +155,7 @@
       animation:spin 1s linear infinite;
       margin:0 auto;
     }
-    @keyframes spin {0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+    @keyframes spin {0%{transform:rotate(0deg);}100%{transform:rotate(360deg);} }
 
     /* FOOTER */
     footer {
@@ -192,7 +187,7 @@
 
 <section class="hero">
   <h1>Social Science Notes</h1>
-  <p>All chapters and study materials for Science</p>
+  <p>All chapters and study materials for Class 9 SST</p>
 </section>
 
 <div class="search-container">
@@ -200,13 +195,14 @@
 </div>
 
 <section class="subject-grid" id="subjectGrid">
-  <div class="subject-card"><div class="loader"></div></div>
-  <div class="subject-card"><div class="loader"></div></div>
-  <div class="subject-card"><div class="loader"></div></div>
+  <div style="text-align:center;width:100%;padding:30px;">
+    <div class="loader" style="margin-bottom:10px;"></div>
+    <p>Loading notes...</p>
+  </div>
 </section>
 
 <footer>
-  © 2025 <span>NoteZilla</span> All Right Are Reserved
+  © 2025 <span>NoteZilla</span> All Rights Reserved
 </footer>
 
 <script>
@@ -217,30 +213,45 @@ function toggleMenu(el){
 
 const sheetURL = "https://script.google.com/macros/s/AKfycbx6Yi6nb-biO1Qw9pz3_1FvCwOQNLEQvi-TUIjdgsF7b9kf8FPgqsH9fIZ4n-neAVhn/exec";
 const subjectName = "SST";
+const subjectGrid = document.getElementById("subjectGrid");
 
-fetch(sheetURL)
-  .then(res => res.json())
-  .then(data => {
-    const subjectGrid = document.getElementById("subjectGrid");
-    subjectGrid.innerHTML = '';
+// Show cached data instantly if available
+const cached = localStorage.getItem(`notes_${subjectName}`);
+if (cached) renderNotes(JSON.parse(cached));
+fetchData(); // Then fetch fresh data
+
+async function fetchData() {
+  try {
+    const res = await fetch(sheetURL);
+    const data = await res.json();
     const filtered = data.filter(d => d.Subject === subjectName);
-    filtered.forEach(chap => {
-      const card = document.createElement("div");
-      card.className = "subject-card";
-      card.innerHTML = `<h2>${chap["Chapter Name"]}</h2><p>${chap.Date}</p>`;
-      card.addEventListener("click", () => {
-        if(chap.Link && chap.Link.trim()!=="") window.open(chap.Link, "_blank");
-        else alert("Link not available for this chapter.");
-      });
-      subjectGrid.appendChild(card);
-    });
-  })
-  .catch(err => {
-    const subjectGrid = document.getElementById("subjectGrid");
-    subjectGrid.innerHTML = `<p style="text-align:center;color:red;">Failed to load chapters. Try again later.</p>`;
-    console.error(err);
-  });
+    localStorage.setItem(`notes_${subjectName}`, JSON.stringify(filtered));
+    renderNotes(filtered);
+  } catch (err) {
+    console.error("Failed to load:", err);
+    subjectGrid.innerHTML = `<p style="text-align:center;color:red;">⚠️ Failed to load notes. Try again later.</p>`;
+  }
+}
 
+function renderNotes(notes) {
+  subjectGrid.innerHTML = "";
+  if (!notes.length) {
+    subjectGrid.innerHTML = `<p style="text-align:center;color:gray;">No chapters available.</p>`;
+    return;
+  }
+  notes.forEach(chap => {
+    const card = document.createElement("div");
+    card.className = "subject-card";
+    card.innerHTML = `<h2>${chap["Chapter Name"]}</h2><p>${chap.Date || ""}</p>`;
+    card.addEventListener("click", () => {
+      if (chap.Link?.trim()) window.open(chap.Link, "_blank");
+      else alert("Link not available for this chapter.");
+    });
+    subjectGrid.appendChild(card);
+  });
+}
+
+// Search Functionality
 const searchBar = document.getElementById("searchBar");
 searchBar.addEventListener("keyup", () => {
   const value = searchBar.value.toLowerCase();
@@ -250,8 +261,9 @@ searchBar.addEventListener("keyup", () => {
   });
 });
 </script>
-<script src="../favicon.js">
-</script>
+
+<script src="../favicon.js"></script>
 <script src="../Record.js"></script>
+
 </body>
 </html>

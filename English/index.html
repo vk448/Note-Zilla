@@ -220,38 +220,45 @@ function toggleMenu(el){
 
 const sheetURL = "https://script.google.com/macros/s/AKfycbx6Yi6nb-biO1Qw9pz3_1FvCwOQNLEQvi-TUIjdgsF7b9kf8FPgqsH9fIZ4n-neAVhn/exec";
 const subjectName = "English";
+const subjectGrid = document.getElementById("subjectGrid");
 
-fetch(sheetURL)
-  .then(res => res.json())
-  .then(data => {
-    const subjectGrid = document.getElementById("subjectGrid");
-    subjectGrid.innerHTML = ''; // remove loader
+// Show cached data instantly if available
+const cached = localStorage.getItem(`notes_${subjectName}`);
+if (cached) renderNotes(JSON.parse(cached));
+fetchData(); // Then fetch fresh data
 
+async function fetchData() {
+  try {
+    const res = await fetch(sheetURL);
+    const data = await res.json();
     const filtered = data.filter(d => d.Subject === subjectName);
+    localStorage.setItem(`notes_${subjectName}`, JSON.stringify(filtered));
+    renderNotes(filtered);
+  } catch (err) {
+    console.error("Failed to load:", err);
+    subjectGrid.innerHTML = `<p style="text-align:center;color:red;">⚠️ Failed to load notes. Try again later.</p>`;
+  }
+}
 
-    filtered.forEach(chap => {
-      const card = document.createElement("div");
-      card.className = "subject-card";
-      card.innerHTML = `
-        <h2>${chap["Chapter Name"]}</h2>
-        <p>${chap.Date}</p>
-      `;
-      card.addEventListener("click", () => {
-        if(chap.Link && chap.Link.trim()!=="") {
-          window.open(chap.Link, "_blank");
-        } else {
-          alert("Link not available for this chapter.");
-        }
-      });
-      subjectGrid.appendChild(card);
+function renderNotes(notes) {
+  subjectGrid.innerHTML = "";
+  if (!notes.length) {
+    subjectGrid.innerHTML = `<p style="text-align:center;color:gray;">No chapters available.</p>`;
+    return;
+  }
+  notes.forEach(chap => {
+    const card = document.createElement("div");
+    card.className = "subject-card";
+    card.innerHTML = `<h2>${chap["Chapter Name"]}</h2><p>${chap.Date || ""}</p>`;
+    card.addEventListener("click", () => {
+      if (chap.Link?.trim()) window.open(chap.Link, "_blank");
+      else alert("Link not available for this chapter.");
     });
-  })
-  .catch(err => {
-    const subjectGrid = document.getElementById("subjectGrid");
-    subjectGrid.innerHTML = `<p style="text-align:center;color:red;">Failed to load chapters. Try again later.</p>`;
-    console.error(err);
+    subjectGrid.appendChild(card);
   });
+}
 
+// Search Functionality
 const searchBar = document.getElementById("searchBar");
 searchBar.addEventListener("keyup", () => {
   const value = searchBar.value.toLowerCase();
