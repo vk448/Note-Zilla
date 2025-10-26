@@ -4,6 +4,220 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Note-Zilla Entry Form</title>
+
+  <!-- POPUP STYLE -->
+  <style>
+    .no{
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .popup {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      padding: 25px;
+      max-width: 400px;
+      text-align: center;
+      animation: pop 0.3s ease;
+    }
+    @keyframes pop {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .popup h2 { color: #0067c5; margin-bottom: 10px; }
+    .popup p { color: #333; line-height: 1.5; }
+    .popup button {
+      margin-top: 20px;
+      background: #0067c5;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .popup button:hover { background: #004f9a; }
+  </style>
+
+  <!-- MAIN STYLE -->
+  <style>
+    :root {
+      --bg: #f4f6fb;
+      --card: #ffffff;
+      --accent: #0067c5;
+      --accent-hover: #0053a3;
+      --muted: #6b6f76;
+      --success: #15803d;
+      --error: #d9534f;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(180deg, #eef3ff 0%, var(--bg) 100%);
+      padding: 28px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 780px;
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: 0 12px 40px rgba(16,24,40,0.12);
+      padding: 32px;
+      transition: transform 0.2s;
+    }
+    .container:hover { transform: translateY(-3px); }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 16px;
+      color: #111827;
+    }
+
+    p.lead {
+      margin: 0 0 20px 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-top: 14px;
+      font-size: 14px;
+      color: #111827;
+    }
+
+    .row {
+      display: flex;
+      gap: 16px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    input[type="text"], select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid #e6e9ef;
+      font-size: 14px;
+      box-sizing: border-box;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input[type="text"]:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 8px rgba(0,103,197,0.2);
+      outline: none;
+    }
+
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s, transform 0.1s;
+    }
+    button.primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+    }
+
+    button.ghost {
+      background: transparent;
+      border: 1px solid #e6e9ef;
+      padding: 10px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.1s;
+    }
+    button.ghost:hover {
+      background: #f1f5f9;
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .status { margin-top: 16px; font-size: 14px; color: var(--muted); }
+
+    .link-box {
+      margin-top: 16px;
+      padding: 12px 14px;
+      background: #f3faf7;
+      border-radius: 10px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #e6f4ea;
+    }
+
+    .link-box .url { font-size: 14px; color: var(--success); word-break: break-all; }
+
+    .small { font-size: 12px; color: var(--muted); }
+
+    .flex-right { margin-left: auto; display:flex; gap:8px; }
+
+    .span {
+      color: #ff3b3b;
+      font-weight: 700;
+      font-size: 22px;
+      padding: 40px 0;
+      text-align: center;
+      display: block;
+      line-height: 1.4;
+      animation: glowPulse 3s ease-in-out infinite;
+      border-radius: 8px;
+      background: rgba(255,59,59,0.05);
+    }
+
+    @keyframes glowPulse {
+      0% { opacity: 0.7; transform: scale(1); text-shadow: 0 0 5px #ff3b3b; }
+      25% { opacity: 0.85; transform: scale(1.02); text-shadow: 0 0 12px #ff4d4d, 0 0 20px #ff3b3b; }
+      50% { opacity: 1; transform: scale(1.05); text-shadow: 0 0 20px #ff6666, 0 0 30px #ff4d4d; }
+      75% { opacity: 0.85; transform: scale(1.02); text-shadow: 0 0 12px #ff4d4d, 0 0 20px #ff3b3b; }
+      100% { opacity: 0.7; transform: scale(1); text-shadow: 0 0 5px #ff3b3b; }
+    }
+
+    @media (max-width: 600px) {
+      .row { flex-direction: column; }
+      h1 { font-size: 24px; }
+      .span { font-size: 20px; padding: 30px 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Admin Alert Popup -->
 <div class="popup-overlay" id="popup">
   <div class="popup">
     <h2>📢 Attention Admin & Co-Admin</h2>
@@ -15,465 +229,180 @@
   </div>
 </div>
 
-<style>
-  .no{
-    text-decoration: none;
-    font-weight: 700;
+<div class="container" role="main">
+  <h1>Note-Zilla — Chapter Data Base Entry</h1>
+  <br>
 
-  }
-  .popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  .popup {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    padding: 25px;
-    max-width: 400px;
-    text-align: center;
-    animation: pop 0.3s ease;
-  }
-  @keyframes pop {
-    from { transform: scale(0.8); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-  }
-  .popup h2 {
-    color: #0067c5;
-    margin-bottom: 10px;
-  }
-  .popup p {
-    color: #333;
-    line-height: 1.5;
-  }
-  .popup button {
-    margin-top: 20px;
-    background: #0067c5;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  .popup button:hover {
-    background: #004f9a;
-  }
-</style>
-  <style>
-    :root {
-  --bg: #f4f6fb;
-  --card: #ffffff;
-  --accent: #0067c5;
-  --accent-hover: #0053a3;
-  --muted: #6b6f76;
-  --success: #15803d;
-  --error: #d9534f;
-}
-
-body {
-  margin: 0;
-  font-family: 'Inter', "Segoe UI", Arial, sans-serif;
-  background: linear-gradient(180deg, #eef3ff 0%, var(--bg) 100%);
-  padding: 28px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
-}
-
-.container {
-  width: 100%;
-  max-width: 780px;
-  background: var(--card);
-  border-radius: 16px;
-  box-shadow: 0 12px 40px rgba(16,24,40,0.12);
-  padding: 32px;
-  transition: transform 0.2s;
-}
-.container:hover {
-  transform: translateY(-3px);
-}
-
-h1 {
-  font-size: 28px;
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 16px;
-  color: #111827;
-}
-
-p.lead {
-  margin: 0 0 20px 0;
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.6;
-  text-align: center;
-}
-
-label {
-  display: block;
-  font-weight: 600;
-  margin-top: 14px;
-  font-size: 14px;
-  color: #111827;
-}
-
-.row {
-  display: flex;
-  gap: 16px;
-  margin-top: 8px;
-  flex-wrap: wrap;
-}
-
-input[type="text"], select {
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: 10px;
-  border: 1px solid #e6e9ef;
-  font-size: 14px;
-  box-sizing: border-box;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-input[type="text"]:focus, select:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 8px rgba(0,103,197,0.2);
-  outline: none;
-}
-
-.controls {
-  margin-top: 20px;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-button.primary {
-  background: var(--accent);
-  color: white;
-  border: none;
-  padding: 12px 18px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background 0.2s, transform 0.1s;
-}
-button.primary:hover {
-  background: var(--accent-hover);
-  transform: translateY(-2px);
-}
-
-button.ghost {
-  background: transparent;
-  border: 1px solid #e6e9ef;
-  padding: 10px 16px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s, transform 0.1s;
-}
-button.ghost:hover {
-  background: #f1f5f9;
-  border-color: var(--accent);
-  transform: translateY(-2px);
-}
-
-.status {
-  margin-top: 16px;
-  font-size: 14px;
-  color: var(--muted);
-}
-
-.link-box {
-  margin-top: 16px;
-  padding: 12px 14px;
-  background: #f3faf7;
-  border-radius: 10px;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  justify-content: space-between;
-  border: 1px solid #e6f4ea;
-}
-
-.link-box .url {
-  font-size: 14px;
-  color: var(--success);
-  word-break: break-all;
-}
-
-.small {
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.flex-right { 
-  margin-left: auto; 
-  display:flex; 
-  gap:8px; 
-}
-
-/* ADMIN WARNING TEXT */
-.span {
-  color: #ff3b3b;
-  font-weight: 700;
-  font-size: 22px;
-  padding: 40px 0;
-  text-align: center;
-  display: block;
-  line-height: 1.4;
-  animation: glowPulse 3s ease-in-out infinite;
-  border-radius: 8px;
-  background: rgba(255,59,59,0.05);
-}
-
-@keyframes glowPulse {
-  0% {
-    opacity: 0.7;
-    transform: scale(1);
-    text-shadow: 0 0 5px #ff3b3b;
-  }
-  25% {
-    opacity: 0.85;
-    transform: scale(1.02);
-    text-shadow: 0 0 12px #ff4d4d, 0 0 20px #ff3b3b;
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-    text-shadow: 0 0 20px #ff6666, 0 0 30px #ff4d4d;
-  }
-  75% {
-    opacity: 0.85;
-    transform: scale(1.02);
-    text-shadow: 0 0 12px #ff4d4d, 0 0 20px #ff3b3b;
-  }
-  100% {
-    opacity: 0.7;
-    transform: scale(1);
-    text-shadow: 0 0 5px #ff3b3b;
-  }
-}
-
-/* RESPONSIVE */
-@media (max-width: 600px) {
-  .row { flex-direction: column; }
-  h1 { font-size: 24px; }
-  .span { font-size: 20px; padding: 30px 0; }
-}
-
-
-
-
-  </style>
-</head>
-<body>
-<!-- Admin Alert Popup -->
-
-
-<script>
-  function closePopup() {
-    document.getElementById("popup").style.display = "none";
-  }
-</script>
-<!-- End Admin Alert Popup -->
-
-  <div class="container" role="main">
-    <h1>Note-Zilla — Chapter Data Base Entry </h1>
-    <br>
-  
   <span class="span">
-  <strong>
-    ⚠️ Admin Access Only! ⚠️<br>
-    This page is restricted to Admins and Co-Admins.<br>
-    Regular users are not authorized to view or modify this page.
-  </strong>
-</span>
+    <strong>
+      ⚠️ Admin Access Only! ⚠️<br>
+      This page is restricted to Admins and Co-Admins.<br>
+      Regular users are not authorized to view or modify this page.
+    </strong>
+  </span>
 
-    <br>
-    <br>
-    <p class="lead">Fill chapter details below. The form will generate a link (or use the direct link you paste) and save it to your Google Sheet.</p>
+  <br><br>
+  <p class="lead">Fill chapter details below. The form will generate a link (or use the direct link you paste) and save it to your Google Sheet.</p>
 
-    <label for="chapter">Chapter Name</label>
-    <input id="chapter" type="text" placeholder="e.g. Chapter 1: Introduction to Computers" />
+  <label for="chapter">Chapter Name</label>
+  <input id="chapter" type="text" placeholder="e.g. Chapter 1: Introduction to Computers" />
 
-    <div class="row" style="margin-top:8px;">
-      <div style="flex:1;">
-        <label for="subject">Subject</label>
-        <select id="subject">
-          <option>Science</option>
-          <option>Maths</option>
-          <option>Hindi</option>
-          <option>Sanskrit</option>
-          <option>English</option>
-          <option>AI</option>
-          <option>SST</option>
-        </select>
-      </div>
-
-      <div style="flex:1;">
-        <label for="folder">Folder (for URL)</label>
-        <select id="folder">
-          <option>Science</option>
-          <option>Maths</option>
-          <option>Hindi</option>
-          <option>Sanskrit</option>
-          <option>English</option>
-          <option>AI</option>
-          <option>SST</option>
-        </select>
-      </div>
+  <div class="row" style="margin-top:8px;">
+    <div style="flex:1;">
+      <label for="subject">Subject</label>
+      <select id="subject">
+        <option>Science</option>
+        <option>Maths</option>
+        <option>Hindi</option>
+        <option>Sanskrit</option>
+        <option>English</option>
+        <option>AI</option>
+        <option>SST</option>
+      </select>
     </div>
 
-    <label for="pdf" style="margin-top:12px;">PDF Name (without .pdf)</label>
-    <input id="pdf" type="text" placeholder="e.g. chapter_1_intro_or_notes_file" />
-
-    <label for="direct_link" style="margin-top:12px;">Or Direct Link (paste if already uploaded)</label>
-    <input id="direct_link" type="text" placeholder="https://drive.google.com/..., or https://your-site/path.pdf" />
-
-    <div class="controls">
-      <button class="primary" onclick="generateAndSave()">Generate & Save</button>
-      <button class="ghost" onclick="clearForm()">Clear</button>
-
-      <div class="flex-right" style="margin-left:auto;">
-        <div class="small">Auto date:</div>
-        <div id="autoDate" class="small" style="padding-left:8px; font-weight:600;"></div>
-      </div>
-    </div>
-
-    <div id="status" class="status"></div>
-
-    <div id="linkBox" class="link-box hidden" style="margin-top:10px;">
-      <div>
-        <div class="small">✅ Link</div>
-        <div id="previewLink" class="url"></div>
-      </div>
-      <div class="flex-right">
-        <button class="ghost" onclick="openLink()">Open</button>
-        <button class="ghost" onclick="copyLink()">Copy</button>
-      </div>
+    <div style="flex:1;">
+      <label for="folder">Folder (for URL)</label>
+      <select id="folder">
+        <option>Science</option>
+        <option>Maths</option>
+        <option>Hindi</option>
+        <option>Sanskrit</option>
+        <option>English</option>
+        <option>AI</option>
+        <option>SST</option>
+      </select>
     </div>
   </div>
 
-  <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyRZo_3MZ8X4v-zzDZObCI6dFXMnq79isXOVpE8XH7s-TZ0OjxjzjyRYZP5Z4Yv_34A/exec";
+  <label for="pdf" style="margin-top:12px;">PDF Name (without .pdf)</label>
+  <input id="pdf" type="text" placeholder="e.g. chapter_1_intro_or_notes_file" />
 
-    // Set auto date
-    const today = new Date();
-    const dd = String(today.getDate()).padStart(2,'0');
-    const mm = String(today.getMonth()+1).padStart(2,'0');
-    const yyyy = today.getFullYear();
-    document.getElementById("autoDate").textContent = `${dd}-${mm}-${yyyy}`;
+  <label for="direct_link" style="margin-top:12px;">Or Direct Link (paste if already uploaded)</label>
+  <input id="direct_link" type="text" placeholder="https://drive.google.com/..., or https://your-site/path.pdf" />
 
-    function toSlug(text){
-      return text.trim().replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_\-]/g,'').toLowerCase();
-    }
+  <div class="controls">
+    <button class="primary" onclick="generateAndSave()">Generate & Save</button>
+    <button class="ghost" onclick="clearForm()">Clear</button>
 
-    async function generateAndSave() {
-      const chapter = document.getElementById("chapter").value.trim();
-      const subject = document.getElementById("subject").value.trim();
-      const folder = document.getElementById("folder").value.trim().toLowerCase();
-      const pdfRaw = document.getElementById("pdf").value.trim();
-      const directLink = document.getElementById("direct_link").value.trim();
+    <div class="flex-right" style="margin-left:auto;">
+      <div class="small">Auto date:</div>
+      <div id="autoDate" class="small" style="padding-left:8px; font-weight:600;"></div>
+    </div>
+  </div>
 
-      if(!chapter){ alert("Enter Chapter Name"); return; }
-      if(!pdfRaw && !directLink){ alert("Enter PDF Name or Direct Link"); return; }
+  <div id="status" class="status"></div>
 
-      const pdfSlug = pdfRaw ? toSlug(pdfRaw) : toSlug(chapter);
-      const generatedUrl = directLink || `https://note-zilla.netlify.app/${folder}/${pdfSlug}.pdf`;
+  <div id="linkBox" class="link-box hidden" style="margin-top:10px;">
+    <div>
+      <div class="small">✅ Link</div>
+      <div id="previewLink" class="url"></div>
+    </div>
+    <div class="flex-right">
+      <button class="ghost" onclick="openLink()">Open</button>
+      <button class="ghost" onclick="copyLink()">Copy</button>
+    </div>
+  </div>
+</div>
 
-      const params = new URLSearchParams({
-        chapter_name: chapter,
-        subject: subject,
-        folder: folder,
-        pdf_name: pdfSlug,
-        link: generatedUrl,
-        direct_link: directLink,
-        date: new Date().toLocaleDateString()
-      });
-
-      document.getElementById("status").innerText = "Saving...";
-      try{
-        const res = await fetch(`${WEB_APP_URL}?${params.toString()}`);
-        const json = await res.json();
-        if(json.status==="success"){
-          document.getElementById("status").innerText = "✅ Saved successfully!";
-          document.getElementById("previewLink").innerText = generatedUrl;
-          document.getElementById("linkBox").classList.remove("hidden");
-        }else{
-          document.getElementById("status").innerText = "❌ Error: "+json.message;
-        }
-      }catch(err){
-        console.error(err);
-        document.getElementById("status").innerText = "❌ Network or script error. Check console.";
-      }
-    }
-
-    function clearForm(){
-      document.getElementById("chapter").value="";
-      document.getElementById("pdf").value="";
-      document.getElementById("direct_link").value="";
-      document.getElementById("subject").selectedIndex=0;
-      document.getElementById("folder").selectedIndex=0;
-      document.getElementById("status").innerText="";
-      document.getElementById("linkBox").classList.add("hidden");
-    }
-
-    function openLink(){
-      const url = document.getElementById("previewLink").innerText;
-      if(url) window.open(url,"_blank");
-    }
-
-    function copyLink(){
-      const url = document.getElementById("previewLink").innerText;
-      if(!url) return;
-      navigator.clipboard.writeText(url).then(()=> {
-        document.getElementById("status").innerText="Link copied ✅";
-      }).catch(()=> alert("Copy manually: "+url));
-    }
-  </script>
-  <script src="https://formspree.io/js/formbutton-v1.min.js" defer></script>
 <script>
-  /* paste this line in verbatim */
+  function closePopup() { document.getElementById("popup").style.display = "none"; }
+
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyRZo_3MZ8X4v-zzDZObCI6dFXMnq79isXOVpE8XH7s-TZ0OjxjzjyRYZP5Z4Yv_34A/exec";
+
+  // ✅ FIXED DATE FORMAT (DD/MM/YYYY) FOR ALL DEVICES
+  const indiaTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+  const d = new Date(indiaTime);
+  const dd = String(d.getDate()).padStart(2,'0');
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const yyyy = d.getFullYear();
+  const fixedDate = `${dd}/${mm}/${yyyy}`;
+  document.getElementById("autoDate").textContent = fixedDate;
+
+  function toSlug(text){
+    return text.trim().replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_\-]/g,'').toLowerCase();
+  }
+
+  async function generateAndSave() {
+    const chapter = document.getElementById("chapter").value.trim();
+    const subject = document.getElementById("subject").value.trim();
+    const folder = document.getElementById("folder").value.trim().toLowerCase();
+    const pdfRaw = document.getElementById("pdf").value.trim();
+    const directLink = document.getElementById("direct_link").value.trim();
+
+    if(!chapter){ alert("Enter Chapter Name"); return; }
+    if(!pdfRaw && !directLink){ alert("Enter PDF Name or Direct Link"); return; }
+
+    const pdfSlug = pdfRaw ? toSlug(pdfRaw) : toSlug(chapter);
+    const generatedUrl = directLink || `https://note-zilla.netlify.app/${folder}/${pdfSlug}.pdf`;
+
+    const params = new URLSearchParams({
+      chapter_name: chapter,
+      subject: subject,
+      folder: folder,
+      pdf_name: pdfSlug,
+      link: generatedUrl,
+      direct_link: directLink,
+      date: fixedDate  // ✅ FIXED DD/MM/YYYY
+    });
+
+    document.getElementById("status").innerText = "Saving...";
+    try{
+      const res = await fetch(`${WEB_APP_URL}?${params.toString()}`);
+      const json = await res.json();
+      if(json.status==="success"){
+        document.getElementById("status").innerText = "✅ Saved successfully!";
+        document.getElementById("previewLink").innerText = generatedUrl;
+        document.getElementById("linkBox").classList.remove("hidden");
+      }else{
+        document.getElementById("status").innerText = "❌ Error: "+json.message;
+      }
+    }catch(err){
+      console.error(err);
+      document.getElementById("status").innerText = "❌ Network or script error. Check console.";
+    }
+  }
+
+  function clearForm(){
+    document.getElementById("chapter").value="";
+    document.getElementById("pdf").value="";
+    document.getElementById("direct_link").value="";
+    document.getElementById("subject").selectedIndex=0;
+    document.getElementById("folder").selectedIndex=0;
+    document.getElementById("status").innerText="";
+    document.getElementById("linkBox").classList.add("hidden");
+  }
+
+  function openLink(){
+    const url = document.getElementById("previewLink").innerText;
+    if(url) window.open(url,"_blank");
+  }
+
+  function copyLink(){
+    const url = document.getElementById("previewLink").innerText;
+    if(!url) return;
+    navigator.clipboard.writeText(url).then(()=> {
+      document.getElementById("status").innerText="Link copied ✅";
+    }).catch(()=> alert("Copy manually: "+url));
+  }
+</script>
+
+<!-- Formspree -->
+<script src="https://formspree.io/js/formbutton-v1.min.js" defer></script>
+<script>
   window.formbutton=window.formbutton||function(){(formbutton.q=formbutton.q||[]).push(arguments)};
-  /* customize formbutton below*/     
   formbutton("create", {
     action: "https://formspree.io/f/xeokweek",
     title: "How can we help?",
     fields: [
-      { 
-        type: "email", 
-        label: "Email:", 
-        name: "email",
-        required: true,
-        placeholder: "your@email.com"
-      },
-      {
-        type: "textarea",
-        label: "Message:",
-        name: "message",
-        placeholder: "What's on your mind?",
-      },
+      { type: "email", label: "Email:", name: "email", required: true, placeholder: "your@email.com" },
+      { type: "textarea", label: "Message:", name: "message", placeholder: "What's on your mind?" },
       { type: "submit" }      
     ],
-    styles: {
-      title: {
-        backgroundColor: "gray"
-      },
-      button: {
-        backgroundColor: "gray"
-      }
-    }
+    styles: { title:{backgroundColor:"gray"}, button:{backgroundColor:"gray"} }
   });
 </script>
-<script src="Record.js">
-</script>
+
+<script src="Record.js"></script>
 </body>
 </html>
