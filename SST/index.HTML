@@ -181,8 +181,10 @@
     <a href="#notes">Social Science Notes</a>
     <a href="../credit.html">About</a>
     <a href="../contact.html">Contact</a>
-    <button class="login-btn"><a href="../login.html" style="color:white;text-decoration:none;">Login</a></button>
+   <a href="../login.html"><button class="login-btn">Login</button></a>
+
   </nav>
+
 </header>
 
 <section class="hero">
@@ -298,5 +300,53 @@ searchBar.addEventListener("keyup", () => {
     }
   });
 </script>
+<script>
+  // --- Universal NoteZilla Login Display System ---
+  (function() {
+    const fullName = localStorage.getItem("fullName");
+    const username = localStorage.getItem("username");
+    const role = localStorage.getItem("userRole");
+
+    // 1️⃣ Replace Login Button Text with Name (if logged in)
+    const loginBtn = document.querySelector(".login-btn");
+    if (loginBtn && fullName) {
+      loginBtn.textContent = fullName;
+      loginBtn.style.background = "linear-gradient(135deg,#203a43,#2c5364)";
+      loginBtn.style.color = "#fff";
+      loginBtn.style.fontWeight = "600";
+
+      // Logout on click
+      loginBtn.onclick = () => {
+        const confirmLogout = confirm(`Logout from ${fullName}?`);
+        if (confirmLogout) {
+          localStorage.removeItem("fullName");
+          localStorage.removeItem("username");
+          localStorage.removeItem("userRole");
+          window.location.reload();
+        }
+      };
+    }
+
+    // 2️⃣ Show Name on Header (if element exists)
+    const userDisplay = document.getElementById("userNameDisplay");
+    if (userDisplay && fullName) {
+      userDisplay.textContent = `👋 ${fullName}`;
+      userDisplay.style.fontWeight = "600";
+    }
+
+    // 3️⃣ If Not Logged In
+    if (!fullName && loginBtn) {
+      loginBtn.textContent = "Login";
+      loginBtn.onclick = () => window.location.href = "login.html";
+    }
+
+    // 4️⃣ Optional: Restrict admin-only pages
+    if (document.body.classList.contains("admin-page") && !role) {
+      alert("⚠️ You must log in first!");
+      window.location.href = "login.html";
+    }
+  })();
+</script>
+
 </body>
 </html>
