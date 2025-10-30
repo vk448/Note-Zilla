@@ -20,6 +20,33 @@ button.ghost:hover{background:#f1f5f9;border-color:#0067c5;transform:translateY(
 .status{margin-top:16px;font-size:14px;color:#6b6f76;}
 .link-box{margin-top:10px;padding:12px 14px;background:#f3faf7;border-radius:10px;display:flex;gap:10px;align-items:center;justify-content:space-between;border:1px solid #e6f4ea;}
 .link-box .url{font-size:14px;color:#15803d;word-break:break-all;}
+.REMOVE {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 20px 12px;
+    
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    
+    background: #d90429; /* Red modern delete color */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    
+    transition: 0.25s ease-in-out;
+    box-shadow: 0 4px 10px rgba(217, 4, 41, 0.3);
+}
+.REMOVE:hover {
+    background: #a10321;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(217,4,41,0.45);
+}
+.REMOVE:active {
+    transform: scale(0.96);
+}
+
 </style>
 </head>
 <body>
@@ -56,13 +83,14 @@ button.ghost:hover{background:#f1f5f9;border-color:#0067c5;transform:translateY(
 </select>
 </div>
 </div>
-
+<div>
 <label for="pdf" style="margin-top:12px;">PDF Name (without .pdf)</label>
+
 <input id="pdf" type="text" placeholder="e.g. chapter_1_intro_or_notes_file" />
 
 <label for="direct_link" style="margin-top:12px;">Or Direct Link</label>
 <input id="direct_link" type="text" placeholder="https://drive.google.com/..., or https://your-site/path.pdf" />
-
+<a href="delete-database-work-admin-owner-notezilla-database-work-add-on.html" target="_blank" class="REMOVE">Remove Incorrect Link </a>
 <div style="margin-top:20px;display:flex;gap:12px;align-items:center;">
 <button class="primary" onclick="generateAndSave()">Generate & Save</button>
 <button class="ghost" onclick="clearForm()">Clear</button>
