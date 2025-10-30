@@ -7,149 +7,151 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#071228;--card:rgba(255,255,255,0.04);--accent:#42a5f5;--ok:#22c55e;--err:#ff6b6b}
-  body{margin:0;font-family:Poppins,system-ui;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#001126,#021428);color:#e6eef8;padding:18px;}
-  .card{width:100%;max-width:980px;border-radius:12px;padding:18px;background:var(--card);box-shadow:0 8px 30px rgba(0,0,0,0.45);}
-  h2{margin:0 0 10px 0;font-size:20px;text-align:center}
-  #loading{color:var(--accent);font-weight:700;padding:8px;text-align:center}
-  table{width:100%;border-collapse:collapse;margin-top:8px}
-  th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);text-align:left;font-size:14px}
-  th{font-weight:700;color:#cfe9ff;background:rgba(255,255,255,0.02)}
-  .btn{padding:8px 10px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
-  .del{background:var(--err);color:white}
-  .del:hover{opacity:0.94}
-  .small{font-size:13px;color:rgba(255,255,255,0.8)}
-  .status{margin-top:12px;padding:10px;border-radius:8px;font-weight:700;display:none}
-  .status.ok{background:rgba(34,197,94,0.12);color:var(--ok);display:block}
-  .status.err{background:rgba(255,107,107,0.12);color:var(--err);display:block}
-  .searchRow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
-  input.search{flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+body{margin:0;font-family:Poppins,system-ui;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#001126,#021428);color:#e6eef8;padding:18px;}
+.card{width:100%;max-width:980px;border-radius:12px;padding:18px;background:var(--card);box-shadow:0 8px 30px rgba(0,0,0,0.45);}
+h2{margin:0 0 10px 0;font-size:20px;text-align:center}
+#loading{color:var(--accent);font-weight:700;padding:8px;text-align:center}
+table{width:100%;border-collapse:collapse;margin-top:8px}
+th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);text-align:left;font-size:14px}
+th{font-weight:700;color:#cfe9ff;background:rgba(255,255,255,0.02)}
+.btn{padding:8px 10px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+.del{background:var(--err);color:white}
+.del:hover{opacity:0.94}
+.small{font-size:13px;color:rgba(255,255,255,0.8)}
+.status{margin-top:12px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.ok{background:rgba(34,197,94,0.12);color:var(--ok);display:block}
+.status.err{background:rgba(255,107,107,0.12);color:var(--err);display:block}
+.searchRow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+input.search{flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
 </style>
 </head>
 <body>
 <div class="card">
-  <h2>🗑️ NoteZilla — Delete Panel</h2>
+<h2>🗑️ NoteZilla — Delete Panel</h2>
 
-  <div class="searchRow">
-    <input id="filterInput" class="search" placeholder="Filter by Title / Subject / ID..." />
-    <button id="refreshBtn" class="btn" style="background:var(--accent);color:#00131f">Refresh</button>
-  </div>
+<div class="searchRow">
+<input id="filterInput" class="search" placeholder="Filter by Chapter / Link / Subject..." />
+<button id="refreshBtn" class="btn" style="background:var(--accent);color:#00131f">Refresh</button>
+</div>
 
-  <div id="loading">Loading data…</div>
-  <div id="statusBox" class="status"></div>
+<div id="loading">Loading data…</div>
+<div id="statusBox" class="status"></div>
 
-  <table id="dataTable" aria-live="polite">
-    <thead>
-      <tr><th style="width:80px">ID</th><th>Title</th><th>Subject</th><th style="width:120px">Action</th></tr>
-    </thead>
-    <tbody id="tableBody"></tbody>
-  </table>
+<table id="dataTable" aria-live="polite">
+  <thead>
+    <tr>
+      <th>Chapter Name</th>
+      <th>Link</th>
+      <th>Subject</th>
+      <th style="width:120px">Action</th>
+    </tr>
+  </thead>
+  <tbody id="tableBody"></tbody>
+</table>
 
 </div>
 
 <script>
-  // 🔐 Access Control
+
+// Access Control
 const role = localStorage.getItem("userRole");
 if (!role || !["admin","co-admin","owner"].includes(role.toLowerCase())) {
-    alert("❌ Access Denied! Only Admins and Co-Admins can access this page.");
+    alert("❌ Access Denied! Only Admins & Co-Admins allowed.");
     window.location.href = "login.html";
 }
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzlqLJGKif2hrkZq0B5095f7-N9SzWyMqsW0OBG1r0OfGpGeqbXXJ7AgG1fvZ3V2QUP/exec"; // <- replace with your Apps Script exec URL
 
-const loadingEl = document.getElementById('loading');
-const tableBody = document.getElementById('tableBody');
-const statusBox = document.getElementById('statusBox');
-const filterInput = document.getElementById('filterInput');
-const refreshBtn = document.getElementById('refreshBtn');
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzlqLJGKif2hrkZq0B5095f7-N9SzWyMqsW0OBG1r0OfGpGeqbXXJ7AgG1fvZ3V2QUP/exec";
 
-refreshBtn.addEventListener('click', loadData);
-filterInput.addEventListener('input', () => renderRows(currentRows));
+const loadingEl = document.getElementById("loading");
+const tableBody = document.getElementById("tableBody");
+const statusBox = document.getElementById("statusBox");
+const filterInput = document.getElementById("filterInput");
+const refreshBtn = document.getElementById("refreshBtn");
 
-let currentRows = []; // cached rows (without header)
+let currentRows = [];
 
-async function loadData(){
-  try{
+refreshBtn.addEventListener("click", loadData);
+filterInput.addEventListener("input", () => renderRows(currentRows));
+
+async function loadData() {
+  try {
     loadingEl.textContent = "Loading data…";
-    statusBox.style.display = 'none';
     tableBody.innerHTML = "";
     const res = await fetch(SCRIPT_URL);
     const json = await res.json();
-    if(json.status !== "ok"){
-      throw new Error(json.message || "Failed to load");
-    }
-    // json.rows is 2D array including header row at index 0
-    const rows = json.rows.slice(1); // remove header
-    // Normalize rows: ensure at least 3 cols
-    currentRows = rows.map(r => [ (r[0]!==undefined?r[0]:""), (r[1]||""), (r[2]||"") ]);
+
+    const rows = json.rows.slice(1);
+
+    currentRows = rows.map(r => [
+      (r[0] || ""), // Chapter Name
+      (r[1] || ""), // Link
+      (r[3] || "")  // Subject
+    ]);
+
     renderRows(currentRows);
     loadingEl.textContent = "";
-  } catch(err){
+  } catch (err) {
     loadingEl.textContent = "";
-    showStatus("Error loading data: " + err.message, true);
+    showStatus("Error: " + err.message, true);
   }
 }
 
-function renderRows(rows){
+function renderRows(rows) {
   const q = filterInput.value.trim().toLowerCase();
   tableBody.innerHTML = "";
+  
   let shown = 0;
-  for(const r of rows){
-    const id = String(r[0]);
-    const title = String(r[1]);
-    const subj = String(r[2]);
-    const combined = (id + " " + title + " " + subj).toLowerCase();
-    if(q && !combined.includes(q)) continue;
-    const tr = document.createElement('tr');
+  for (const r of rows) {
+    const chapter = r[0];
+    const link = r[1];
+    const subject = r[2];
+
+    const match = (chapter + " " + link + " " + subject).toLowerCase();
+    if (q && !match.includes(q)) continue;
+
+    const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${escapeHtml(id)}</td>
-      <td class="small">${escapeHtml(title)}</td>
-      <td class="small">${escapeHtml(subj)}</td>
-      <td><button class="btn del" onclick="handleDelete('${escapeJs(id)}')">Delete</button></td>
+      <td>${chapter}</td>
+      <td><a href="${link}" target="_blank">Open</a></td>
+      <td class="small">${subject}</td>
+      <td><button class="btn del" onclick="handleDelete('${chapter}')">Delete</button></td>
     `;
     tableBody.appendChild(tr);
     shown++;
   }
-  if(shown === 0){
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td colspan="4" class="small" style="padding:18px;text-align:center">No rows match.</td>`;
-    tableBody.appendChild(tr);
+
+  if (!shown) {
+    tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center">No rows found.</td></tr>`;
   }
 }
 
-function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function escapeJs(s){ return String(s).replace(/'/g,"\\'"); }
+async function handleDelete(chapter) {
+  if (!confirm(`Delete "${chapter}"? This can't be undone.`)) return;
 
-async function handleDelete(id){
-  if(!id){ showStatus("Invalid ID", true); return; }
-  if(!confirm("Delete ID " + id + " ? This cannot be undone.")) return;
-  try{
-    showStatus("Deleting ID " + id + " …", false);
-    const res = await fetch(SCRIPT_URL + "?id=" + encodeURIComponent(id));
+  try {
+    showStatus(`Deleting "${chapter}"…`);
+    const res = await fetch(SCRIPT_URL + "?id=" + encodeURIComponent(chapter));
     const json = await res.json();
-    if(json.status === "deleted"){
-      showStatus("Deleted ID " + id, false, true);
-      // remove from local cache and re-render
-      currentRows = currentRows.filter(r => String(r[0]) !== String(id));
+
+    if (json.status === "deleted") {
+      showStatus(`Deleted "${chapter}"`, false, true);
+      currentRows = currentRows.filter(r => r[0] !== chapter);
       renderRows(currentRows);
-    } else if(json.status === "not_found"){
-      showStatus("ID not found: " + id, true);
     } else {
-      showStatus("Error: " + (json.message || JSON.stringify(json)), true);
+      showStatus("Not found: " + chapter, true);
     }
-  } catch(err){
-    showStatus("Delete failed: " + err.message, true);
+  } catch (err) {
+    showStatus("Error: " + err.message, true);
   }
 }
 
-function showStatus(msg, isError=false, isOk=false){
-  statusBox.style.display = 'block';
-  statusBox.className = 'status';
-  if(isError) statusBox.classList.add('err'); 
-  else if(isOk) statusBox.classList.add('ok');
+function showStatus(msg, err = false, ok = false) {
+  statusBox.style.display = "block";
+  statusBox.className = "status" + (err ? " err" : ok ? " ok" : "");
   statusBox.textContent = msg;
-  setTimeout(()=>{ /* auto-hide after 6s */ if(statusBox) statusBox.style.display='none'; },6000);
+  setTimeout(() => (statusBox.style.display = "none"), 4000);
 }
 
-// initial load
 loadData();
 </script>
 </body>
