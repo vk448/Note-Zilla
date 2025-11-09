@@ -1,127 +1,310 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Class IX A - Time Table</title>
-<link rel="icon" href="Images/Favicon.png">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
-<style>
-/* ===== General Reset ===== */
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins', sans-serif; }
-body { background:#f9fafb; color:#333; line-height:1.6; text-align:center; padding:20px; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Class IX A - Time Table</title>
+  <link rel="icon" href="Images/Favicon.png">
+ <style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap');
 
-/* ===== Header ===== */
-header {
-  width:100%; display:flex; justify-content:space-between; align-items:center;
-  padding:15px 50px; background:#fff; box-shadow:0 4px 6px rgba(0,0,0,0.1);
-  position:sticky; top:0; z-index:1000;
-}
-header .logo { font-weight:900; font-size:1.8rem; background:linear-gradient(90deg,#4e73df,#1cc88a);
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-}
-nav { display:flex; gap:20px; align-items:center; }
-nav a { text-decoration:none; color:#333; font-weight:500; transition:0.3s; }
-nav a:hover { color:#4e73df; }
+  /* ===== General Reset ===== */
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+  body { background: #f9fafb; color: #333; line-height: 1.6; text-align: center; padding: 20px; }
 
-.hamburger { display:none; flex-direction:column; cursor:pointer; gap:5px; }
-.hamburger div { width:25px; height:3px; background-color:#333; transition:0.3s; }
+  /* ===== Header ===== */
+  header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 50px;
+    background: #fff;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
 
-/* ===== Back Link ===== */
-a.back { display:inline-block; margin:20px 0; font-weight:500; text-decoration:none; color:green;
-  text-shadow:0 0 10px greenyellow,0 0 20px green,0 0 30px yellowgreen; transition:0.3s ease; }
-a.back:hover { transform:translateX(-8px); color:yellow;
-  text-shadow:0 0 10px yellow,0 0 20px yellowgreen,0 0 30px greenyellow; }
+  header .logo {
+    font-weight: 900;
+    font-size: 1.8rem;
+    background: linear-gradient(90deg, #4e73df, #1cc88a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 
-/* ===== Title ===== */
-h2 { text-transform:uppercase; letter-spacing:2px; margin-bottom:30px; color:#4e73df; }
+  nav {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
 
-/* ===== Table ===== */
-.table-container { width:100%; overflow-x:auto; margin-bottom:50px; }
-table { width:100%; border-collapse:collapse; background:#fff; border-radius:12px; box-shadow:0 6px 15px rgba(0,0,0,0.2); }
-th, td { padding:14px; text-align:center; font-size:16px; white-space:nowrap; }
-th { background:#4e73df; color:white; text-transform:uppercase; letter-spacing:1px; font-size:15px; }
-tr:nth-child(even) { background:#f9f9f9; }
-tr:hover { background:#eafaea; transition:0.3s; }
-strong { color:#d32f2f; }
+  nav a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    transition: 0.3s;
+  }
 
-/* ===== Recess Highlight ===== */
-td.recess { color:red; font-weight:bold; }
+  nav a:hover {
+    color: #4e73df;
+  }
 
-/* ===== Responsive ===== */
-@media (max-width:768px){ nav{display:none; flex-direction:column; width:100%; gap:10px; margin-top:10px;}
-nav.active{display:flex;} .hamburger{display:flex;} th, td{padding:10px; font-size:14px;} }
-@media (max-width:480px){ th, td{padding:8px; font-size:12px;} }
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap'); /* ===== General Reset ===== */ * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; } body { background: #f9fafb; color: #333; line-height: 1.6; text-align: center; padding: 20px; } /* ===== Header ===== */ header { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 15px 50px; background: #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; } header .logo { font-weight: 900; font-size: 1.8rem; background: linear-gradient(90deg, #4e73df, #1cc88a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; } nav { display: flex; gap: 20px; align-items: center; } nav a { text-decoration: none; color: #333; font-weight: 500; transition: 0.3s; } nav a:hover { color: #4e73df; } .hamburger { display: none; flex-direction: column; cursor: pointer; gap: 5px; } .hamburger div { width: 25px; height: 3px; background-color: #333; transition: all 0.3s; } /* ===== Back Link ===== */ a.back { display: inline-block; margin: 20px 0; font-weight: 500; text-decoration: none; color: green; text-shadow: 0 0 10px greenyellow, 0 0 20px green, 0 0 30px yellowgreen; transition: 0.3s ease; } a.back:hover { transform: translateX(-8px); color: yellow; text-shadow: 0 0 10px yellow, 0 0 20px yellowgreen, 0 0 30px greenyellow; } /* ===== Title ===== */ h2 { text-transform: uppercase; letter-spacing: 2px; margin-bottom: 30px; color: #4e73df; } /* ===== Table ===== */ .table-container { width: 100%; overflow-x: auto; margin-bottom: 50px; } table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; box-shadow: 0px 6px 15px rgba(0,0,0,0.2); } th, td { padding: 14px; text-align: center; font-size: 16px; white-space: nowrap; } th { background: linear-gradient(135deg, #4e73df, #1cc88a); color: white; text-transform: uppercase; letter-spacing: 1px; font-size: 15px; } tr:nth-child(even) { background: #f9f9f9; } tr:hover { background: #eafaea; transition: 0.3s; } strong { color: #d32f2f; } /* ===== Responsive ===== */ @media (max-width: 768px) { nav { display: none; flex-direction: column; width: 100%; gap: 10px; margin-top: 10px; } nav.active { display: flex; } .hamburger { display: flex; } th, td { padding: 10px; font-size: 14px; } } @media (max-width: 480px) { th, td { padding: 8px; font-size: 12px; } }
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    gap: 5px;
+  }
+
+  .hamburger div {
+    width: 25px;
+    height: 3px;
+    background-color: #333;
+    transition: all 0.3s;
+  }
+
+  /* ===== Back Link ===== */
+  a.back {
+    display: inline-block;
+    margin: 20px 0;
+    font-weight: 500;
+    text-decoration: none;
+    color: green;
+    text-shadow: 0 0 10px greenyellow, 0 0 20px green, 0 0 30px yellowgreen;
+    transition: 0.3s ease;
+  }
+  a.back:hover {
+    transform: translateX(-8px);
+    color: yellow;
+    text-shadow: 0 0 10px yellow, 0 0 20px yellowgreen, 0 0 30px greenyellow;
+  }
+
+  /* ===== Title ===== */
+  h2 {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+    color: #4e73df;
+  }
+
+  /* ===== Table ===== */
+  .table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-bottom: 50px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0px 6px 15px rgba(0,0,0,0.2);
+  }
+
+  th, td {
+    padding: 14px;
+    text-align: center;
+    font-size: 16px;
+    white-space: nowrap;
+  }
+
+  th {
+    background: linear-gradient(135deg, #4e73df, #1cc88a);
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 15px;
+  }
+
+  tr:nth-child(even) { background: #f9f9f9; }
+  tr:hover { background: #eafaea; transition: 0.3s; }
+  strong { color: #d32f2f; }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 768px) {
+    nav { display: none; flex-direction: column; width: 100%; gap: 10px; margin-top: 10px; }
+    nav.active { display: flex; }
+    .hamburger { display: flex; }
+    th, td { padding: 10px; font-size: 14px; }
+  }
+
+  @media (max-width: 480px) {
+    th, td { padding: 8px; font-size: 12px; }
+  }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">Note Zilla</div>
-  <div class="hamburger" onclick="toggleMenu(this)"><div></div><div></div><div></div></div>
-  <nav><a href="index.html">Home</a><a href="#timetable">Time Table</a><a href="credit.html">About</a><a href="#">Contact</a></nav>
-</header>
+  <!-- Header -->
+  <header>
+    <div class="logo">Note Zilla</div>
+    <div class="hamburger" onclick="toggleMenu(this)">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="#timetable">Time Table</a>
+      <a href="credit.html">About</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
 
-<a href="index.html" class="back">← Back to Home</a>
+  <!-- Back Link -->
+  <a href="index.html" class="back">← Back to Home</a>
 
-<h2 id="timetable">Class IX A - Time Table</h2>
+  <!-- Title -->
+  <h2 id="timetable">Class IX A - Time Table</h2>
 
-<div class="table-container">
-  <table id="timetableTable">
-    <thead>
-      <tr>
-        <th>Time</th>
-        <th>Period</th>
-        <th>Subject / Teacher</th>
-        <th>Days</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
+  <!-- Table Container -->
+  <div class="table‑container">
+    <table id="timetableTable">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Period</th>
+          <th>Subject / Teacher</th>
+          <th>Days</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- rows will be populated by JS -->
+      </tbody>
+    </table>
+  </div>
 
+  <script>
+    
+    function toggleMenu(element) {
+      const nav = document.querySelector('header nav');
+      nav.classList.toggle('active');
+      element.classList.toggle('open');
+    }
+
+    const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyWteSKyyQH_5c1FPCO8018ih5rl1J8uAMN0QQ2YWg8n5JBKwgZEh2XGn4SKRXmpx1-/exec";  // replace with your actual URL
+
+    fetch(SHEET_API_URL)
+      .then(response => response.json())
+      .then(rows => {
+        const tbody = document.querySelector("#timetableTable tbody");
+        rows.forEach(row => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${row.Time}</td>
+            <td>${row.Period}</td>
+            <td>${row.SubjectTeacher}</td>
+            <td>${row.Days}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      })
+      .catch(error => {
+        console.error("Error loading timetable data:", error);
+        const tbody = document.querySelector("#timetableTable tbody");
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="4">Unable to load timetable.</td>`;
+        tbody.appendChild(tr);
+      });
+  </script>
+
+  <!-- Formspree + visitor logging scripts (unchanged) -->
+  <script src="https://formspree.io/js/formbutton-v1.min.js" defer></script>
+  <script>
+    window.formbutton = window.formbutton || function(){ (formbutton.q = formbutton.q || []).push(arguments); };
+    formbutton("create", {
+      action: "https://formspree.io/f/xeokweek",
+      title: "How can we help?",
+      fields: [
+        {
+          type: "email",
+          label: "Email:",
+          name: "email",
+          required: true,
+          placeholder: "your@email.com"
+        },
+        {
+          type: "textarea",
+          label: "Message:",
+          name: "message",
+          placeholder: "What's on your mind?"
+        },
+        { type: "submit" }
+      ],
+      styles: {
+        title: { backgroundColor: "gray" },
+        button: { backgroundColor: "gray" }
+      }
+    });
+  </script>
 <script>
-// Hamburger menu toggle
-function toggleMenu(element){
+function toggleMenu(element) {
   const nav = document.querySelector('header nav');
   nav.classList.toggle('active');
   element.classList.toggle('open');
 }
 
-// Fetch timetable data with caching for fast load
-const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyWteSKyyQH_5c1FPCO8018ih5rl1J8uAMN0QQ2YWg8n5JBKwgZEh2XGn4SKRXmpx1-/exec";
-const cacheKey = 'timetableData';
-const tbody = document.querySelector("#timetableTable tbody");
+const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyWteSKyyQH_5c1FPCO8018ih5rl1J8uAMN0QQ2YWg8n5JBKwgZEh2XGn4SKRXmpx1-/exec"; // replace with your URL
+const STORAGE_KEY = "timetableData";
 
-function renderTable(rows){
-  let html = '';
-  rows.forEach(r => {
-    let recessClass = r.SubjectTeacher.toLowerCase().includes('recess') ? 'recess' : '';
-    html += `<tr>
-      <td class="${recessClass}">${r.Time}</td>
-      <td class="${recessClass}">${r.Period}</td>
-      <td class="${recessClass}">${r.SubjectTeacher}</td>
-      <td class="${recessClass}">${r.Days}</td>
-    </tr>`;
+function renderTable(rows) {
+  const tbody = document.querySelector("#timetableTable tbody");
+  tbody.innerHTML = "";
+  rows.forEach(row => {
+    const tr = document.createElement("tr");
+
+    // Check if the period is "Recess" (case-insensitive)
+    const isRecess = (row.Period || "").toLowerCase().includes("recess") || 
+                     (row.SubjectTeacher || "").toLowerCase().includes("recess");
+
+    tr.innerHTML = `
+      <td>${row.Time}</td>
+      <td style="${isRecess ? 'color:red; font-weight:bold;' : ''}">${row.Period}</td>
+      <td style="${isRecess ? 'color:red; font-weight:bold;' : ''}">${row.SubjectTeacher}</td>
+      <td>${row.Days}</td>
+    `;
+    tbody.appendChild(tr);
   });
-  tbody.innerHTML = html;
 }
 
-const cached = localStorage.getItem(cacheKey);
-if(cached) renderTable(JSON.parse(cached));
+// Load from localStorage first
+const cachedData = localStorage.getItem(STORAGE_KEY);
+if (cachedData) {
+  try {
+    const parsedData = JSON.parse(cachedData);
+    renderTable(parsedData);
+  } catch(e) {
+    console.warn("Failed to parse cached timetable:", e);
+    localStorage.removeItem(STORAGE_KEY);
+  }
+}
 
+// Fetch fresh data in background
 fetch(SHEET_API_URL)
-  .then(res => res.json())
+  .then(response => response.json())
   .then(rows => {
-    localStorage.setItem(cacheKey, JSON.stringify(rows));
     renderTable(rows);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(rows));
+    } catch(e) {
+      console.warn("Failed to store timetable in localStorage:", e);
+    }
   })
-  .catch(err => {
-    console.error('Error loading timetable:', err);
-    tbody.innerHTML = '<tr><td colspan="4">Unable to load timetable.</td></tr>';
+  .catch(error => {
+    console.error("Error loading timetable data:", error);
+    const tbody = document.querySelector("#timetableTable tbody");
+    if (!tbody.innerHTML) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td colspan="4">Unable to load timetable.</td>`;
+      tbody.appendChild(tr);
+    }
   });
 </script>
+
+
 
 </body>
 </html>
