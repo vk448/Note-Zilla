@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NoteZilla — Delete Panel</title>
+<title>NoteZilla — Edit & Delete Panel (All cols + Date)</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#071228;--card:rgba(255,255,255,0.04);--accent:#42a5f5;--ok:#22c55e;--err:#ff6b6b}
 body{margin:0;font-family:Poppins,system-ui;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#001126,#021428);color:#e6eef8;padding:18px;}
-.card{width:100%;max-width:980px;border-radius:12px;padding:18px;background:var(--card);box-shadow:0 8px 30px rgba(0,0,0,0.45);}
+.card{width:100%;max-width:1100px;border-radius:12px;padding:18px;background:var(--card);box-shadow:0 8px 30px rgba(0,0,0,0.45);}
 h2{margin:0 0 10px 0;font-size:20px;text-align:center}
 #loading{color:var(--accent);font-weight:700;padding:8px;text-align:center}
 table{width:100%;border-collapse:collapse;margin-top:8px}
@@ -17,78 +17,115 @@ th{font-weight:700;color:#cfe9ff;background:rgba(255,255,255,0.02)}
 .btn{padding:8px 10px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
 .del{background:var(--err);color:white}
 .del:hover{opacity:0.94}
+.edit{background:var(--accent);color:#00131f}
+.edit:hover{opacity:0.94}
 .small{font-size:13px;color:rgba(255,255,255,0.8)}
 .status{margin-top:12px;padding:10px;border-radius:8px;font-weight:700;display:none}
 .status.ok{background:rgba(34,197,94,0.12);color:var(--ok);display:block}
 .status.err{background:rgba(255,107,107,0.12);color:var(--err);display:block}
 .searchRow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
 input.search{flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:1000;display:none}
+.modal-content{background:#0b1b35;padding:20px;border-radius:12px;width:95%;max-width:480px;box-shadow:0 0 25px rgba(0,0,0,0.4)}
+.modal-content h3{text-align:center;margin-bottom:10px}
+.modal-content label{font-size:13px;display:block;margin-top:8px}
+.modal-content input{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:white;margin-top:4px}
+.modal-actions{display:flex;justify-content:space-between;margin-top:12px}
 </style>
 </head>
 <body>
 <div class="card">
-<h2>🗑️ NoteZilla — Delete Panel</h2>
+  <h2>🗂️ NoteZilla — Edit & Delete Panel</h2>
 
-<div class="searchRow">
-<input id="filterInput" class="search" placeholder="Filter by Chapter / Link / Subject..." />
-<button id="refreshBtn" class="btn" style="background:var(--accent);color:#00131f">Refresh</button>
+  <div class="searchRow">
+    <input id="filterInput" class="search" placeholder="Filter any column..." />
+    <button id="refreshBtn" class="btn" style="background:var(--accent);color:#00131f">Refresh</button>
+  </div>
+
+  <div id="loading">Loading data…</div>
+  <div id="statusBox" class="status"></div>
+
+  <table id="dataTable" aria-live="polite">
+    <thead id="tableHead"></thead>
+    <tbody id="tableBody"></tbody>
+  </table>
 </div>
 
-<div id="loading">Loading data…</div>
-<div id="statusBox" class="status"></div>
-
-<table id="dataTable" aria-live="polite">
-  <thead>
-    <tr>
-      <th>Chapter Name</th>
-      <th>Link</th>
-      <th>Subject</th>
-      <th style="width:120px">Action</th>
-    </tr>
-  </thead>
-  <tbody id="tableBody"></tbody>
-</table>
-
+<!-- Edit modal (fields for Chapter, Link, Date, Subject) -->
+<div id="editModal" class="modal">
+  <div class="modal-content">
+    <h3>Edit Row</h3>
+    <label>Chapter Name</label>
+    <input id="editChapter" type="text">
+    <label>Link</label>
+    <input id="editLink" type="text">
+    <label>Date</label>
+    <input id="editDate" type="date">
+    <label>Subject</label>
+    <input id="editSubject" type="text">
+    <div class="modal-actions">
+      <button id="saveEdit" class="btn edit">Save</button>
+      <button id="cancelEdit" class="btn del">Cancel</button>
+    </div>
+  </div>
 </div>
 
 <script>
-
-// Access Control
+// Access Control (keep as you had)
 const role = localStorage.getItem("userRole");
 if (!role || !["admin","co-admin","owner"].includes(role.toLowerCase())) {
-    alert("❌ Access Denied! Only Admins & Co-Admins allowed.");
-    window.location.href = "login.html";
+  alert("❌ Access Denied! Only Admins & Co-Admins allowed.");
+  window.location.href = "login.html";
 }
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzlqLJGKif2hrkZq0B5095f7-N9SzWyMqsW0OBG1r0OfGpGeqbXXJ7AgG1fvZ3V2QUP/exec";
+// <-- put your deployed Apps Script URL here -->
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxGSJZokyUxwjEc74CnA8L5KZ31hdPWQOA5syNFuB5woIpZFpXgtaAPVG1OymZgsJX9/exec";
 
 const loadingEl = document.getElementById("loading");
+const tableHead = document.getElementById("tableHead");
 const tableBody = document.getElementById("tableBody");
 const statusBox = document.getElementById("statusBox");
 const filterInput = document.getElementById("filterInput");
 const refreshBtn = document.getElementById("refreshBtn");
 
-let currentRows = [];
+const modal = document.getElementById("editModal");
+const editChapter = document.getElementById("editChapter");
+const editLink = document.getElementById("editLink");
+const editDate = document.getElementById("editDate");
+const editSubject = document.getElementById("editSubject");
+const saveEdit = document.getElementById("saveEdit");
+const cancelEdit = document.getElementById("cancelEdit");
+
+let header = [];
+let currentRows = []; // each row = array of values
+let editingIndex = -1;
 
 refreshBtn.addEventListener("click", loadData);
 filterInput.addEventListener("input", () => renderRows(currentRows));
 
-async function loadData() {
+async function loadData(){
   try {
     loadingEl.textContent = "Loading data…";
+    tableHead.innerHTML = "";
     tableBody.innerHTML = "";
     const res = await fetch(SCRIPT_URL);
     const json = await res.json();
 
-    const rows = json.rows.slice(1);
+    if (!json.rows || !json.rows.length) {
+      loadingEl.textContent = "";
+      showStatus("No data found.", true);
+      return;
+    }
 
-    currentRows = rows.map(r => [
-      (r[0] || ""), // Chapter Name
-      (r[1] || ""), // Link
-      (r[3] || "")  // Subject
-    ]);
+    // first row is header
+    header = json.rows[0].map(h => String(h || ""));
+    currentRows = json.rows.slice(1).map(r => r.map(c => c == null ? "" : c));
 
+    buildTableHeader();
     renderRows(currentRows);
+
     loadingEl.textContent = "";
   } catch (err) {
     loadingEl.textContent = "";
@@ -96,62 +133,170 @@ async function loadData() {
   }
 }
 
-function renderRows(rows) {
+function buildTableHeader(){
+  // create header row dynamically and add Action column
+  const tr = document.createElement("tr");
+  header.forEach(h => {
+    const th = document.createElement("th");
+    th.textContent = h;
+    tr.appendChild(th);
+  });
+  const thAction = document.createElement("th");
+  thAction.style.width = "180px";
+  thAction.textContent = "Action";
+  tr.appendChild(thAction);
+  tableHead.innerHTML = "";
+  tableHead.appendChild(tr);
+}
+
+// Render rows using header length. Date column display normalized.
+function renderRows(rows){
   const q = filterInput.value.trim().toLowerCase();
   tableBody.innerHTML = "";
-  
   let shown = 0;
-  for (const r of rows) {
-    const chapter = r[0];
-    const link = r[1];
-    const subject = r[2];
 
-    const match = (chapter + " " + link + " " + subject).toLowerCase();
-    if (q && !match.includes(q)) continue;
+  for (let i = 0; i < rows.length; i++){
+    const row = rows[i];
+    const joined = row.join(" ").toLowerCase();
+    if (q && !joined.includes(q)) continue;
 
     const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${chapter}</td>
-      <td><a href="${link}" target="_blank">Open</a></td>
-      <td class="small">${subject}</td>
-      <td><button class="btn del" onclick="handleDelete('${chapter}')">Delete</button></td>
+
+    for (let c = 0; c < header.length; c++){
+      const td = document.createElement("td");
+      let val = row[c] == null ? "" : String(row[c]);
+
+      // If the header contains 'date' show as yyyy-mm-dd (if parseable)
+      if (/date/i.test(header[c]) && val){
+        const d = new Date(val);
+        if (!isNaN(d)) {
+          // format yyyy-mm-dd for clarity
+          const yyyy = d.getFullYear();
+          const mm = String(d.getMonth()+1).padStart(2,'0');
+          const dd = String(d.getDate()).padStart(2,'0');
+          val = `${yyyy}-${mm}-${dd}`;
+        }
+      }
+
+      // link column: try to show "Open" link if it looks like URL
+      if (/link/i.test(header[c]) && val) {
+        td.innerHTML = `<a href="${val}" target="_blank" rel="noopener">Open</a>`;
+      } else {
+        td.textContent = val;
+      }
+      tr.appendChild(td);
+    }
+
+    // action buttons
+    const tdAction = document.createElement("td");
+    tdAction.innerHTML = `
+      <button class="btn edit" onclick="openEdit(${i})">Edit</button>
+      <button class="btn del" onclick="handleDelete(${i})">Delete</button>
     `;
+    tr.appendChild(tdAction);
+
     tableBody.appendChild(tr);
     shown++;
   }
 
   if (!shown) {
-    tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center">No rows found.</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="${header.length + 1}" style="text-align:center">No rows found.</td></tr>`;
   }
 }
 
-async function handleDelete(chapter) {
-  if (!confirm(`Delete "${chapter}"? This can't be undone.`)) return;
+// Delete by row index in currentRows
+async function handleDelete(index){
+  const row = currentRows[index];
+  const id = String(row[0] || "");
+  if (!id) return showStatus("Cannot delete: missing identifier (first column).", true);
+  if (!confirm(`Delete "${id}"? This can't be undone.`)) return;
 
   try {
-    showStatus(`Deleting "${chapter}"…`);
-    const res = await fetch(SCRIPT_URL + "?id=" + encodeURIComponent(chapter));
+    showStatus(`Deleting "${id}"…`);
+    const res = await fetch(SCRIPT_URL + "?id=" + encodeURIComponent(id));
     const json = await res.json();
-
-    if (json.status === "deleted") {
-      showStatus(`Deleted "${chapter}"`, false, true);
-      currentRows = currentRows.filter(r => r[0] !== chapter);
+    if (json.status === "deleted"){
+      showStatus(`Deleted "${id}"`, false, true);
+      currentRows.splice(index,1);
       renderRows(currentRows);
     } else {
-      showStatus("Not found: " + chapter, true);
+      showStatus(json.message || "Delete failed.", true);
     }
-  } catch (err) {
+  } catch (err){
     showStatus("Error: " + err.message, true);
   }
 }
 
-function showStatus(msg, err = false, ok = false) {
+// Open modal for editing a row (by index)
+window.openEdit = function(index){
+  editingIndex = index;
+  const row = currentRows[index] || [];
+  // Map to expected fields: 0=Chapter,1=Link,2=Date,3=Subject (if present)
+  editChapter.value = row[0] || "";
+  editLink.value = row[1] || "";
+  // parse date into yyyy-mm-dd for date input
+  const rawDate = row[2] || "";
+  let dateStr = "";
+  if (rawDate) {
+    const d = new Date(rawDate);
+    if (!isNaN(d)) {
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth()+1).padStart(2,'0');
+      const dd = String(d.getDate()).padStart(2,'0');
+      dateStr = `${yyyy}-${mm}-${dd}`;
+    } else {
+      // if not parseable, try to keep as-is (won't show in date input)
+      dateStr = "";
+    }
+  }
+  editDate.value = dateStr;
+  editSubject.value = row[3] || "";
+  modal.style.display = "flex";
+};
+
+cancelEdit.onclick = () => (modal.style.display = "none");
+
+// Save edit: send newValues array as JSON string
+saveEdit.onclick = async () => {
+  if (editingIndex === -1) return;
+  const oldId = String(currentRows[editingIndex][0] || "");
+  const newChapter = editChapter.value.trim();
+  const newLink = editLink.value.trim();
+  const newDate = editDate.value ? editDate.value : "";
+  const newSubject = editSubject.value.trim();
+
+  if (!newChapter) return alert("Chapter name required.");
+
+  const newValues = [newChapter, newLink, newDate, newSubject];
+
+  try {
+    showStatus(`Updating "${oldId}"…`);
+    const url = SCRIPT_URL + "?edit=1&old=" + encodeURIComponent(oldId) +
+                "&newValues=" + encodeURIComponent(JSON.stringify(newValues));
+    const res = await fetch(url);
+    const json = await res.json();
+    if (json.status === "updated"){
+      showStatus(`Updated "${newChapter}"`, false, true);
+      currentRows[editingIndex] = newValues;
+      renderRows(currentRows);
+    } else {
+      showStatus(json.message || "Update failed.", true);
+    }
+  } catch (err) {
+    showStatus("Error: " + err.message, true);
+  } finally {
+    modal.style.display = "none";
+  }
+};
+
+function showStatus(msg, err = false, ok = false){
   statusBox.style.display = "block";
   statusBox.className = "status" + (err ? " err" : ok ? " ok" : "");
   statusBox.textContent = msg;
   setTimeout(() => (statusBox.style.display = "none"), 4000);
 }
 
+// initial load
 loadData();
 </script>
 </body>

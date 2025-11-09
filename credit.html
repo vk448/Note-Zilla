@@ -45,6 +45,7 @@ header {
   background: linear-gradient(90deg, #4e73df, #1cc88a);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
+  text-align: center;
 }
 
 /* ================= Page Title ================= */
@@ -77,6 +78,7 @@ h1 {
 .credit-card:hover {
   transform:translateY(-5px);
   box-shadow:0 10px 25px rgba(0,0,0,0.2);
+  animation: color ease-in-out infinite 3s;
 }
 
 .credit-card img {
@@ -120,14 +122,35 @@ footer {
   width: 100%;
   height:100px ;
 }
-
+.home a{
+  display: inline-block;
+  font-size: 20px;
+  color: rgb(2, 0, 128);
+  padding: 10px 12px;
+  background: #1cc88a;
+  border-radius: 20px;
+  text-decoration: none;
+  margin-top: 30px;
+ transition:transform 0.3s;
+ animation: color ease-in-out infinite 2s;
+}
+.home a:hover{
+  transform: scale(1.04);
+  background-color: #4e73df;
+  color: rgb(47, 211, 121);
+}
+@keyframes color {
+  0%{box-shadow: 0 0 10px chartreuse, 0 0 20px lightgreen,0 0 30px lightyellow;}
+  50%{box-shadow: 0 0 20px chartreuse, 0 0 30px lightgreen, 0 0 40px yellow;}
+  100%{box-shadow: 0 0 5px chartreuse, 0, 0 10px lightgreen, 0 0 20px yellowgreen;}
+}
 </style>
 </head>
 <body>
 
 <!-- Header -->
 <header>
-  <div class="logo">Note Zilla</div>
+  <div class="logo">Note Zilla - Team Member</div>
 </header>
 
 <h1>Credits</h1>
@@ -143,17 +166,20 @@ footer {
   <div class="credit-card">
     <img src="Images/k.jpg" alt="Kamakshi">
     <div class="info">
-      <h3>Kamakshi</h3>
+      <h3>Kamakshi Verma</h3>
       <p>Content Creator / Designer</p>
     </div>
   </div>
   <div class="credit-card">
     <img src="Images/h.jpg" alt="Harshverdhan">
     <div class="info">
-      <h3>Harshverdhan</h3>
+      <h3>Harshverdhan Singh</h3>
       <p>PDF Maker/ Co - Admin</p>
     </div>
   </div>
+</div>
+<div class="home">
+<a href="/">Back To Home </a>
 </div>
 <footer>
   <p>&copy; 2025 Note Zilla Are Right Are Reserved</p>

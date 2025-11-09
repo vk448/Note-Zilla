@@ -239,10 +239,36 @@ function renderNotes(notes) {
     subjectGrid.innerHTML = `<p style="text-align:center;color:gray;">No chapters available.</p>`;
     return;
   }
+
   notes.forEach(chap => {
+    let formattedDate = "";
+
+    // ✅ Fix NaN/NaN/NaN issue
+    if (chap.Date && chap.Date.trim() !== "") {
+      let date;
+      // Try to parse automatically
+      if (!isNaN(Date.parse(chap.Date))) {
+        date = new Date(chap.Date);
+      } else {
+        // Try manual split (handles 22/10/2025 or 22-10-2025)
+        const parts = chap.Date.split(/[-/]/);
+        if (parts.length === 3) {
+          const [d, m, y] = parts;
+          date = new Date(`${y}-${m}-${d}`);
+        }
+      }
+
+      if (date && !isNaN(date)) {
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const year = date.getFullYear();
+        formattedDate = `${day}/${month}/${year}`;
+      }
+    }
+
     const card = document.createElement("div");
     card.className = "subject-card";
-    card.innerHTML = `<h2>${chap["Chapter Name"]}</h2><p>${chap.Date || ""}</p>`;
+    card.innerHTML = `<h2>${chap["Chapter Name"]}</h2><p>${formattedDate || "—"}</p>`;
     card.addEventListener("click", () => {
       if (chap.Link?.trim()) window.open(chap.Link, "_blank");
       else alert("Link not available for this chapter.");
@@ -251,7 +277,7 @@ function renderNotes(notes) {
   });
 }
 
-// Search Functionality
+// 🔍 Search Functionality
 const searchBar = document.getElementById("searchBar");
 searchBar.addEventListener("keyup", () => {
   const value = searchBar.value.toLowerCase();
