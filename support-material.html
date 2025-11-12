@@ -90,7 +90,7 @@ footer {
 
 <!-- Header -->
 <header>
-  <div class="logo">Note Zilla</div>
+  <div class="logo" id="href" onclick="home()">Note Zilla</div>
   <div class="hamburger" onclick="toggleMenu(this)"><div></div><div></div><div></div></div>
   <nav>
     <a href="index.html">Home</a>
@@ -176,6 +176,11 @@ link.type = 'image/png';
 link.href = 'images/favicon.png'; // yahan apne icon ka naam likho
 document.head.appendChild(link);
 
+  </script>
+  <script>
+  function home(){
+    window.location.href = '/'
+  }
   </script>
   <script src="Record.js"></script>
 </body>
