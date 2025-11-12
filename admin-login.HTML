@@ -178,8 +178,9 @@ const dashboard = document.getElementById("dashboard");
 const adminName = document.getElementById("adminName");
 const logoutBtn = document.getElementById("logoutBtn");
 const sidebar = document.getElementById("sidebar");
+const frameBox = document.getElementById("frameBox");
 
-// Login handler
+// LOGIN handler
 document.getElementById("loginForm").addEventListener("submit", e => {
   e.preventDefault();
   const formData = new FormData(e.target);
@@ -192,9 +193,24 @@ document.getElementById("loginForm").addEventListener("submit", e => {
       if (data.status === "success") {
         loginContainer.style.display = "none";
         dashboard.style.display = "flex";
-        adminName.textContent = data.fullName || data.username || "Admin";
+
+        // Extract user info
+        const name = data.fullName || data.username || "Admin";
+        const role = (data.role || "user").toLowerCase();
+
+        // Save to localStorage
         localStorage.setItem("loggedIn", "true");
-        localStorage.setItem("adminName", adminName.textContent);
+        localStorage.setItem("adminName", name);
+        localStorage.setItem("role", role);
+
+        // Display name + role
+        adminName.textContent = `${name} (${role.toUpperCase()})`;
+
+        // Update sidebar access
+        updateSidebarForRole(role);
+
+        // Load welcome page in iframe
+        frameBox.src = "welcome.html";
       } else {
         alert("❌ Login Failed: " + data.message);
       }
@@ -205,16 +221,32 @@ document.getElementById("loginForm").addEventListener("submit", e => {
     });
 });
 
-// Logout
+// Show/hide sidebar buttons based on role
+function updateSidebarForRole(role) {
+  const buttons = sidebar.querySelectorAll("button:not(.logout-btn)");
+  const fullAccessRoles = ["admin", "co-admin", "owner"];
+
+  if (fullAccessRoles.includes(role)) {
+    buttons.forEach(btn => btn.style.display = "block");
+  } else {
+    buttons.forEach(btn => btn.style.display = "none");
+  }
+
+  // Logout always visible
+  logoutBtn.style.display = "block";
+}
+
+// LOGOUT
 logoutBtn.addEventListener("click", () => {
-  localStorage.removeItem("loggedIn");
+  localStorage.clear();
   dashboard.style.display = "none";
   loginContainer.style.display = "block";
+  frameBox.src = "";
 });
 
-// Sidebar Toggle (Desktop + Mobile)
-function toggleSidebar(){
-  if(window.innerWidth <= 768){
+// Sidebar toggle (Desktop + Mobile)
+function toggleSidebar() {
+  if (window.innerWidth <= 768) {
     sidebar.classList.toggle("active"); // mobile
   } else {
     sidebar.classList.toggle("collapsed"); // desktop
@@ -222,36 +254,44 @@ function toggleSidebar(){
 }
 
 // Close sidebar when clicking outside (mobile)
-window.addEventListener("click", (e) => {
-  if(window.innerWidth <= 768 && sidebar.classList.contains("active")){
-    if(!sidebar.contains(e.target) && !e.target.classList.contains("menu-icon")){
+window.addEventListener("click", e => {
+  if (window.innerWidth <= 768 && sidebar.classList.contains("active")) {
+    if (!sidebar.contains(e.target) && !e.target.classList.contains("menu-icon")) {
       sidebar.classList.remove("active");
     }
   }
 });
 
-// Auto-login
+// AUTO LOGIN + load welcome.html
 window.addEventListener("load", () => {
-  if(localStorage.getItem("loggedIn")==="true"){
-    loader.style.display="none";
-    loginContainer.style.display="none";
-    dashboard.style.display="flex";
-    adminName.textContent=localStorage.getItem("adminName");
+  if (localStorage.getItem("loggedIn") === "true") {
+    loginContainer.style.display = "none";
+    dashboard.style.display = "flex";
+
+    const name = localStorage.getItem("adminName") || "Admin";
+    const role = localStorage.getItem("role") || "admin";
+
+    adminName.textContent = `${name} (${role.toUpperCase()})`;
+    updateSidebarForRole(role);
+
+    // Always load welcome page by default
+    frameBox.src = "welcome.html";
   }
 });
 
-// Load internal pages
-function loadPage(url, btn){
-  // Google Sheets can't load in iframe → open in new tab
-  if(url.startsWith("https://docs.google.com")){
+// Load other pages from sidebar
+function loadPage(url, btn) {
+  if (url.startsWith("https://docs.google.com")) {
     window.open(url, "_blank");
     return;
   }
-  document.getElementById("frameBox").src = url;
-  document.querySelectorAll(".sidebar button").forEach(b=>b.classList.remove("active"));
+  frameBox.src = url;
+  document.querySelectorAll(".sidebar button").forEach(b => b.classList.remove("active"));
   btn.classList.add("active");
 }
 </script>
+
+
 <script>
 function loadPage(url, btn){
   document.getElementById("frameBox").src = url;
