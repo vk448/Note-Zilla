@@ -90,7 +90,6 @@ button.ghost:hover{background:#f1f5f9;border-color:#0067c5;transform:translateY(
 
 <label for="direct_link" style="margin-top:12px;">Or Direct Link</label>
 <input id="direct_link" type="text" placeholder="https://drive.google.com/..., or https://your-site/path.pdf" />
-<a href="delete-database-work-admin-owner-notezilla-database-work-add-on.html" target="_blank" class="REMOVE">Remove Incorrect Link </a>
 <div style="margin-top:20px;display:flex;gap:12px;align-items:center;">
 <button class="primary" onclick="generateAndSave()">Generate & Save</button>
 <button class="ghost" onclick="clearForm()">Clear</button>
@@ -115,13 +114,6 @@ button.ghost:hover{background:#f1f5f9;border-color:#0067c5;transform:translateY(
 </div>
 
 <script>
-// 🔐 Access Control
-const role = localStorage.getItem("userRole");
-if (!role || !["admin","co-admin","owner"].includes(role.toLowerCase())) {
-    alert("❌ Access Denied! Only Admins and Co-Admins can access this page.");
-    window.location.href = "login.html";
-}
-
 // ✅ Fixed DD/MM/YYYY
 const indiaTime = new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"});
 const d = new Date(indiaTime);

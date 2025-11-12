@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NoteZilla — Login</title>
+<title>NoteZilla — Admin Login</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-body{background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);display:flex;justify-content:center;align-items:center;min-height:100vh;padding:10px;}
+body{background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);display:flex;justify-content:center;align-items:center;min-height:100vh;}
 .container{width:100%;max-width:400px;background:#fff;border-radius:15px;padding:30px 25px;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,0.2);}
 h1{font-size:2rem;color:#203a43;margin-bottom:5px;}
 h2{font-size:1.7rem;color:#1b1b1b;margin-bottom:8px;}
@@ -21,105 +21,167 @@ button:hover{transform:scale(1.02);background:linear-gradient(135deg,#2c5364,#20
 .notice a:hover{text-decoration:underline;}
 #loaderOverlay{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.25);z-index:9999;justify-content:center;align-items:center;flex-direction:column;color:#fff;font-size:1.2rem;}
 .spinner{border:6px solid rgba(255,255,255,0.3);border-top:6px solid #fff;border-radius:50%;width:50px;height:50px;animation:spin 1s linear infinite;margin-bottom:12px;}
-#welcomeBox{display:none;margin-top:15px;background:#f3f3f3;padding:20px;border-radius:12px;text-align:center;}
-#welcomeBox h3{margin-bottom:15px;color:#203a43;}
-#userInfo{text-align:left; margin-bottom:15px; padding:0 10px;}
-#userInfo div{padding:6px 0; border-bottom:1px dotted #ccc; font-size:0.95rem; color:#444;}
-#userInfo strong{color:#203a43; display:inline-block; width:90px;}
-#welcomeBox a{display:inline-block;padding:10px 20px;background:#2c5364;color:#fff;border-radius:8px;text-decoration:none;font-weight:600; margin-top:10px;}
-#welcomeBox a:hover{background:#203a43;}
 @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
-@media (max-width:480px){.container{padding:25px 20px;}h1{font-size:1.5rem;} h2{font-size:1.4rem;}}
 form p{text-align:left;margin-bottom:5px;color:black;font-weight:600;margin-top:10px;}
+
+/* Dashboard Layout */
+.dashboard{display:none;height:100vh;width:100vw;overflow:hidden;background:#f9f9f9;}
+.sidebar{width:250px;background:#203a43;color:#fff;display:flex;flex-direction:column;align-items:center;padding:20px 10px;transition:width 0.3s ease, left 0.3s ease;overflow:hidden;position:relative;}
+.sidebar img{width:100px;height:100px;border-radius:50%;border:3px solid #fff;margin-bottom:10px;transition:0.3s;}
+.sidebar h3{margin-bottom:10px;text-align:center;transition:0.3s;}
+.sidebar button,.sidebar a{width:90%;margin:5px 0;padding:10px;background:#2c5364;color:#fff;border:none;border-radius:8px;text-align:center;text-decoration:none;font-size:0.9rem;transition:0.3s;cursor:pointer;}
+.sidebar a:hover,.sidebar button:hover{background:#203a43;}
+.main{flex:1;display:flex;flex-direction:column;}
+.topbar{background:#fff;display:flex;align-items:center;justify-content:space-between;padding:10px 20px;border-bottom:2px solid #eee;}
+.topbar h2{color:#203a43;font-size:1.3rem;}
+.logout-btn{background:#d9534f;border:none;color:#fff;padding:8px 15px;border-radius:8px;font-weight:600;cursor:pointer;}
+.logout-btn:hover{background:#c9302c;}
+iframe{flex:1;width:100%;border:none;}
+.menu-icon{font-size:22px;cursor:pointer;color:#203a43;font-weight:bold;}
+
+/* Collapsed sidebar */
+.sidebar.collapsed{
+  width:80px;
+}
+.sidebar.collapsed img,
+.sidebar.collapsed h3,
+.sidebar.collapsed button,
+.sidebar.collapsed a {
+  display:none;
+}
+.sidebar.collapsed::after{
+  content:'Logout';
+  color:#fff;
+  background:#d9534f;
+  padding:10px 60px 5px 0px;
+  border-radius:8px;
+  font-weight:600;
+  position:absolute;
+  top:45%;
+  left:15px;
+  right:15px;
+  text-align:center;
+  
+}
+.sidebar .logout-btn{
+    background-color: #c9302c;
+}
+/* Responsive */
+@media(max-width:768px){
+.sidebar{position:absolute;left:-250px;top:0;height:100%;transition:0.3s;z-index:10;}
+.sidebar.active{left:0;}
+.main{flex:1;}
+}
 </style>
 </head>
 <body>
 
 <div id="loaderOverlay">
-    <div class="spinner"></div>
-    <div>Logging in...</div>
+  <div class="spinner"></div>
+  <div>Logging in...</div>
 </div>
 
-<div class="container">
-    <h1>NoteZilla</h1>
-    <h2>Login to Your Account</h2>
-    <p>Enter your credentials to access your admin dashboard</p>
+<!-- LOGIN PAGE -->
+<div class="container" id="loginContainer">
+  <h1>NoteZilla</h1>
+  <h2>Login to Admin Page</h2>
+  <p>Enter your credentials to access your admin panel</p>
 
-    <form id="loginForm">
-        <div>
-            <p>Username</p>
-            <input type="text" name="Username" placeholder="Username" required>
-        </div>
-        <div>
-            <p>Password</p>
-            <input type="password" name="Password" placeholder="Password" required>
-        </div>
-        <button type="submit">Login</button>
-    </form>
+  <form id="loginForm">
+    <p>Username</p>
+    <input type="text" name="Username" placeholder="Username" required>
+    <p>Password</p>
+    <input type="password" name="Password" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
 
-    <div class="notice">
-        Not registered? 
-        <a href="admin-register.html">Register Here</a>
+  <div class="notice">
+    Not registered? <a href="admin-register.html">Register Here</a>
+  </div>
+</div>
+
+<!-- DASHBOARD PAGE -->
+<div class="dashboard" id="dashboard">
+  <div class="sidebar" id="sidebar">
+    <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="profile">
+    <h3 id="adminName">Admin Name</h3>
+    <button class="logout-btn" id="logoutBtn">Logout</button>
+    <button>Edit Profile</button>
+    <a href="upload-work-data-base-admin-co-admin.html" target="frameBox">Notes DataBase</a>
+    <a href="https://docs.google.com/spreadsheets/d/18ZuLufS0Vkulej9N_mtAKKw4WGulKTYyhdxjKIs-Y-A/edit?gid=0#gid=0" target="frameBox">Time-Table DataBase</a>
+      <a href="delete-database-work-admin-owner-notezilla-database-work-add-on.HTML">Edit Notes DataBase</a>
+    <a href="credits.html" target="frameBox">Credits DataBase</a>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="menu-icon" onclick="toggleSidebar()">☰</div>
+      <h2>NoteZilla Admin Page</h2>
     </div>
-
-    <div id="welcomeBox">
-        <h3 id="welcomeText"></h3>
-        <div id="userInfo"></div>
-        <a href="upload-work-data-base-admin-co-admin.html">➡️ Go to Upload Database</a>
-        <a href="https://docs.google.com/spreadsheets/d/18ZuLufS0Vkulej9N_mtAKKw4WGulKTYyhdxjKIs-Y-A/edit?gid=0#gid=0">Time Table data base</Data></a>
-    </div>
+    <iframe name="frameBox" id="frameBox"></iframe>
 </div>
 
 <script>
-const scriptUrl = "https://script.google.com/macros/s/AKfycbyauck1tUPnDBrZYqUY1ogkhQAYaj_acdtC1pQIdj9Nu4XoBOjZc8KhJDulQszmuZuR/exec"; 
+const scriptUrl = "https://script.google.com/macros/s/AKfycbyauck1tUPnDBrZYqUY1ogkhQAYaj_acdtC1pQIdj9Nu4XoBOjZc8KhJDulQszmuZuR/exec";
 const loader = document.getElementById("loaderOverlay");
-const welcomeBox = document.getElementById("welcomeBox");
-const welcomeText = document.getElementById("welcomeText");
-const userInfo = document.getElementById("userInfo");
+const loginContainer = document.getElementById("loginContainer");
+const dashboard = document.getElementById("dashboard");
+const adminName = document.getElementById("adminName");
+const logoutBtn = document.getElementById("logoutBtn");
+const sidebar = document.getElementById("sidebar");
 
+// Login
 document.getElementById("loginForm").addEventListener("submit", e => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    loader.style.display = "flex";
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  loader.style.display = "flex";
 
-    fetch(scriptUrl, { method: "POST", body: formData })
-    .then(res => res.json())
-    .then(data => {
-        loader.style.display = "none";
-        
-        if (data.status === "success") {
-            const role = (data.role || "").toLowerCase();
-            welcomeText.innerText = `🎉 Welcome, ${data.fullName || data.username}!`;
+  fetch(scriptUrl, { method: "POST", body: formData })
+  .then(res => res.json())
+  .then(data => {
+    loader.style.display = "none";
+    if (data.status === "success") {
+      loginContainer.style.display = "none";
+      dashboard.style.display = "flex";
+      adminName.textContent = data.fullName || data.username || "Admin";
+      localStorage.setItem("loggedIn", "true");
+      localStorage.setItem("adminName", adminName.textContent);
+    } else {
+      alert("❌ Login Failed: " + data.message);
+    }
+  })
+  .catch(err => {
+    loader.style.display = "none";
+    alert("⚠️ Server Error: " + err.message);
+  });
+});
 
-            userInfo.innerHTML = `
-                <div><strong>Role:</strong> ${data.role || 'N/A'}</div>
-                <div><strong>Username:</strong> ${data.username || 'N/A'}</div>
-                <div><strong>Email:</strong> ${data.email || 'N/A'}</div>
-                <div><strong>Phone:</strong> ${data.phone || 'N/A'}</div>
-                <div><strong>Class:</strong> ${data.class || 'N/A'}</div>
-                <div><strong>Gender:</strong> ${data.gender || 'N/A'}</div>
-            `;
+// Logout
+logoutBtn.addEventListener("click", () => {
+  localStorage.removeItem("loggedIn");
+  dashboard.style.display = "none";
+  loginContainer.style.display = "block";
+});
 
-            welcomeBox.style.display = "block";
-            e.target.style.display = "none";
-            document.querySelector('.notice').style.display = "none";
+// Sidebar Toggle
+function toggleSidebar(){
+  // For large screen: collapse to logout-only view
+  if(window.innerWidth > 768){
+    sidebar.classList.toggle("collapsed");
+  } 
+  // For mobile: slide open/close
+  else {
+    sidebar.classList.toggle("active");
+  }
+}
 
-            if (role === "admin" || role === "co-admin" || role === "owner") {
-                localStorage.setItem("userRole", role);
-                localStorage.setItem("username", data.username);
-            } else {
-                alert("⚠️ You are logged in but do not have access to admin pages.");
-                document.querySelector("#welcomeBox a").style.display = "none";
-            }
-
-        } else {
-            alert("❌ Login Failed: " + data.message);
-        }
-    })
-    .catch(err => {
-        loader.style.display = "none";
-        alert("⚠️ Server Error: Could not connect. " + err.message);
-    });
+// Auto-login check
+window.addEventListener("load", () => {
+  if(localStorage.getItem("loggedIn")==="true"){
+    loginContainer.style.display="none";
+    dashboard.style.display="flex";
+    adminName.textContent=localStorage.getItem("adminName");
+  }
 });
 </script>
 </body>

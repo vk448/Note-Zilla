@@ -73,12 +73,6 @@ input.search{flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,
 </div>
 
 <script>
-// Access Control (keep as you had)
-const role = localStorage.getItem("userRole");
-if (!role || !["admin","co-admin","owner"].includes(role.toLowerCase())) {
-  alert("❌ Access Denied! Only Admins & Co-Admins allowed.");
-  window.location.href = "login.html";
-}
 
 // <-- put your deployed Apps Script URL here -->
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxGSJZokyUxwjEc74CnA8L5KZ31hdPWQOA5syNFuB5woIpZFpXgtaAPVG1OymZgsJX9/exec";
