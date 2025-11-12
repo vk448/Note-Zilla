@@ -3,74 +3,121 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NoteZilla — Admin Login</title>
+<title>NoteZilla — Admin Panel</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-body{background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);display:flex;justify-content:center;align-items:center;min-height:100vh;}
-.container{width:100%;max-width:400px;background:#fff;border-radius:15px;padding:30px 25px;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,0.2);}
-h1{font-size:2rem;color:#203a43;margin-bottom:5px;}
-h2{font-size:1.7rem;color:#1b1b1b;margin-bottom:8px;}
-p{color:#666;font-size:0.9rem;margin-bottom:20px;}
-input,button{width:100%;padding:12px;margin-bottom:12px;border-radius:8px;border:1.5px solid #ddd;font-size:14px;transition:0.3s;}
-input:focus{border-color:#2c5364;outline:none;box-shadow:0 0 5px rgba(44,83,100,0.3);}
-button{background:linear-gradient(135deg,#203a43,#2c5364);color:#fff;font-weight:600;cursor:pointer;border:none;}
-button:hover{transform:scale(1.02);background:linear-gradient(135deg,#2c5364,#203a43);}
+body{
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  display:flex;justify-content:center;align-items:center;
+  min-height:100vh;overflow:hidden;
+}
+
+/* Loader */
+#loaderOverlay{
+  display:none;
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.35);z-index:9999;
+  justify-content:center;align-items:center;flex-direction:column;
+  color:#fff;
+}
+.spinner{
+  border:6px solid rgba(255,255,255,0.3);
+  border-top:6px solid #fff;
+  border-radius:50%;width:50px;height:50px;
+  animation:spin 1s linear infinite;margin-bottom:12px;
+}
+@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+
+/* LOGIN */
+.container{
+  width:100%;max-width:400px;background:#fff;border-radius:15px;
+  padding:35px 25px;text-align:center;
+  box-shadow:0 8px 30px rgba(0,0,0,0.2);
+}
+h1{font-size:2rem;color:#203a43;margin-bottom:10px;}
+h2{font-size:1.4rem;color:#333;margin-bottom:20px;}
+p{color:#666;font-size:0.9rem;margin-bottom:15px;}
+input,button{
+  width:100%;padding:12px;margin-bottom:12px;border-radius:8px;
+  border:1.5px solid #ddd;font-size:14px;transition:0.3s;
+}
+input:focus{
+  border-color:#2c5364;outline:none;
+  box-shadow:0 0 5px rgba(44,83,100,0.3);
+}
+button{
+  background:linear-gradient(135deg,#203a43,#2c5364);
+  color:#fff;font-weight:600;cursor:pointer;border:none;
+}
+button:hover{
+  transform:scale(1.02);
+  background:linear-gradient(135deg,#2c5364,#203a43);
+}
 .notice{font-size:0.9rem;color:#555;margin-top:12px;}
 .notice a{color:#2c5364;font-weight:600;text-decoration:none;}
 .notice a:hover{text-decoration:underline;}
-#loaderOverlay{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.25);z-index:9999;justify-content:center;align-items:center;flex-direction:column;color:#fff;font-size:1.2rem;}
-.spinner{border:6px solid rgba(255,255,255,0.3);border-top:6px solid #fff;border-radius:50%;width:50px;height:50px;animation:spin 1s linear infinite;margin-bottom:12px;}
-@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
-form p{text-align:left;margin-bottom:5px;color:black;font-weight:600;margin-top:10px;}
 
-/* Dashboard Layout */
-.dashboard{display:none;height:100vh;width:100vw;overflow:hidden;background:#f9f9f9;}
-.sidebar{width:250px;background:#203a43;color:#fff;display:flex;flex-direction:column;align-items:center;padding:20px 10px;transition:width 0.3s ease, left 0.3s ease;overflow:hidden;position:relative;}
-.sidebar img{width:100px;height:100px;border-radius:50%;border:3px solid #fff;margin-bottom:10px;transition:0.3s;}
-.sidebar h3{margin-bottom:10px;text-align:center;transition:0.3s;}
-.sidebar button,.sidebar a{width:90%;margin:5px 0;padding:10px;background:#2c5364;color:#fff;border:none;border-radius:8px;text-align:center;text-decoration:none;font-size:0.9rem;transition:0.3s;cursor:pointer;}
-.sidebar a:hover,.sidebar button:hover{background:#203a43;}
-.main{flex:1;display:flex;flex-direction:column;}
-.topbar{background:#fff;display:flex;align-items:center;justify-content:space-between;padding:10px 20px;border-bottom:2px solid #eee;}
-.topbar h2{color:#203a43;font-size:1.3rem;}
-.logout-btn{background:#d9534f;border:none;color:#fff;padding:8px 15px;border-radius:8px;font-weight:600;cursor:pointer;}
-.logout-btn:hover{background:#c9302c;}
-iframe{flex:1;width:100%;border:none;}
-.menu-icon{font-size:22px;cursor:pointer;color:#203a43;font-weight:bold;}
+/* DASHBOARD */
+.dashboard{display:none;height:100vh;width:100vw;overflow:hidden;background:#f1f4f8;}
 
-/* Collapsed sidebar */
-.sidebar.collapsed{
-  width:80px;
+/* Sidebar */
+.sidebar{
+  width:250px;background:#1b2838;color:#fff;
+  display:flex;flex-direction:column;align-items:center;
+  padding:20px 10px;
+  transition:width 0.3s ease,left 0.3s ease;
+  box-shadow:4px 0 15px rgba(0,0,0,0.2);
 }
+.sidebar img{
+  width:85px;height:85px;border-radius:50%;
+  border:3px solid #fff;margin-bottom:10px;
+}
+.sidebar h3{margin-bottom:20px;text-align:center;}
+.sidebar button{
+  width:90%;margin:5px 0;padding:10px;
+  background:transparent;color:#fff;border:none;
+  border-radius:8px;text-align:left;font-size:0.95rem;
+  cursor:pointer;display:flex;align-items:center;
+  gap:10px;transition:0.3s;padding-left:15px;
+}
+.sidebar button:hover{background:#203a43;}
+.sidebar button.active{background:#4fc3f7;color:#1b2838;font-weight:700;}
+.sidebar i{font-size:1rem;width:20px;text-align:center;}
+.logout-btn{background:#d9534f!important;margin-top:auto;width:90%;}
+.logout-btn:hover{background:#c9302c!important;}
+
+/* Collapsible Sidebar (Desktop) */
+.sidebar.collapsed{width:80px;align-items:center;}
 .sidebar.collapsed img,
-.sidebar.collapsed h3,
-.sidebar.collapsed button,
-.sidebar.collapsed a {
-  display:none;
+.sidebar.collapsed h3{display:none;}
+.sidebar.collapsed button{
+  justify-content:center;
+  padding-left:0;text-align:center;
 }
-.sidebar.collapsed::after{
-  content:'Logout';
-  color:#fff;
-  background:#d9534f;
-  padding:10px 60px 5px 0px;
-  border-radius:8px;
-  font-weight:600;
-  position:absolute;
-  top:45%;
-  left:15px;
-  right:15px;
-  text-align:center;
-  
+.sidebar.collapsed button i{
+  margin-right:0;font-size:1.2rem;
 }
-.sidebar .logout-btn{
-    background-color: #c9302c;
+.sidebar.collapsed button span{display:none;}
+
+/* Main Section */
+.main{flex:1;display:flex;flex-direction:column;}
+.topbar{
+  background:#fff;display:flex;align-items:center;justify-content:space-between;
+  padding:10px 20px;border-bottom:2px solid #eee;
+  box-shadow:0 2px 10px rgba(0,0,0,0.05);
 }
-/* Responsive */
+.topbar h2{color:#203a43;font-size:1.3rem;font-weight:600;}
+iframe{flex:1;width:100%;border:none;background:#fff;}
+.menu-icon{font-size:24px;cursor:pointer;color:#203a43;font-weight:bold;}
+
+/* Mobile Responsive */
 @media(max-width:768px){
-.sidebar{position:absolute;left:-250px;top:0;height:100%;transition:0.3s;z-index:10;}
-.sidebar.active{left:0;}
-.main{flex:1;}
+  .sidebar{
+    position:absolute;left:-250px;top:0;height:100%;z-index:10;
+  }
+  .sidebar.active{left:0;}
 }
 </style>
 </head>
@@ -84,14 +131,14 @@ iframe{flex:1;width:100%;border:none;}
 <!-- LOGIN PAGE -->
 <div class="container" id="loginContainer">
   <h1>NoteZilla</h1>
-  <h2>Login to Admin Page</h2>
-  <p>Enter your credentials to access your admin panel</p>
+  <h2>Admin Login</h2>
+  <p>Enter your credentials to access the dashboard</p>
 
   <form id="loginForm">
-    <p>Username</p>
-    <input type="text" name="Username" placeholder="Username" required>
-    <p>Password</p>
-    <input type="password" name="Password" placeholder="Password" required>
+    <p style="text-align:left;font-weight:600;color:black;">Username</p>
+    <input type="text" name="Username" placeholder="Enter Username" required>
+    <p style="text-align:left;font-weight:600;color:black;">Password</p>
+    <input type="password" name="Password" placeholder="Enter Password" required>
     <button type="submit">Login</button>
   </form>
 
@@ -105,20 +152,22 @@ iframe{flex:1;width:100%;border:none;}
   <div class="sidebar" id="sidebar">
     <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="profile">
     <h3 id="adminName">Admin Name</h3>
-    <button class="logout-btn" id="logoutBtn">Logout</button>
-    <button>Edit Profile</button>
-    <a href="upload-work-data-base-admin-co-admin.html" target="frameBox">Notes DataBase</a>
-    <a href="https://docs.google.com/spreadsheets/d/18ZuLufS0Vkulej9N_mtAKKw4WGulKTYyhdxjKIs-Y-A/edit?gid=0#gid=0" target="frameBox">Time-Table DataBase</a>
-      <a href="delete-database-work-admin-owner-notezilla-database-work-add-on.HTML">Edit Notes DataBase</a>
-    <a href="credits.html" target="frameBox">Credits DataBase</a>
+
+    <button onclick="loadPage('upload-work-data-base-admin-co-admin.html', this)"><i class="fa-solid fa-database"></i><span>Notes Database</span></button>
+    <button onclick="loadPage('https://docs.google.com/spreadsheets/d/18ZuLufS0Vkulej9N_mtAKKw4WGulKTYyhdxjKIs-Y-A/edit?gid=0#gid=0', this)"><i class="fa-solid fa-calendar-days"></i><span>Time-Table Database</span></button>
+    <button onclick="loadPage('delete-database-work-admin-owner-notezilla-database-work-add-on.html', this)"><i class="fa-solid fa-pen-to-square"></i><span>Edit Notes Database</span></button>
+    <button onclick="loadPage('credits.html', this)"><i class="fa-solid fa-id-card"></i><span>Credits Database</span></button>
+    <button onclick="window.location.href='https://note-zilla.netlify.app/'"><i class="fa-solid fa-globe"></i><span>Go to NoteZilla</span></button>
+    <button class="logout-btn" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></button>
   </div>
 
   <div class="main">
     <div class="topbar">
       <div class="menu-icon" onclick="toggleSidebar()">☰</div>
-      <h2>NoteZilla Admin Page</h2>
+      <h2>NoteZilla Admin Panel</h2>
     </div>
     <iframe name="frameBox" id="frameBox"></iframe>
+  </div>
 </div>
 
 <script>
@@ -130,30 +179,30 @@ const adminName = document.getElementById("adminName");
 const logoutBtn = document.getElementById("logoutBtn");
 const sidebar = document.getElementById("sidebar");
 
-// Login
+// Login handler
 document.getElementById("loginForm").addEventListener("submit", e => {
   e.preventDefault();
   const formData = new FormData(e.target);
   loader.style.display = "flex";
 
   fetch(scriptUrl, { method: "POST", body: formData })
-  .then(res => res.json())
-  .then(data => {
-    loader.style.display = "none";
-    if (data.status === "success") {
-      loginContainer.style.display = "none";
-      dashboard.style.display = "flex";
-      adminName.textContent = data.fullName || data.username || "Admin";
-      localStorage.setItem("loggedIn", "true");
-      localStorage.setItem("adminName", adminName.textContent);
-    } else {
-      alert("❌ Login Failed: " + data.message);
-    }
-  })
-  .catch(err => {
-    loader.style.display = "none";
-    alert("⚠️ Server Error: " + err.message);
-  });
+    .then(res => res.json())
+    .then(data => {
+      loader.style.display = "none";
+      if (data.status === "success") {
+        loginContainer.style.display = "none";
+        dashboard.style.display = "flex";
+        adminName.textContent = data.fullName || data.username || "Admin";
+        localStorage.setItem("loggedIn", "true");
+        localStorage.setItem("adminName", adminName.textContent);
+      } else {
+        alert("❌ Login Failed: " + data.message);
+      }
+    })
+    .catch(err => {
+      loader.style.display = "none";
+      alert("⚠️ Server Error: " + err.message);
+    });
 });
 
 // Logout
@@ -163,26 +212,53 @@ logoutBtn.addEventListener("click", () => {
   loginContainer.style.display = "block";
 });
 
-// Sidebar Toggle
+// Sidebar Toggle (Desktop + Mobile)
 function toggleSidebar(){
-  // For large screen: collapse to logout-only view
-  if(window.innerWidth > 768){
-    sidebar.classList.toggle("collapsed");
-  } 
-  // For mobile: slide open/close
-  else {
-    sidebar.classList.toggle("active");
+  if(window.innerWidth <= 768){
+    sidebar.classList.toggle("active"); // mobile
+  } else {
+    sidebar.classList.toggle("collapsed"); // desktop
   }
 }
 
-// Auto-login check
+// Close sidebar when clicking outside (mobile)
+window.addEventListener("click", (e) => {
+  if(window.innerWidth <= 768 && sidebar.classList.contains("active")){
+    if(!sidebar.contains(e.target) && !e.target.classList.contains("menu-icon")){
+      sidebar.classList.remove("active");
+    }
+  }
+});
+
+// Auto-login
 window.addEventListener("load", () => {
   if(localStorage.getItem("loggedIn")==="true"){
+    loader.style.display="none";
     loginContainer.style.display="none";
     dashboard.style.display="flex";
     adminName.textContent=localStorage.getItem("adminName");
   }
 });
+
+// Load internal pages
+function loadPage(url, btn){
+  // Google Sheets can't load in iframe → open in new tab
+  if(url.startsWith("https://docs.google.com")){
+    window.open(url, "_blank");
+    return;
+  }
+  document.getElementById("frameBox").src = url;
+  document.querySelectorAll(".sidebar button").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+}
 </script>
+<script>
+function loadPage(url, btn){
+  document.getElementById("frameBox").src = url;
+  document.querySelectorAll(".sidebar button").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+}
+</script>
+
 </body>
 </html>
