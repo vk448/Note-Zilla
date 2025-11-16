@@ -2,136 +2,294 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Massive ChatBox</title>
+<title>Professional ChatBox</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 
+    /* GENERAL STYLES & CONTAINER */
     body {
         margin: 0;
-        background: #1e1e1e;
-        font-family: Arial, sans-serif;
+        background: #121212; /* Very dark background */
+        font-family: 'Roboto', sans-serif;
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
-        color: white;
+        color: #e0e0e0; /* Lighter text for contrast */
     }
 
     .container {
         width: 95%;
-        max-width: 900px;
+        max-width: 1000px; /* Slightly wider */
         height: 90vh;
-        background: #2d2d2d;
-        border-radius: 15px;
-        display: flex;
+        background: #1e1e1e; /* Main background */
+        border-radius: 12px;
+        display: flex; /* Desktop: Side by side */
         overflow: hidden;
-        border: 1px solid #444;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); /* Added subtle shadow */
     }
 
-    /* LEFT USER PANEL */
+    /* LEFT USER PANEL (Desktop Styles) */
     .users {
-        width: 25%;
-        background: #222;
-        padding: 10px;
+        width: 280px; /* Fixed width for consistency */
+        background: #252525;
+        padding: 20px 15px;
         overflow-y: auto;
         border-right: 1px solid #333;
     }
     .users h2 {
         margin-top: 0;
-        text-align: center;
-        color: #0d6efd;
+        margin-bottom: 20px;
+        text-align: left;
+        color: #4a90e2; /* Corporate Blue */
+        font-weight: 500;
+        font-size: 1.5em;
+        border-bottom: 2px solid #333;
+        padding-bottom: 10px;
+    }
+    .users input#username {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #444;
+        border-radius: 6px;
+        background: #333;
+        color: white;
+        margin-bottom: 20px;
+        box-sizing: border-box;
     }
     .user {
-        padding: 10px;
-        border-radius: 8px;
-        margin: 5px 0;
-        background: #333;
+        padding: 12px;
+        border-radius: 6px;
+        margin: 8px 0;
+        background: transparent;
         cursor: pointer;
-        transition: 0.2s;
+        transition: background 0.2s, color 0.2s;
+        display: flex;
+        align-items: center;
+        font-weight: 400;
+        color: #cccccc;
     }
     .user:hover {
-        background: #444;
+        background: #333;
+        color: #e0e0e0;
+    }
+    .user span.status {
+        width: 10px;
+        height: 10px;
+        background: #0d9b4b; /* Green status dot */
+        border-radius: 50%;
+        margin-right: 10px;
+        display: inline-block;
+    }
+    .userList {
+        list-style: none;
+        padding: 0;
+        margin: 0;
     }
 
-    /* CHAT AREA */
+    /* CHAT AREA (Desktop Styles) */
     .chat-area {
         flex: 1;
         display: flex;
         flex-direction: column;
-        background: #1f1f1f;
+        background: #1e1e1e;
     }
 
     .chat-header {
-        padding: 15px;
-        background: #111;
+        padding: 20px;
+        background: #252525;
         border-bottom: 1px solid #333;
-        font-size: 18px;
-        color: #0d6efd;
+        font-size: 1.2em;
+        font-weight: 500;
+        color: #4a90e2;
+        text-align: center;
     }
 
     .messages {
         flex: 1;
-        padding: 15px;
+        padding: 20px;
         overflow-y: auto;
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 15px; /* Increased gap */
     }
 
     .msg {
-        max-width: 70%;
-        padding: 12px;
-        border-radius: 12px;
-        line-height: 18px;
+        max-width: 65%;
+        padding: 15px;
+        border-radius: 10px;
+        line-height: 1.4;
         position: relative;
-        animation: fadeIn 0.3s;
+        animation: fadeIn 0.3s ease-out;
         word-wrap: break-word;
+        font-size: 0.95em;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .msg b {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 5px;
+        font-size: 0.85em;
     }
 
     .me {
-        background: #0d6efd;
+        background: #4a90e2; /* Corporate Blue for self */
+        color: white;
         align-self: flex-end;
+        border-bottom-right-radius: 2px; /* Slight edge detail */
     }
 
     .other {
         background: #333;
+        color: #e0e0e0;
         align-self: flex-start;
+        border-bottom-left-radius: 2px; /* Slight edge detail */
     }
 
     .time {
-        font-size: 10px;
-        opacity: 0.6;
-        margin-top: 5px;
+        font-size: 0.75em;
+        opacity: 0.7;
+        margin-top: 8px;
+        display: block; /* Ensures it sits on its own line */
+        text-align: right;
+    }
+    .other .time {
+        text-align: left;
     }
 
     @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
+        from { opacity: 0; transform: translateY(5px); }
         to { opacity: 1; transform: translateY(0); }
     }
 
     /* INPUT AREA */
     .input-area {
-        padding: 15px;
+        padding: 15px 20px;
         display: flex;
-        background: #111;
+        background: #252525;
         border-top: 1px solid #333;
+        align-items: center;
     }
     .input-area input {
         flex: 1;
-        padding: 12px;
+        padding: 14px;
         border: none;
-        border-radius: 8px;
-        background: #222;
+        border-radius: 25px; /* Pill shape */
+        background: #333;
         color: white;
+        font-size: 1em;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+    .input-area input:focus {
+        border-color: #4a90e2;
+        box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
     }
     .input-area button {
-        padding: 12px 20px;
+        padding: 12px 25px;
         margin-left: 10px;
-        background: #0d6efd;
+        background: #4a90e2;
         border: none;
-        border-radius: 8px;
+        border-radius: 25px;
         color: white;
+        font-weight: 500;
         cursor: pointer;
+        transition: background 0.2s, transform 0.1s;
+    }
+    .input-area button:hover {
+        background: #3672c2; /* Darker hover state */
+    }
+    .input-area button:active {
+        transform: scale(0.98);
+    }
+    
+    /* ------------------------------------------------------------------ */
+    /* MOBILE RESPONSIVENESS (Screens up to 768px) */
+    /* ------------------------------------------------------------------ */
+    @media (max-width: 768px) {
+        body {
+            height: 100vh;
+        }
+        
+        .container {
+            width: 100%;
+            height: 100vh;
+            max-width: none;
+            border-radius: 0;
+            flex-direction: column; /* Stack vertically for mobile */
+        }
+        
+        .users {
+            width: 100%;
+            height: 55px; /* **MAXIMUM REDUCTION for chat space** */
+            border-right: none;
+            border-bottom: 1px solid #333;
+            padding: 8px 10px; /* Reduced padding */
+            box-sizing: border-box;
+        }
+
+        .users h2 {
+            margin-bottom: 3px; /* Reduced margin */
+            font-size: 1.1em; /* Slightly smaller font */
+            padding-bottom: 3px;
+        }
+
+        .users input#username {
+            display: none; /* Hiding on mobile to save critical space */
+        }
+        
+        /* Make the user list scrollable within its constrained height */
+        .userList {
+            max-height: 25px; /* Ensures a clean single line */
+            overflow-x: auto; /* Only horizontal scroll */
+            overflow-y: hidden;
+            white-space: nowrap; /* Keep items in a single line */
+        }
+        
+        .user {
+            display: inline-flex; /* Display users horizontally */
+            padding: 5px 8px; /* Reduced padding */
+            margin: 0 4px; /* Added horizontal margin */
+            font-size: 0.85em;
+            background: #333; /* Make users stand out slightly */
+        }
+
+        .chat-area {
+            width: 100%;
+            flex: 1; /* Takes up remaining space */
+        }
+
+        .chat-header {
+            padding: 12px; /* Reduced padding */
+            font-size: 1.1em;
+        }
+
+        .messages {
+            padding: 10px; /* Less padding on mobile */
+            gap: 8px; /* Less gap on mobile */
+        }
+
+        .input-area {
+            padding: 8px; /* Reduced padding */
+        }
+
+        .input-area input {
+            padding: 10px;
+            font-size: 0.9em;
+        }
+
+        .input-area button {
+            padding: 10px 15px;
+            font-size: 0.9em;
+        }
+        
+        .msg {
+            max-width: 85%; /* Give messages more space */
+            padding: 12px;
+            font-size: 0.9em;
+        }
     }
 
 </style>
@@ -142,18 +300,22 @@
 
     <!-- LEFT USERS PANEL -->
     <div class="users">
-        <h2>Users</h2>
-        <input id="username" placeholder="Enter Your Name" style="width:100%;padding:8px;border-radius:5px;border:none;margin-bottom:10px">
-        <div id="userList"></div>
+        <h2>All Chat Members</h2>
+        <input id="username" placeholder="Enter Your Name" type="text">
+        <div id="userList" class="userList"></div>
     </div>
 
     <!-- CHAT AREA -->
     <div class="chat-area">
-        <div class="chat-header" id="chatHeader">Global Chat</div>
+        <!-- UPDATED CHAT HEADER WITH VERSION NAME -->
+        <div class="chat-header" id="chatHeader">
+            Global Chat - Realtime Messaging 
+            <span style="font-size: 0.7em; opacity: 0.6;">v1.2.0</span>
+        </div>
         <div class="messages" id="messages"></div>
 
         <div class="input-area">
-            <input id="msgInput" placeholder="Type Message...">
+            <input id="msgInput" placeholder="Type your professional message..." type="text" onkeypress="handleKey(event)">
             <button onclick="sendMsg()">Send</button>
         </div>
     </div>
@@ -166,54 +328,71 @@
 
 <script>
 
-// Your Firebase Config
+// Your Firebase Config (Retained from original)
 const firebaseConfig = {
-  apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
-  authDomain: "chat-box-e01e5.firebaseapp.com",
-  databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
-  projectId: "chat-box-e01e5",
-  storageBucket: "chat-box-e01e5.firebasestorage.app",
-  messagingSenderId: "597491149800",
-  appId: "1:597491149800:web:7bd908925f70b62018125d",
-  measurementId: "G-FJ6PKK2FNQ"
+    apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
+    authDomain: "chat-box-e01e5.firebaseapp.com",
+    databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
+    projectId: "chat-box-e01e5",
+    storageBucket: "chat-box-e01e5.firebasestorage.app",
+    messagingSenderId: "597491149800",
+    appId: "1:597491149800:web:7bd908925f70b62018125d",
+    measurementId: "G-FJ6PKK2FNQ"
 };
 
 firebase.initializeApp(firebaseConfig);
 let db = firebase.database();
 
 /* ===========================
-   SEND MESSAGE
+    HELPER: Handle Enter Key Press
+=========================== */
+function handleKey(event) {
+    if (event.key === "Enter") {
+        sendMsg();
+    }
+}
+
+/* ===========================
+    SEND MESSAGE
 =========================== */
 function sendMsg() {
     let msg = document.getElementById("msgInput").value;
-    let user = document.getElementById("username").value || "Unknown";
+    // Check for the desktop input first, or fall back to 'Guest'
+    let user = document.getElementById("username").value.trim() || "Guest"; 
 
     if (!msg.trim()) return;
 
     db.ref("megaChat").push({
         name: user,
         text: msg,
-        time: new Date().toLocaleTimeString()
+        timestamp: firebase.database.ServerValue.TIMESTAMP // Use server timestamp
     });
 
     document.getElementById("msgInput").value = "";
 }
 
 /* ===========================
-   RECEIVE MESSAGES LIVE
+    RECEIVE MESSAGES LIVE
 =========================== */
 db.ref("megaChat").on("child_added", (data) => {
     let val = data.val();
     let msgBox = document.getElementById("messages");
 
+    // Format the timestamp to a readable time string
+    let date = new Date(val.timestamp);
+    let timeString = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); // e.g., 03:02 PM
+
     let message = document.createElement("div");
-    message.className = "msg " +
-        ((val.name === document.getElementById("username").value) ? "me" : "other");
+    // Determine if the message is 'me' or 'other'
+    let currentUsername = document.getElementById("username").value.trim();
+    let isMe = (val.name === currentUsername && currentUsername !== "");
+    
+    message.className = "msg " + (isMe ? "me" : "other");
 
     message.innerHTML = `
-        <b>${val.name}</b><br>
+        <b>${val.name}</b>
         ${val.text}
-        <div class="time">${val.time}</div>
+        <span class="time">${timeString}</span>
     `;
 
     msgBox.appendChild(message);
@@ -221,21 +400,23 @@ db.ref("megaChat").on("child_added", (data) => {
 });
 
 /* ===========================
-   SHOW ACTIVE USERS
+    SHOW ALL USERS (Historical)
 =========================== */
 db.ref("megaChat").on("value", (snap) => {
     let users = {};
     snap.forEach(data => {
+        // Collects all unique usernames regardless of when they last messaged
         users[data.val().name] = true;
     });
 
     let userList = document.getElementById("userList");
     userList.innerHTML = "";
 
-    Object.keys(users).forEach(u => {
+    Object.keys(users).sort().forEach(u => {
         let div = document.createElement("div");
         div.className = "user";
-        div.textContent = "🟢 " + u;
+        // Using span for the status dot (which now just indicates a member)
+        div.innerHTML = `<span class="status"></span> ${u}`;
         userList.appendChild(div);
     });
 });
