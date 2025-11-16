@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Massive ChatBox</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+
+    body {
+        margin: 0;
+        background: #1e1e1e;
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: white;
+    }
+
+    .container {
+        width: 95%;
+        max-width: 900px;
+        height: 90vh;
+        background: #2d2d2d;
+        border-radius: 15px;
+        display: flex;
+        overflow: hidden;
+        border: 1px solid #444;
+    }
+
+    /* LEFT USER PANEL */
+    .users {
+        width: 25%;
+        background: #222;
+        padding: 10px;
+        overflow-y: auto;
+        border-right: 1px solid #333;
+    }
+    .users h2 {
+        margin-top: 0;
+        text-align: center;
+        color: #0d6efd;
+    }
+    .user {
+        padding: 10px;
+        border-radius: 8px;
+        margin: 5px 0;
+        background: #333;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .user:hover {
+        background: #444;
+    }
+
+    /* CHAT AREA */
+    .chat-area {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background: #1f1f1f;
+    }
+
+    .chat-header {
+        padding: 15px;
+        background: #111;
+        border-bottom: 1px solid #333;
+        font-size: 18px;
+        color: #0d6efd;
+    }
+
+    .messages {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .msg {
+        max-width: 70%;
+        padding: 12px;
+        border-radius: 12px;
+        line-height: 18px;
+        position: relative;
+        animation: fadeIn 0.3s;
+        word-wrap: break-word;
+    }
+
+    .me {
+        background: #0d6efd;
+        align-self: flex-end;
+    }
+
+    .other {
+        background: #333;
+        align-self: flex-start;
+    }
+
+    .time {
+        font-size: 10px;
+        opacity: 0.6;
+        margin-top: 5px;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* INPUT AREA */
+    .input-area {
+        padding: 15px;
+        display: flex;
+        background: #111;
+        border-top: 1px solid #333;
+    }
+    .input-area input {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        background: #222;
+        color: white;
+    }
+    .input-area button {
+        padding: 12px 20px;
+        margin-left: 10px;
+        background: #0d6efd;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+    }
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- LEFT USERS PANEL -->
+    <div class="users">
+        <h2>Users</h2>
+        <input id="username" placeholder="Enter Your Name" style="width:100%;padding:8px;border-radius:5px;border:none;margin-bottom:10px">
+        <div id="userList"></div>
+    </div>
+
+    <!-- CHAT AREA -->
+    <div class="chat-area">
+        <div class="chat-header" id="chatHeader">Global Chat</div>
+        <div class="messages" id="messages"></div>
+
+        <div class="input-area">
+            <input id="msgInput" placeholder="Type Message...">
+            <button onclick="sendMsg()">Send</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- FIREBASE SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script>
+
+// Your Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
+  authDomain: "chat-box-e01e5.firebaseapp.com",
+  databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
+  projectId: "chat-box-e01e5",
+  storageBucket: "chat-box-e01e5.firebasestorage.app",
+  messagingSenderId: "597491149800",
+  appId: "1:597491149800:web:7bd908925f70b62018125d",
+  measurementId: "G-FJ6PKK2FNQ"
+};
+
+firebase.initializeApp(firebaseConfig);
+let db = firebase.database();
+
+/* ===========================
+   SEND MESSAGE
+=========================== */
+function sendMsg() {
+    let msg = document.getElementById("msgInput").value;
+    let user = document.getElementById("username").value || "Unknown";
+
+    if (!msg.trim()) return;
+
+    db.ref("megaChat").push({
+        name: user,
+        text: msg,
+        time: new Date().toLocaleTimeString()
+    });
+
+    document.getElementById("msgInput").value = "";
+}
+
+/* ===========================
+   RECEIVE MESSAGES LIVE
+=========================== */
+db.ref("megaChat").on("child_added", (data) => {
+    let val = data.val();
+    let msgBox = document.getElementById("messages");
+
+    let message = document.createElement("div");
+    message.className = "msg " +
+        ((val.name === document.getElementById("username").value) ? "me" : "other");
+
+    message.innerHTML = `
+        <b>${val.name}</b><br>
+        ${val.text}
+        <div class="time">${val.time}</div>
+    `;
+
+    msgBox.appendChild(message);
+    msgBox.scrollTop = msgBox.scrollHeight;
+});
+
+/* ===========================
+   SHOW ACTIVE USERS
+=========================== */
+db.ref("megaChat").on("value", (snap) => {
+    let users = {};
+    snap.forEach(data => {
+        users[data.val().name] = true;
+    });
+
+    let userList = document.getElementById("userList");
+    userList.innerHTML = "";
+
+    Object.keys(users).forEach(u => {
+        let div = document.createElement("div");
+        div.className = "user";
+        div.textContent = "🟢 " + u;
+        userList.appendChild(div);
+    });
+});
+
+</script>
+
+</body>
+</html>
