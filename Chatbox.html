@@ -1,378 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Professional ChatBox</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-<style>
-/* ---------------- GENERAL ---------------- */
-body {
-    margin: 0;
-    font-family: 'Roboto', sans-serif;
-    background: #121212;
-    color: #e0e0e0;
-}
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anonymous Chat</title>
 
-/* ---------------- DESKTOP CHAT ---------------- */
-.desktop-chat { display: block; }
-.mobile-chat { display: none; }
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
-.container {
-    width: 95%;
-    max-width: 1000px;
-    height: 90vh;
-    background: #1e1e1e;
-    border-radius: 12px;
-    display: flex;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
+<link rel="stylesheet" href="chatbox.css">
 
-/* USERS PANEL */
-.users {
-    width: 280px;
-    background: #252525;
-    padding: 20px 15px;
-    overflow-y: auto;
-    border-right: 1px solid #333;
-}
-.users h2 {
-    margin: 0 0 20px 0;
-    font-size: 1.5em;
-    color: #4a90e2;
-    font-weight: 500;
-    border-bottom: 2px solid #333;
-    padding-bottom: 10px;
-}
-.users input#username {
-    width: 100%;
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid #444;
-    background: #333;
-    color: white;
-    margin-bottom: 20px;
-    box-sizing: border-box;
-}
-.userList {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-.user {
-    padding: 12px;
-    margin: 8px 0;
-    border-radius: 6px;
-    background: transparent;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    font-weight: 400;
-    color: #cccccc;
-    transition: 0.2s;
-}
-.user:hover { background: #333; color: #e0e0e0; }
-.user span.status {
-    width: 10px; height: 10px;
-    background: #0d9b4b;
-    border-radius: 50%;
-    margin-right: 10px;
-}
-
-/* CHAT AREA */
-.chat-area {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    background: #1e1e1e;
-}
-.chat-header {
-    padding: 20px;
-    background: #252525;
-    border-bottom: 1px solid #333;
-    font-size: 1.2em;
-    font-weight: 500;
-    color: #4a90e2;
-    text-align: center;
-}
-.messages {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-.msg {
-    max-width: 65%;
-    padding: 15px;
-    border-radius: 10px;
-    line-height: 1.4;
-    word-wrap: break-word;
-    font-size: 0.95em;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    position: relative;
-}
-.msg b { display: block; font-weight: 500; margin-bottom: 5px; font-size: 0.85em; }
-.me { background: #4a90e2; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
-.other { background: #333; color: #e0e0e0; align-self: flex-start; border-bottom-left-radius: 2px; }
-.time { font-size: 0.75em; opacity: 0.7; margin-top: 8px; display: block; text-align: right; }
-.other .time { text-align: left; }
-
-.input-area {
-    padding: 15px 20px;
-    display: flex;
-    background: #252525;
-    border-top: 1px solid #333;
-    align-items: center;
-}
-.input-area input {
-    flex: 1;
-    padding: 14px;
-    border: none;
-    border-radius: 25px;
-    background: #333;
-    color: white;
-    font-size: 1em;
-    outline: none;
-}
-.input-area input:focus { box-shadow: 0 0 5px rgba(74,144,226,0.5); }
-.input-area button {
-    padding: 12px 25px;
-    margin-left: 10px;
-    background: #4a90e2;
-    border: none;
-    border-radius: 25px;
-    color: white;
-    font-weight: 500;
-    cursor: pointer;
-}
-.input-area button:hover { background: #3672c2; }
-.input-area button:active { transform: scale(0.98); }
-
-/* ---------------- MOBILE CHAT ---------------- */
-@media (max-width: 768px) {
-    .desktop-chat { display: none; }
-    .mobile-chat { display: flex; flex-direction: column; height: 100vh; }
-
-    .mobile-chat .chat-header {
-        background: #252525;
-        padding: 15px;
-        text-align: center;
-        font-size: 1.2em;
-        font-weight: 500;
-        color: #4a90e2;
-        border-bottom: 1px solid #333;
-    }
-    .mobile-chat .user-bar {
-        display: flex;
-        overflow-x: auto;
-        background: #252525;
-        padding: 8px 5px;
-        border-bottom: 1px solid #333;
-    }
-    .mobile-chat .user-bar .user {
-        padding: 8px 12px;
-        margin-right: 6px;
-        background: #333;
-        border-radius: 20px;
-        display: inline-flex;
-        align-items: center;
-        font-size: 0.9em;
-        color: #ccc;
-    }
-    .mobile-chat .user-bar .user span.status {
-        width: 10px; height: 10px;
-        border-radius: 50%;
-        background: #0d9b4b;
-        margin-right: 6px;
-    }
-    .mobile-chat .messages {
-        flex: 1;
-        padding: 10px;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        background: #1e1e1e;
-    }
-    .mobile-chat .msg {
-        max-width: 85%;
-        padding: 12px;
-        border-radius: 10px;
-        line-height: 1.4;
-        word-wrap: break-word;
-        font-size: 0.95em;
-    }
-    .mobile-chat .me { background: #4a90e2; color: white; align-self: flex-end; }
-    .mobile-chat .other { background: #333; color: #e0e0e0; align-self: flex-start; }
-    .mobile-chat .time { font-size: 0.75em; opacity: 0.7; margin-top: 5px; display: block; }
-    .mobile-chat .other .time { text-align: left; }
-    .mobile-chat .input-area {
-        display: flex;
-        padding: 8px;
-        background: #252525;
-        border-top: 1px solid #333;
-    }
-    .mobile-chat .input-area input {
-        flex: 1;
-        padding: 12px;
-        border-radius: 20px;
-        border: none;
-        background: #333;
-        color: white;
-        font-size: 1em;
-        outline: none;
-    }
-    .mobile-chat .input-area button {
-        margin-left: 6px;
-        padding: 12px 18px;
-        border-radius: 20px;
-        border: none;
-        background: #4a90e2;
-        color: white;
-        font-weight: 500;
-        cursor: pointer;
-    }
-    .mobile-chat .input-area button:hover { background: #3672c2; }
-}
-</style>
 </head>
-<body>
 
-<!-- ================= DESKTOP CHAT ================= -->
-<div class="desktop-chat" style="
-    margin: 20px 10px 10px 100px;">
-    <div class="container">
+<body class="h-screen flex flex-col">
 
-        <!-- USERS PANEL -->
-        <div class="users">
-            <h2>All Chat Members</h2>
-            <input id="username" placeholder="Enter Your Name" type="text">
-            <div id="userList" class="userList"></div>
-        </div>
-
-        <!-- CHAT AREA -->
-        <div class="chat-area">
-            <div class="chat-header" id="chatHeader">
-                Global Chat - Realtime Messaging 
-                <span style="font-size: 0.7em; opacity: 0.6;">v1.2.0</span>
-            </div>
-            <div class="messages" id="messages"></div>
-
-            <div class="input-area">
-                <input id="msgInput" placeholder="Type your message..." type="text" onkeypress="handleKey(event)">
-                <button onclick="sendMsg()">Send</button>
-            </div>
-        </div>
-
-    </div>
+<!-- TOP BAR -->
+<div class="glass-header w-full p-4 text-center text-2xl font-semibold tracking-wide shadow-lg">
+  Anonymous Chat
 </div>
 
-<!-- ================= MOBILE CHAT ================= -->
-<div class="mobile-chat">
-    <div class="chat-header">Global Chat - Mobile</div>
-    <div class="user-bar" id="mobileUserBar"></div>
-    <div class="messages" id="mobileMessages"></div>
-    <div class="input-area">
-        <input id="mobileMsgInput" placeholder="Type your message..." type="text" onkeypress="handleMobileKey(event)">
-        <button onclick="sendMobileMsg()">Send</button>
-    </div>
+<!-- CHAT BOX -->
+<div id="messages" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
+
+<!-- INPUT BAR -->
+<div class="p-4 backdrop-blur-lg bg-[rgba(255,255,255,0.05)] border-t border-[rgba(255,255,255,0.08)] flex gap-3">
+  <input id="msgInput"
+         type="text"
+         placeholder="Type a message..."
+         class="flex-1 p-3 rounded-full bg-[rgba(255,255,255,0.12)] border border-white/10 outline-none text-white placeholder-gray-300">
+  <button onclick="sendMessage()"
+          class="px-5 py-3 bg-blue-600 rounded-full shadow-lg hover:bg-blue-700 active:scale-95 transition">
+    Send
+  </button>
 </div>
 
-<!-- ================= FIREBASE ================= -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<!-- Toast container -->
+<div id="toastWrapper"></div>
+
 <script>
+// Firebase config
 const firebaseConfig = {
-    apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
-    authDomain: "chat-box-e01e5.firebaseapp.com",
-    databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
-    projectId: "chat-box-e01e5",
-    storageBucket: "chat-box-e01e5.firebasestorage.app",
-    messagingSenderId: "597491149800",
-    appId: "1:597491149800:web:7bd908925f70b62018125d",
-    measurementId: "G-FJ6PKK2FNQ"
+  apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
+  authDomain: "chat-box-e01e5.firebaseapp.com",
+  databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
+  projectId: "chat-box-e01e5",
+  storageBucket: "chat-box-e01e5.appspot.com",
+  messagingSenderId: "77418949896",
+  appId: "1:77418949896:web:e789dca08f4a6e9af86e49",
 };
 firebase.initializeApp(firebaseConfig);
-let db = firebase.database();
+const db = firebase.database();
 
-/* ---------- DESKTOP CHAT FUNCTIONS ---------- */
-function handleKey(e){ if(e.key==='Enter') sendMsg(); }
-function sendMsg(){
-    let msg = document.getElementById("msgInput").value.trim();
-    let user = document.getElementById("username").value.trim() || "Guest";
-    if(!msg) return;
-    db.ref("megaChat").push({ name: user, text: msg, timestamp: firebase.database.ServerValue.TIMESTAMP });
-    document.getElementById("msgInput").value = "";
+// Ask Notification Permission
+if ("Notification" in window) {
+  Notification.requestPermission();
 }
-db.ref("megaChat").on("child_added", (data)=>{
-    let val = data.val();
-    let msgBox = document.getElementById("messages");
-    let date = new Date(val.timestamp);
-    let timeString = date.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-    let currentUser = document.getElementById("username").value.trim();
-    let isMe = val.name===currentUser && currentUser!=="";
-    let msg = document.createElement("div");
-    msg.className = "msg "+(isMe?"me":"other");
-    msg.innerHTML = `<b>${val.name}</b>${val.text}<span class="time">${timeString}</span>`;
-    msgBox.appendChild(msg);
-    msgBox.scrollTop = msgBox.scrollHeight;
-});
-db.ref("megaChat").on("value", snap=>{
-    let users={};
-    snap.forEach(d=>{ users[d.val().name]=true; });
-    let userList = document.getElementById("userList");
-    userList.innerHTML = "";
-    Object.keys(users).sort().forEach(u=>{
-        let div = document.createElement("div");
-        div.className = "user";
-        div.innerHTML = `<span class="status"></span>${u}`;
-        userList.appendChild(div);
-    });
-});
 
-/* ---------- MOBILE CHAT FUNCTIONS ---------- */
-function handleMobileKey(e){ if(e.key==='Enter') sendMobileMsg(); }
-function sendMobileMsg(){
-    let msg = document.getElementById("mobileMsgInput").value.trim();
-    let user = localStorage.getItem("mobileUser") || "Guest";
-    if(!msg) return;
-    db.ref("megaChat").push({ name: user, text: msg, timestamp: firebase.database.ServerValue.TIMESTAMP });
-    document.getElementById("mobileMsgInput").value = "";
+// Toast message fallback
+function showToast(text) {
+  const div = document.createElement("div");
+  div.className = "toast";
+  div.textContent = text;
+
+  document.getElementById("toastWrapper").appendChild(div);
+
+  setTimeout(() => {
+    div.style.opacity = "0";
+    div.style.transform = "translateY(10px)";
+    setTimeout(() => div.remove(), 400);
+  }, 3000);
 }
-db.ref("megaChat").on("child_added", (data)=>{
-    let val = data.val();
-    let msgBox = document.getElementById("mobileMessages");
-    let date = new Date(val.timestamp);
-    let timeString = date.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-    let user = localStorage.getItem("mobileUser") || "Guest";
-    let isMe = val.name===user && user!=="";
-    let msg = document.createElement("div");
-    msg.className = "msg "+(isMe?"me":"other");
-    msg.innerHTML = `<b>${val.name}</b>${val.text}<span class="time">${timeString}</span>`;
-    msgBox.appendChild(msg);
-    msgBox.scrollTop = msgBox.scrollHeight;
-});
-db.ref("megaChat").on("value", snap=>{
-    let users={};
-    snap.forEach(d=>{ users[d.val().name]=true; });
-    let userBar = document.getElementById("mobileUserBar");
-    userBar.innerHTML = "";
-    Object.keys(users).sort().forEach(u=>{
-        let div = document.createElement("div");
-        div.className = "user";
-        div.innerHTML = `<span class="status"></span>${u}`;
-        userBar.appendChild(div);
-    });
+
+// Browser notification
+function showMessageNotification(title, body) {
+  if ("Notification" in window && Notification.permission === "granted") {
+    try { new Notification(title, { body }); return; }
+    catch (err) {}
+  }
+  showToast(`${title}: ${body}`);
+}
+
+// Generate random anonymous name
+let anonName = "anonymous" + Math.floor(Math.random() * 9999);
+
+// Send message
+function sendMessage() {
+  let text = msgInput.value.trim();
+  if (!text) return;
+
+  db.ref("anonChat").push({
+    name: anonName,
+    text: text,
+    time: Date.now()
+  });
+
+  msgInput.value = "";
+}
+
+// Receive messages
+db.ref("anonChat").on("child_added", snap => {
+  const v = snap.val();
+  const mine = (v.name === anonName);
+
+  const box = document.createElement("div");
+  box.className =
+    "message max-w-[70%] p-3 rounded-2xl shadow-lg break-words " +
+    (mine
+      ? "bg-blue-600 text-white ml-auto rounded-br-none"
+      : "bg-white/10 backdrop-blur-md border border-white/10 rounded-bl-none");
+
+  box.innerHTML = `<span class="text-xs opacity-70">${v.name}</span><br>${v.text}`;
+
+  messages.appendChild(box);
+
+  messages.scrollTop = messages.scrollHeight;
+
+  if (!mine) showMessageNotification(v.name, v.text);
 });
 
-/* ---------- PROMPT MOBILE USER NAME ---------- */
-if(!localStorage.getItem("mobileUser")){
-    let name = prompt("Enter your name for mobile chat") || "Guest";
-    localStorage.setItem("mobileUser", name);
-}
+msgInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") sendMessage();
+});
 </script>
 
 </body>

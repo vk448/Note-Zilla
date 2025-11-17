@@ -1,0 +1,768 @@
+
+/* ===========================
+   Mega Chat CSS — 500+ lines
+   Paste inside <style> ... </style>
+   Compatible classes:
+   .app-wrap, .panel, .sidebar, .chat, .messages,
+   .msg, .me, .other, .input-area, .users, .chat-header
+   =========================== */
+
+/* ---------- Root variables (palette + spacing + shadows) ---------- */
+:root {
+  /* Colors */
+  --bg-1: #071025;
+  --bg-2: #0f1b2b;
+  --panel-glass: rgba(255,255,255,0.03);
+  --panel-border: rgba(255,255,255,0.04);
+  --accent: #4a90e2;
+  --accent-2: #7bd389;
+  --accent-3: #8b5cf6;
+  --muted: rgba(255,255,255,0.6);
+  --muted-2: rgba(255,255,255,0.35);
+  --danger: #ff6b6b;
+  --success: #16a34a;
+  --white: #ffffff;
+
+  /* Message colors */
+  --me-bg: linear-gradient(135deg,#2b8cff,#4a90e2);
+  --me-text: #ffffff;
+  --other-bg: rgba(255,255,255,0.04);
+  --other-text: #e6eef8;
+
+  /* Sizes */
+  --max-width: 1200px;
+  --sidebar-width: 320px;
+  --radius: 14px;
+
+  /* Spacing */
+  --space-xxs: 6px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 18px;
+  --space-lg: 28px;
+  --space-xl: 40px;
+
+  /* Typography */
+  --font-sans: "Inter", "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  --base: 16px;
+
+  /* Shadows */
+  --shadow-soft: 0 6px 24px rgba(2,6,23,0.6);
+  --shadow-sm: 0 4px 14px rgba(2,6,23,0.45);
+  --glass-shadow: 0 8px 32px rgba(10,20,40,0.5);
+
+  /* Motion */
+  --ease: cubic-bezier(.22,.9,.35,1);
+  --dur-fast: 150ms;
+  --dur-med: 300ms;
+  --dur-slow: 450ms;
+}
+
+/* ---------- Base reset & helpers ---------- */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  background: radial-gradient(1200px 600px at 10% 10%, rgba(74,144,226,0.03), transparent 8%),
+              linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
+  color: var(--white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+/* Provide sensible defaults for interactive elements */
+button, input, textarea {
+  font-family: inherit;
+  font-size: 1rem;
+  color: inherit;
+}
+
+/* Simple utility classes */
+.flex { display: flex; }
+.center { display: grid; place-items: center; }
+.col { display: flex; flex-direction: column; }
+.row { display: flex; flex-direction: row; }
+
+/* ---------- App layout ---------- */
+.app-wrap {
+  width: calc(100% - 48px);
+  max-width: var(--max-width);
+  margin: 24px auto;
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  gap: var(--space-lg);
+  align-items: start;
+  min-height: calc(100vh - 48px);
+  padding-bottom: 24px;
+}
+
+/* Mobile fallback */
+@media (max-width: 900px) {
+  .app-wrap { grid-template-columns: 1fr; gap: 12px; padding: 12px; min-height: 100vh; }
+}
+
+/* Panel (glass card) */
+.panel {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius: var(--radius);
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Sidebar (users) ---------- */
+.sidebar {
+  padding: var(--space-lg);
+  min-height: 420px;
+  gap: var(--space-md);
+}
+
+/* Sidebar header with small controls */
+.sidebar .header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.sidebar .header .title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sidebar .header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  letter-spacing: 0.2px;
+  color: var(--accent);
+}
+.sidebar .header .sub {
+  font-size: 0.85rem;
+  color: var(--muted-2);
+}
+
+/* Create a subtle search input */
+.user-search {
+  margin-top: 4px;
+  position: relative;
+}
+.user-search input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.03);
+  background: rgba(255,255,255,0.02);
+  color: var(--white);
+  outline: none;
+  transition: box-shadow var(--dur-med) var(--ease), transform var(--dur-med) var(--ease);
+}
+.user-search input::placeholder {
+  color: rgba(255,255,255,0.35);
+}
+.user-search input:focus {
+  box-shadow: 0 8px 20px rgba(74,144,226,0.07);
+  transform: translateY(-2px);
+}
+
+/* User list container */
+.user-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: var(--space-md);
+  overflow-y: auto;
+  padding-right: 6px;
+  max-height: calc(100vh - 340px);
+}
+
+/* Individual user item */
+.user-item {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 12px;
+  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+  cursor: pointer;
+}
+.user-item:hover {
+  background: linear-gradient(90deg, rgba(74,144,226,0.04), rgba(255,255,255,0.01));
+  transform: translateX(6px);
+  box-shadow: 0 6px 18px rgba(9,18,40,0.5);
+}
+.user-item .avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: .95rem;
+  color: var(--accent);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.03);
+}
+.user-item .meta { display: flex; flex-direction: column; gap: 4px; }
+.user-item .meta .name { font-weight: 650; color: var(--white); font-size: 0.95rem; }
+.user-item .meta .last { color: var(--muted-2); font-size: 0.82rem; line-height: 1; }
+
+/* small status dot */
+.user-item .status-dot {
+  margin-left: auto;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: linear-gradient(180deg, #00e6a6, #00a873);
+  box-shadow: 0 6px 16px rgba(0,160,120,0.12);
+}
+
+/* ---------- Chat area ---------- */
+.chat {
+  display: flex;
+  flex-direction: column;
+  min-height: 420px;
+  height: calc(100vh - 100px);
+}
+
+/* Chat header */
+.chat-header {
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.02);
+  background: linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0));
+}
+.chat-header .left { display:flex; gap:12px; align-items:center; }
+.chat-header .title { font-size: 1.05rem; font-weight: 600; color: var(--accent); }
+.chat-header .meta { color: var(--muted-2); font-size: .9rem; }
+
+/* header actions */
+.chat-header .actions { display: flex; gap: 8px; align-items:center; }
+.icon-btn {
+  display: inline-grid; place-items: center;
+  width: 40px; height: 40px; border-radius: 10px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.03);
+  cursor: pointer;
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+.icon-btn:hover { transform: translateY(-4px); box-shadow: 0 6px 18px rgba(9,18,40,0.45); }
+
+/* ---------- Messages area ---------- */
+.messages {
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  flex: 1;
+  scroll-behavior: smooth;
+}
+
+/* custom scrollbar */
+.messages::-webkit-scrollbar { width: 10px; }
+.messages::-webkit-scrollbar-track { background: transparent; }
+.messages::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.02);
+}
+
+/* individual message bubble */
+.msg {
+  max-width: 72%;
+  padding: 12px 14px;
+  border-radius: 16px;
+  line-height: 1.35;
+  position: relative;
+  display: inline-block;
+  word-wrap: break-word;
+  box-shadow: 0 6px 20px rgba(6,12,24,0.45);
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease), opacity var(--dur-fast) var(--ease);
+  opacity: 0;
+  transform: translateY(6px);
+  animation: appear var(--dur-med) var(--ease) forwards;
+}
+
+/* appear animation */
+@keyframes appear {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* message meta inside bubble */
+.msg .meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.msg .meta .name {
+  font-weight: 700;
+  font-size: 0.86rem;
+  color: rgba(255,255,255,0.9);
+}
+.msg .meta .time {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.6);
+}
+
+/* ME (sender) bubble */
+.msg.me {
+  margin-left: auto;
+  border-bottom-right-radius: 4px;
+  background: var(--me-bg);
+  color: var(--me-text);
+  box-shadow: 0 10px 30px rgba(42,120,210,0.18);
+  transform-origin: 100% 0;
+}
+
+/* OTHER bubble */
+.msg.other {
+  margin-right: auto;
+  border-bottom-left-radius: 4px;
+  background: var(--other-bg);
+  color: var(--other-text);
+  border: 1px solid rgba(255,255,255,0.02);
+}
+
+/* small "read" badge */
+.msg .badge {
+  position: absolute;
+  bottom: -12px;
+  right: 8px;
+  background: rgba(255,255,255,0.04);
+  color: var(--muted);
+  padding: 4px 8px;
+  font-size: 11px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.02);
+}
+
+/* quoted message style */
+.msg .quote {
+  display: block;
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  border-left: 3px solid rgba(255,255,255,0.03);
+  background: rgba(255,255,255,0.01);
+  color: rgba(255,255,255,0.7);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+/* code block inside message */
+.msg pre {
+  background: rgba(0,0,0,0.35);
+  padding: 8px;
+  border-radius: 8px;
+  overflow: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+  font-size: 0.86rem;
+  margin: 8px 0 0 0;
+}
+
+/* reactions container */
+.msg .reactions {
+  margin-top: 8px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.reaction {
+  background: rgba(255,255,255,0.03);
+  padding: 6px 8px;
+  border-radius: 12px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: transform var(--dur-fast) var(--ease);
+}
+.reaction:hover { transform: translateY(-4px); }
+
+/* link style inside messages */
+.msg a {
+  color: rgba(74,144,226,0.98);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* emoji-only message style */
+.msg.emoji-only {
+  font-size: 2rem;
+  padding: 8px 12px;
+  border-radius: 18px;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* ---------- Input area / composer ---------- */
+.input-area {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  align-items: center;
+  border-top: 1px solid rgba(255,255,255,0.02);
+  background: linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0));
+}
+.input-area .left {
+  display:flex; gap:8px; align-items:center;
+}
+.composer {
+  flex: 1;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.input {
+  flex: 1;
+  padding: 12px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.03);
+  background: rgba(255,255,255,0.02);
+  color: var(--white);
+  outline: none;
+  transition: box-shadow var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.input::placeholder { color: rgba(255,255,255,0.35); }
+.input:focus {
+  box-shadow: 0 12px 30px rgba(74,144,226,0.06);
+  transform: translateY(-2px);
+}
+
+/* send button */
+.btn-send {
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), #3672c2);
+  color: var(--white);
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: 0 8px 30px rgba(58,120,210,0.18);
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+.btn-send:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(58,120,210,0.22); }
+.btn-send:active { transform: scale(.98); }
+
+/* attachment button / icons */
+.icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  display: grid; place-items: center;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.03);
+  cursor: pointer;
+  transition: transform var(--dur-fast) var(--ease);
+}
+.icon:hover { transform: translateY(-4px); }
+
+/* ---------- Message types / variants ---------- */
+/* system message center */
+.msg.system {
+  margin: 0 auto;
+  background: rgba(255,255,255,0.03);
+  color: rgba(255,255,255,0.8);
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 0.88rem;
+  max-width: 60%;
+  text-align: center;
+}
+
+/* warning / error messages */
+.msg.warn {
+  background: linear-gradient(180deg, rgba(255,160,70,0.12), rgba(255,120,0,0.06));
+  color: #fff8ea;
+  border: 1px solid rgba(255,120,0,0.12);
+}
+.msg.error {
+  background: linear-gradient(180deg, rgba(255,90,90,0.12), rgba(255,30,30,0.04));
+  color: #fff8f8;
+  border: 1px solid rgba(255,30,30,0.12);
+}
+
+/* pinned message */
+.msg.pinned {
+  outline: 1px dashed rgba(255,255,255,0.03);
+  box-shadow: 0 10px 30px rgba(10,20,40,0.6);
+}
+
+/* ---------- Message grouping & day separators ---------- */
+.day-sep {
+  display:flex; align-items:center; gap:12px;
+  color: var(--muted-2); font-size: 0.86rem;
+  margin: 6px 0;
+}
+.day-sep::before, .day-sep::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.02), transparent);
+}
+
+/* message group wrapper (for avatar + bubble) */
+.msg-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+/* avatar for other messages */
+.msg .avatar {
+  width: 44px; height: 44px; border-radius: 10px;
+  display: grid; place-items: center; font-weight: 700;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.02);
+  margin-right: 8px;
+}
+
+/* small timestamp under message */
+.msg .ts {
+  display:block; font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 8px;
+}
+
+/* ---------- Reactions popover ---------- */
+.popover {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 12px;
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 10px 30px rgba(4,8,20,0.6);
+  z-index: 40;
+}
+.popover .emo {
+  padding: 6px 8px; border-radius: 8px; cursor:pointer; font-size: 14px;
+}
+.popover .emo:hover { transform: translateY(-4px); }
+
+/* ---------- Attachments (images, files) ---------- */
+.attachment {
+  margin-top: 8px;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+.attachment img {
+  max-width: 220px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.03);
+  box-shadow: 0 6px 18px rgba(3,6,12,0.6);
+}
+.attachment .file {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.02);
+  display:flex; gap:8px; align-items:center;
+  border: 1px solid rgba(255,255,255,0.02);
+}
+
+/* ---------- Typing indicator ---------- */
+.typing {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.02);
+  color: rgba(255,255,255,0.85);
+  font-style: italic;
+}
+.typing .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(255,255,255,0.6);
+  animation: blink 1.4s infinite ease-in-out;
+}
+.typing .dot:nth-child(2) { animation-delay: 0.2s; }
+.typing .dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0%, 80%, 100% { opacity: 0.18; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-4px); } }
+
+/* ---------- Floating quick actions ---------- */
+.fab {
+  position: fixed;
+  right: 26px;
+  bottom: 28px;
+  width: 60px; height: 60px;
+  border-radius: 999px;
+  display: grid; place-items: center;
+  background: linear-gradient(90deg, var(--accent), #3672c2);
+  box-shadow: 0 12px 36px rgba(58,120,210,0.26);
+  color: white;
+  cursor: pointer;
+  z-index: 60;
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+.fab:hover { transform: translateY(-6px); box-shadow: 0 22px 54px rgba(58,120,210,0.32); }
+
+/* ---------- Empty / placeholder states ---------- */
+.empty {
+  display: grid; place-items: center;
+  padding: 40px;
+  color: rgba(255,255,255,0.65);
+  text-align: center;
+}
+.empty h3 { margin: 0 0 8px 0; font-size: 1.05rem; }
+.empty p { margin: 0; font-size: .95rem; }
+
+/* ---------- Popover / modal styles ---------- */
+.modal {
+  position: fixed; inset: 0; display: grid; place-items: center; z-index: 120;
+  background: linear-gradient(180deg, rgba(2,6,23,0.6), rgba(2,6,23,0.8));
+  padding: 24px;
+}
+.modal .card {
+  width: 100%;
+  max-width: 680px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  padding: 20px;
+  box-shadow: var(--glass-shadow);
+}
+
+/* ---------- Responsive tweaks ---------- */
+@media (max-width: 900px) {
+  .sidebar { padding: 12px; min-height: auto; }
+  .panel { border-radius: 12px; }
+  .user-item .avatar { width: 40px; height: 40px; }
+  .msg { max-width: 90%; }
+  .app-wrap { gap: 12px; padding: 12px; }
+  .fab { right: 18px; bottom: 18px; width: 56px; height: 56px; }
+}
+
+/* ---------- Utilities (small helpers) ---------- */
+.u-hidden { display:none !important; }
+.u-inline { display:inline-block !important; }
+.u-cap { text-transform: capitalize; }
+.u-bold { font-weight: 700; }
+.u-muted { color: var(--muted-2); }
+
+/* ---------- Theme variants (dark, dim, vibrant) ---------- */
+
+/* Dim mode — reduces background contrast */
+.theme-dim {
+  --bg-1: #091022; --bg-2: #0b1420;
+  --panel-glass: rgba(255,255,255,0.02);
+  --accent: #66b5ff;
+}
+
+/* Vibrant accent */
+.theme-vibrant {
+  --accent: #ff7ab6;
+  --accent-2: #7bd389;
+  --accent-3: #ffd66b;
+}
+
+/* Light-ish mode — optional (not full light theme) */
+.theme-light {
+  --bg-1: #eef2ff;
+  --bg-2: #e6eefc;
+  --panel-glass: rgba(10,10,12,0.02);
+  --panel-border: rgba(0,0,0,0.06);
+  --white: #0b1220;
+  --muted: rgba(11,18,32,0.6);
+  --other-bg: rgba(11,18,32,0.03);
+  --me-bg: linear-gradient(135deg,#7cc0ff,#4a90e2);
+  --me-text: #0b1220;
+}
+
+/* ---------- Accessibility: focus rings ---------- */
+:focus {
+  outline: none;
+}
+.icon-btn:focus, .input:focus, .user-item:focus {
+  box-shadow: 0 10px 28px rgba(74,144,226,0.08);
+  transform: translateY(-2px);
+}
+
+/* ---------- Deep customizations: message tailoring ---------- */
+
+/* long text handling */
+.msg.long { white-space: pre-wrap; word-break: break-word; }
+
+/* collapsed long message with "read more" */
+.msg.collapsed {
+  max-height: 160px;
+  overflow: hidden;
+  position: relative;
+}
+.msg.collapsed::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 56px;
+  background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,0.45));
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+/* "read more" link */
+.read-more {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+/* ---------- Animated background glows ---------- */
+.bg-glow {
+  position: relative;
+  overflow: hidden;
+}
+.bg-glow::before {
+  content: "";
+  position: absolute;
+  top: -30%;
+  left: -20%;
+  width: 140%; height: 160%;
+  background: radial-gradient(circle at 20% 20%, rgba(74,144,226,0.12), transparent 10%),
+              radial-gradient(circle at 80% 80%, rgba(140,92,246,0.08), transparent 12%);
+  transform: rotate(10deg);
+  filter: blur(30px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ensure content sits above */
+.bg-glow > * { position: relative; z-index: 1; }
+
+/* ---------- Debug helpers (temporary) ---------- */
+.debug-grid { outline: 1px dashed rgba(255,255,255,0.02); }
+
+/* ---------- Large screen tweaks ---------- */
+@media (min-width: 1400px) {
+  :root { --space-lg: 36px; --space-xl: 56px; }
+  .app-wrap { gap: 48px; }
+}
+
+/* ---------- End of mega CSS (rich features included) ---------- */
+
+/* ---------- Extra utilities for older markup compatibility ---------- */
+
+/* Compatibility with earlier classes (.desktop-chat, .mobile-chat) */
+.desktop-chat, .mobile-chat { width: 100%; display: block; }
+.desktop-chat .container { display:flex; gap: 12px; }
+.mobile-chat .messages { padding: 12px; }
+
+/* Map earlier simple classes to new look */
+.messages .msg.me { border-bottom-right-radius: 6px; }
+.messages .msg.other { border-bottom-left-radius: 6px; }
+
+/* Extra small screen improvements */
+@media (max-width: 480px) {
+  .user-item .meta .name { font-size: 0.9rem; }
+  .user-item .meta .last { font-size: 0.78rem; }
+  .msg { padding: 10px 12px; border-radius: 12px; }
+}
+
+/* ---------- End of file ---------- */
