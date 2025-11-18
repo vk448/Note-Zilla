@@ -1,127 +1,991 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Anonymous Chat</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mega Chat: Anonymous Glassmorphic UI</title>
 
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <!-- Google Font: Inter (required by the CSS) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <!-- TailwindCSS for responsive utilities and base setup -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-<link rel="stylesheet" href="chatbox.css">
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
+    <style>
+        /* ===========================
+           Mega Chat CSS — 500+ lines (Provided by user)
+           =========================== */
+
+        /* ---------- Root variables (palette + spacing + shadows) ---------- */
+        :root {
+            /* Colors */
+            --bg-1: #071025;
+            --bg-2: #0f1b2b;
+            --panel-glass: rgba(255,255,255,0.03);
+            --panel-border: rgba(255,255,255,0.04);
+            --accent: #4a90e2;
+            --accent-2: #7bd389;
+            --accent-3: #8b5cf6;
+            --muted: rgba(255,255,255,0.6);
+            --muted-2: rgba(255,255,255,0.35);
+            --danger: #ff6b6b;
+            --success: #16a34a;
+            --white: #ffffff;
+
+            /* Message colors */
+            --me-bg: linear-gradient(135deg,#2b8cff,#4a90e2);
+            --me-text: #ffffff;
+            --other-bg: rgba(255,255,255,0.04);
+            --other-text: #e6eef8;
+
+            /* Sizes */
+            --max-width: 1200px;
+            --sidebar-width: 320px;
+            --radius: 14px;
+
+            /* Spacing */
+            --space-xxs: 6px;
+            --space-xs: 8px;
+            --space-sm: 12px;
+            --space-md: 18px;
+            --space-lg: 28px;
+            --space-xl: 40px;
+
+            /* Typography */
+            --font-sans: "Inter", "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            --base: 16px;
+
+            /* Shadows */
+            --shadow-soft: 0 6px 24px rgba(2,6,23,0.6);
+            --shadow-sm: 0 4px 14px rgba(2,6,23,0.45);
+            --glass-shadow: 0 8px 32px rgba(10,20,40,0.5);
+
+            /* Motion */
+            --ease: cubic-bezier(.22,.9,.35,1);
+            --dur-fast: 150ms;
+            --dur-med: 300ms;
+            --dur-slow: 450ms;
+        }
+
+        /* ---------- Base reset & helpers ---------- */
+        *,
+        *::before,
+        *::after { box-sizing: border-box; }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-sans);
+            background: radial-gradient(1200px 600px at 10% 10%, rgba(74,144,226,0.03), transparent 8%),
+                        linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
+            color: var(--white);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow: hidden; /* Hide scrollbars that pop up before content loads */
+        }
+
+        /* Provide sensible defaults for interactive elements */
+        button, input, textarea {
+            font-family: inherit;
+            font-size: 1rem;
+            color: inherit;
+        }
+
+        /* Simple utility classes */
+        .flex { display: flex; }
+        .center { display: grid; place-items: center; }
+        .col { display: flex; flex-direction: column; }
+        .row { display: flex; flex-direction: row; }
+
+        /* ---------- App layout ---------- */
+        .app-wrap {
+            width: calc(100% - 48px);
+            max-width: var(--max-width);
+            margin: 24px auto;
+            display: grid;
+            grid-template-columns: var(--sidebar-width) 1fr;
+            gap: var(--space-lg);
+            align-items: start;
+            min-height: calc(100vh - 48px);
+            padding-bottom: 24px;
+        }
+
+        /* Mobile fallback */
+        @media (max-width: 900px) {
+            .app-wrap { grid-template-columns: 1fr; gap: 12px; padding: 12px; min-height: 100vh; }
+        }
+
+        /* Panel (glass card) */
+        .panel {
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border-radius: var(--radius);
+            border: 1px solid var(--panel-border);
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ---------- Sidebar (users) ---------- */
+        .sidebar {
+            padding: var(--space-lg);
+            min-height: 420px;
+            gap: var(--space-md);
+        }
+
+        /* Sidebar header with small controls */
+        .sidebar .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .sidebar .header .title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .sidebar .header h2 {
+            margin: 0;
+            font-size: 1.05rem;
+            letter-spacing: 0.2px;
+            color: var(--accent);
+        }
+        .sidebar .header .sub {
+            font-size: 0.85rem;
+            color: var(--muted-2);
+        }
+
+        /* Create a subtle search input */
+        .user-search {
+            margin-top: 4px;
+            position: relative;
+        }
+        .user-search input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.03);
+            background: rgba(255,255,255,0.02);
+            color: var(--white);
+            outline: none;
+            transition: box-shadow var(--dur-med) var(--ease), transform var(--dur-med) var(--ease);
+        }
+        .user-search input::placeholder {
+            color: rgba(255,255,255,0.35);
+        }
+        .user-search input:focus {
+            box-shadow: 0 8px 20px rgba(74,144,226,0.07);
+            transform: translateY(-2px);
+        }
+
+        /* User list container */
+        .user-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: var(--space-md);
+            overflow-y: auto;
+            padding-right: 6px;
+            max-height: calc(100vh - 340px);
+        }
+
+        /* Individual user item */
+        .user-item {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 10px;
+            border-radius: 12px;
+            transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+            cursor: pointer;
+        }
+        .user-item:hover {
+            background: linear-gradient(90deg, rgba(74,144,226,0.04), rgba(255,255,255,0.01));
+            transform: translateX(6px);
+            box-shadow: 0 6px 18px rgba(9,18,40,0.5);
+        }
+        .user-item .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            font-weight: 700;
+            font-size: .95rem;
+            color: var(--accent);
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+        .user-item .meta { display: flex; flex-direction: column; gap: 4px; }
+        .user-item .meta .name { font-weight: 650; color: var(--white); font-size: 0.95rem; }
+        .user-item .meta .last { color: var(--muted-2); font-size: 0.82rem; line-height: 1; }
+
+        /* small status dot */
+        .user-item .status-dot {
+            margin-left: auto;
+            width: 10px; height: 10px; border-radius: 50%;
+            background: linear-gradient(180deg, #00e6a6, #00a873);
+            box-shadow: 0 6px 16px rgba(0,160,120,0.12);
+        }
+
+        /* ---------- Chat area ---------- */
+        .chat {
+            display: flex;
+            flex-direction: column;
+            min-height: 420px;
+            height: calc(100vh - 100px);
+        }
+
+        /* Chat header */
+        .chat-header {
+            padding: 18px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+            background: linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0));
+        }
+        .chat-header .left { display:flex; gap:12px; align-items:center; }
+        .chat-header .title { font-size: 1.05rem; font-weight: 600; color: var(--accent); }
+        .chat-header .meta { color: var(--muted-2); font-size: .9rem; }
+
+        /* header actions */
+        .chat-header .actions { display: flex; gap: 8px; align-items:center; }
+        .icon-btn {
+            display: inline-grid; place-items: center;
+            width: 40px; height: 40px; border-radius: 10px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.03);
+            cursor: pointer;
+            transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+        }
+        .icon-btn:hover { transform: translateY(-4px); box-shadow: 0 6px 18px rgba(9,18,40,0.45); }
+
+        /* ---------- Messages area ---------- */
+        .messages {
+            padding: var(--space-md);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow-y: auto;
+            flex: 1;
+            scroll-behavior: smooth;
+        }
+
+        /* custom scrollbar */
+        .messages::-webkit-scrollbar { width: 10px; }
+        .messages::-webkit-scrollbar-track { background: transparent; }
+        .messages::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.02);
+        }
+
+        /* individual message bubble */
+        .msg {
+            max-width: 72%;
+            padding: 12px 14px;
+            border-radius: 16px;
+            line-height: 1.35;
+            position: relative;
+            display: inline-block;
+            word-wrap: break-word;
+            box-shadow: 0 6px 20px rgba(6,12,24,0.45);
+            transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease), opacity var(--dur-fast) var(--ease);
+            opacity: 0;
+            transform: translateY(6px);
+            animation: appear var(--dur-med) var(--ease) forwards;
+        }
+
+        /* appear animation */
+        @keyframes appear {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* message meta inside bubble */
+        .msg .meta {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .msg .meta .name {
+            font-weight: 700;
+            font-size: 0.86rem;
+            color: rgba(255,255,255,0.9);
+        }
+        .msg .meta .time {
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* ME (sender) bubble */
+        .msg.me {
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+            background: var(--me-bg);
+            color: var(--me-text);
+            box-shadow: 0 10px 30px rgba(42,120,210,0.18);
+            transform-origin: 100% 0;
+        }
+
+        /* OTHER bubble */
+        .msg.other {
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+            background: var(--other-bg);
+            color: var(--other-text);
+            border: 1px solid rgba(255,255,255,0.02);
+        }
+
+        /* small "read" badge */
+        .msg .badge {
+            position: absolute;
+            bottom: -12px;
+            right: 8px;
+            background: rgba(255,255,255,0.04);
+            color: var(--muted);
+            padding: 4px 8px;
+            font-size: 11px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.02);
+        }
+
+        /* quoted message style */
+        .msg .quote {
+            display: block;
+            margin-bottom: 10px;
+            padding: 8px 10px;
+            border-left: 3px solid rgba(255,255,255,0.03);
+            background: rgba(255,255,255,0.01);
+            color: rgba(255,255,255,0.7);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        /* code block inside message */
+        .msg pre {
+            background: rgba(0,0,0,0.35);
+            padding: 8px;
+            border-radius: 8px;
+            overflow: auto;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+            font-size: 0.86rem;
+            margin: 8px 0 0 0;
+        }
+
+        /* reactions container */
+        .msg .reactions {
+            margin-top: 8px;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .reaction {
+            background: rgba(255,255,255,0.03);
+            padding: 6px 8px;
+            border-radius: 12px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: transform var(--dur-fast) var(--ease);
+        }
+        .reaction:hover { transform: translateY(-4px); }
+
+        /* link style inside messages */
+        .msg a {
+            color: rgba(74,144,226,0.98);
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        /* emoji-only message style */
+        .msg.emoji-only {
+            font-size: 2rem;
+            padding: 8px 12px;
+            border-radius: 18px;
+            background: transparent;
+            box-shadow: none;
+        }
+
+        /* ---------- Input area / composer ---------- */
+        .input-area {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            align-items: center;
+            border-top: 1px solid rgba(255,255,255,0.02);
+            background: linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0));
+        }
+        .input-area .left {
+            display:flex; gap:8px; align-items:center;
+        }
+        .composer {
+            flex: 1;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .input {
+            flex: 1;
+            padding: 12px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.03);
+            background: rgba(255,255,255,0.02);
+            color: var(--white);
+            outline: none;
+            transition: box-shadow var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+        }
+        .input::placeholder { color: rgba(255,255,255,0.35); }
+        .input:focus {
+            box-shadow: 0 12px 30px rgba(74,144,226,0.06);
+            transform: translateY(-2px);
+        }
+
+        /* send button */
+        .btn-send {
+            padding: 10px 16px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--accent), #3672c2);
+            color: var(--white);
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            box-shadow: 0 8px 30px rgba(58,120,210,0.18);
+            transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+        }
+        .btn-send:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(58,120,210,0.22); }
+        .btn-send:active { transform: scale(.98); }
+
+        /* attachment button / icons */
+        .icon {
+            width: 44px; height: 44px; border-radius: 10px;
+            display: grid; place-items: center;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.03);
+            cursor: pointer;
+            transition: transform var(--dur-fast) var(--ease);
+        }
+        .icon:hover { transform: translateY(-4px); }
+
+        /* ---------- Message types / variants ---------- */
+        /* system message center */
+        .msg.system {
+            margin: 0 auto;
+            background: rgba(255,255,255,0.03);
+            color: rgba(255,255,255,0.8);
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 0.88rem;
+            max-width: 60%;
+            text-align: center;
+        }
+
+        /* warning / error messages */
+        .msg.warn {
+            background: linear-gradient(180deg, rgba(255,160,70,0.12), rgba(255,120,0,0.06));
+            color: #fff8ea;
+            border: 1px solid rgba(255,120,0,0.12);
+        }
+        .msg.error {
+            background: linear-gradient(180deg, rgba(255,90,90,0.12), rgba(255,30,30,0.04));
+            color: #fff8f8;
+            border: 1px solid rgba(255,30,30,0.12);
+        }
+
+        /* pinned message */
+        .msg.pinned {
+            outline: 1px dashed rgba(255,255,255,0.03);
+            box-shadow: 0 10px 30px rgba(10,20,40,0.6);
+        }
+
+        /* ---------- Message grouping & day separators ---------- */
+        .day-sep {
+            display:flex; align-items:center; gap:12px;
+            color: var(--muted-2); font-size: 0.86rem;
+            margin: 6px 0;
+        }
+        .day-sep::before, .day-sep::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.02), transparent);
+        }
+
+        /* message group wrapper (for avatar + bubble) */
+        .msg-row {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        /* avatar for other messages */
+        .msg-row .avatar {
+            width: 44px; height: 44px; border-radius: 10px;
+            display: grid; place-items: center; font-weight: 700;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.02);
+        }
+
+        /* small timestamp under message */
+        .msg .ts {
+            display:block; font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 8px;
+        }
+
+        /* ---------- Reactions popover ---------- */
+        .popover {
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 12px;
+            display: flex;
+            gap: 6px;
+            padding: 6px;
+            border-radius: 12px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(6px);
+            box-shadow: 0 10px 30px rgba(4,8,20,0.6);
+            z-index: 40;
+        }
+        .popover .emo {
+            padding: 6px 8px; border-radius: 8px; cursor:pointer; font-size: 14px;
+        }
+        .popover .emo:hover { transform: translateY(-4px); }
+
+        /* ---------- Attachments (images, files) ---------- */
+        .attachment {
+            margin-top: 8px;
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .attachment img {
+            max-width: 220px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.03);
+            box-shadow: 0 6px 18px rgba(3,6,12,0.6);
+        }
+        .attachment .file {
+            padding: 8px 10px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.02);
+            display:flex; gap:8px; align-items:center;
+            border: 1px solid rgba(255,255,255,0.02);
+        }
+
+        /* ---------- Typing indicator ---------- */
+        .typing {
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.02);
+            color: rgba(255,255,255,0.85);
+            font-style: italic;
+        }
+        .typing .dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: rgba(255,255,255,0.6);
+            animation: blink 1.4s infinite ease-in-out;
+        }
+        .typing .dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing .dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes blink { 0%, 80%, 100% { opacity: 0.18; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-4px); } }
+
+        /* ---------- Floating quick actions ---------- */
+        .fab {
+            position: fixed;
+            right: 26px;
+            bottom: 28px;
+            width: 60px; height: 60px;
+            border-radius: 999px;
+            display: grid; place-items: center;
+            background: linear-gradient(90deg, var(--accent), #3672c2);
+            box-shadow: 0 12px 36px rgba(58,120,210,0.26);
+            color: white;
+            cursor: pointer;
+            z-index: 60;
+            transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+        }
+        .fab:hover { transform: translateY(-6px); box-shadow: 0 22px 54px rgba(58,120,210,0.32); }
+
+        /* ---------- Empty / placeholder states ---------- */
+        .empty {
+            display: grid; place-items: center;
+            padding: 40px;
+            color: rgba(255,255,255,0.65);
+            text-align: center;
+        }
+        .empty h3 { margin: 0 0 8px 0; font-size: 1.05rem; }
+        .empty p { margin: 0; font-size: .95rem; }
+
+        /* ---------- Popover / modal styles ---------- */
+        .modal {
+            position: fixed; inset: 0; display: grid; place-items: center; z-index: 120;
+            background: linear-gradient(180deg, rgba(2,6,23,0.6), rgba(2,6,23,0.8));
+            padding: 24px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal .card {
+            width: 100%;
+            max-width: 680px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            padding: 20px;
+            box-shadow: var(--glass-shadow);
+        }
+        .modal-body {
+            padding: 20px;
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 900px) {
+            .sidebar { padding: 12px; min-height: auto; }
+            .panel { border-radius: 12px; }
+            .user-item .avatar { width: 40px; height: 40px; }
+            .msg { max-width: 90%; }
+            .app-wrap { gap: 12px; padding: 12px; }
+            .fab { right: 18px; bottom: 18px; width: 56px; height: 56px; }
+        }
+
+        /* Adjustments for image size inside message bubbles */
+        .msg img.chat-img {
+            max-width: 180px;
+            border-radius: 8px;
+            margin-top: 4px;
+            display: block;
+        }
+
+    </style>
 </head>
 
-<body class="h-screen flex flex-col">
+<body>
 
-<!-- TOP BAR -->
-<div class="glass-header w-full p-4 text-center text-2xl font-semibold tracking-wide shadow-lg">
-  Anonymous Chat
+<div class="app-wrap bg-glow">
+
+    <!-- 1. Sidebar (Mock User List) -->
+    <div class="panel sidebar">
+        <div class="header">
+            <div class="title">
+                <!-- Icon for users (e.g., Lucide/FontAwesome icon) -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <h2>Online Users</h2>
+            </div>
+            <span class="sub" id="userCount">...</span>
+        </div>
+
+        <div class="user-search">
+            <input type="text" placeholder="Search chats or users">
+        </div>
+
+        <!-- Placeholder user list -->
+        <div class="user-list">
+            <div class="user-item">
+                <div class="avatar">G</div>
+                <div class="meta">
+                    <span class="name">Guest 1337</span>
+                    <span class="last">Join the anonymous chat!</span>
+                </div>
+                <div class="status-dot"></div>
+            </div>
+            <div class="user-item">
+                <div class="avatar">A</div>
+                <div class="meta">
+                    <span class="name">Anonymous 589</span>
+                    <span class="last">Hey, what's up?</span>
+                </div>
+                <!-- <div class="status-dot"></div> -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Chat Area -->
+    <div class="panel chat">
+
+        <!-- Chat Header -->
+        <div class="chat-header">
+            <div class="left">
+                <div class="avatar">GC</div>
+                <div>
+                    <div class="title">Global Anonymous Channel by note-zilla</div>
+                    <div class="meta" id="anonNameDisplay">Your Name: Loading...</div>
+                </div>
+            </div>
+            <div class="actions">
+                <div class="icon-btn" onclick="openModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 17h3a5 5 0 0 0 0-10h-3"/><path d="M8 20l-4-4 4-4"/><path d="M18 16H4"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages Container -->
+        <div id="messages" class="messages">
+            <div class="msg system">
+                Welcome to Mega Chat! You are connected anonymously. Say hello!
+            </div>
+            <!-- Messages will be injected here -->
+        </div>
+
+        <!-- Input Area / Composer -->
+        <div class="input-area">
+            <input type="file" id="imgInput" accept="image/*" style="display:none;">
+
+            <!-- Attachment Button -->
+            <button id="imgBtn" class="icon center" title="Send Image">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 8v.01"/><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M3 16l6-6c.928-.928 2.072-1.232 3.14-.98c.571.134 1.121.378 1.63.74L21 15.5"/></svg>
+            </button>
+
+            <!-- Text Input -->
+            <div class="composer">
+                <input id="msgInput"
+                       type="text"
+                       placeholder="Send a message..."
+                       class="input">
+                <button onclick="sendMessage()" class="btn-send">
+                    Send
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- CHAT BOX -->
-<div id="messages" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
-
-<!-- INPUT BAR -->
-<div class="p-4 backdrop-blur-lg bg-[rgba(255,255,255,0.05)] border-t border-[rgba(255,255,255,0.08)] flex gap-3">
-  <input id="msgInput"
-         type="text"
-         placeholder="Type a message..."
-         class="flex-1 p-3 rounded-full bg-[rgba(255,255,255,0.12)] border border-white/10 outline-none text-white placeholder-gray-300">
-  <button onclick="sendMessage()"
-          class="px-5 py-3 bg-blue-600 rounded-full shadow-lg hover:bg-blue-700 active:scale-95 transition">
-    Send
-  </button>
+<!-- Modal for Info/Help -->
+<div id="infoModal" class="modal" onclick="closeModal(event)">
+    <div class="card" onclick="event.stopPropagation()">
+        <div class="chat-header border-none">
+            <div class="title">App Information</div>
+            <div class="icon-btn" onclick="closeModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </div>
+        </div>
+        <div class="modal-body text-sm text-gray-400">
+            <p>This is a real-time, anonymous chat application using the **Mega Chat** UI theme.</p>
+            <ul class="list-disc ml-5 mt-4 space-y-2">
+                <li><strong class="text-white">Anonymity:</strong> Your name is randomly generated (e.g., <span id="modalAnonName" class="text-accent-2"></span>).</li>
+                <li><strong class="text-white">Real-Time:</strong> Messages are synchronized instantly using **Firebase Realtime Database**.</li>
+                <li><strong class="text-white">Features:</strong> You can send text messages and Base64-encoded images.</li>
+                <li><strong class="text-white">Compatibility:</strong> The stunning glassmorphic look is achieved with the comprehensive CSS provided.</li>
+            </ul>
+        </div>
+    </div>
 </div>
 
-<!-- Toast container -->
-<div id="toastWrapper"></div>
 
+<!-- JS START -->
 <script>
-// Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
-  authDomain: "chat-box-e01e5.firebaseapp.com",
-  databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
-  projectId: "chat-box-e01e5",
-  storageBucket: "chat-box-e01e5.appspot.com",
-  messagingSenderId: "77418949896",
-  appId: "1:77418949896:web:e789dca08f4a6e9af86e49",
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+    // -----------------------------------------------------------
+    // Global Constants and Setup
+    // -----------------------------------------------------------
+    const messages = document.getElementById("messages");
+    const msgInput = document.getElementById("msgInput");
+    const imgInput = document.getElementById("imgInput");
+    const modal = document.getElementById("infoModal");
 
-// Ask Notification Permission
-if ("Notification" in window) {
-  Notification.requestPermission();
-}
+    // Firebase Config (Replace with your actual config if needed)
+    // NOTE: Using a public test database path for demonstration.
+    const firebaseConfig = {
+        apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
+        authDomain: "chat-box-e01e5.firebaseapp.com",
+        databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
+        projectId: "chat-box-e01e5",
+        storageBucket: "chat-box-e01e5.appspot.com",
+        messagingSenderId: "77418949896",
+        appId: "1:77418949896:web:e789dca08f4a6e9af86e49",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-// Toast message fallback
-function showToast(text) {
-  const div = document.createElement("div");
-  div.className = "toast";
-  div.textContent = text;
+    // Anonymous Name Generation
+    let anonName = "User-" + Math.floor(Math.random() * 9000 + 1000);
+    document.getElementById("anonNameDisplay").textContent = `You are: ${anonName}`;
 
-  document.getElementById("toastWrapper").appendChild(div);
+    // -----------------------------------------------------------
+    // UI Logic (Modal and Toast)
+    // -----------------------------------------------------------
 
-  setTimeout(() => {
-    div.style.opacity = "0";
-    div.style.transform = "translateY(10px)";
-    setTimeout(() => div.remove(), 400);
-  }, 3000);
-}
+    function openModal() {
+        document.getElementById("modalAnonName").textContent = anonName;
+        modal.classList.add('open');
+    }
 
-// Browser notification
-function showMessageNotification(title, body) {
-  if ("Notification" in window && Notification.permission === "granted") {
-    try { new Notification(title, { body }); return; }
-    catch (err) {}
-  }
-  showToast(`${title}: ${body}`);
-}
+    function closeModal(event) {
+        // Only close if click is on backdrop or close button
+        if (!event || event.target.closest('.icon-btn') || event.target === modal) {
+            modal.classList.remove('open');
+        }
+    }
 
-// Generate random anonymous name
-let anonName = "anonymous" + Math.floor(Math.random() * 9999);
+    // Function to handle custom UI alerts (instead of alert())
+    function showToast(text, isError = false) {
+        let div = document.createElement("div");
+        div.className = `fixed bottom-4 right-4 z-50 p-3 rounded-xl shadow-lg transition-opacity duration-300 ${isError ? 'bg-danger text-white' : 'bg-gray-800 text-white'}`;
+        div.textContent = text;
+        document.body.appendChild(div);
+        setTimeout(() => {
+            div.style.opacity = '0';
+            div.style.transform = 'translateY(10px)';
+            setTimeout(() => div.remove(), 300);
+        }, 3000);
+    }
 
-// Send message
-function sendMessage() {
-  let text = msgInput.value.trim();
-  if (!text) return;
+    // -----------------------------------------------------------
+    // Messaging Logic
+    // -----------------------------------------------------------
 
-  db.ref("anonChat").push({
-    name: anonName,
-    text: text,
-    time: Date.now()
-  });
+    function sendMessage() {
+        let text = msgInput.value.trim();
+        if (!text) return;
 
-  msgInput.value = "";
-}
+        db.ref("megaChatChannel").push({
+            name: anonName,
+            text,
+            type: "text",
+            time: Date.now()
+        }).catch(e => {
+            showToast("Failed to send message.", true);
+            console.error(e);
+        });
 
-// Receive messages
-db.ref("anonChat").on("child_added", snap => {
-  const v = snap.val();
-  const mine = (v.name === anonName);
+        msgInput.value = "";
+    }
 
-  const box = document.createElement("div");
-  box.className =
-    "message max-w-[70%] p-3 rounded-2xl shadow-lg break-words " +
-    (mine
-      ? "bg-blue-600 text-white ml-auto rounded-br-none"
-      : "bg-white/10 backdrop-blur-md border border-white/10 rounded-bl-none");
+    // Send Image (Base64)
+    document.getElementById("imgBtn").onclick = () => {
+        imgInput.click();
+    };
 
-  box.innerHTML = `<span class="text-xs opacity-70">${v.name}</span><br>${v.text}`;
+    imgInput.addEventListener("change", function() {
+        let file = this.files[0];
+        if (!file || !file.type.startsWith('image/')) {
+            showToast("Please select a valid image file.", true);
+            return;
+        }
+        if (file.size > 500 * 1024) { // Limit image size to 500KB for Base64 embedding
+            showToast("Image is too large. Max 500KB allowed.", true);
+            return;
+        }
 
-  messages.appendChild(box);
+        let reader = new FileReader();
+        reader.onload = function() {
+            db.ref("megaChatChannel").push({
+                name: anonName,
+                image: reader.result, // Base64 image
+                type: "image",
+                time: Date.now()
+            }).catch(e => {
+                showToast("Failed to send image.", true);
+                console.error(e);
+            });
+            imgInput.value = ""; // Clear file input
+        };
+        reader.readAsDataURL(file);
+    });
 
-  messages.scrollTop = messages.scrollHeight;
+    // Receive Messages and Render
+    db.ref("megaChatChannel").on("child_added", snap => {
+        let v = snap.val();
+        let isMine = v.name === anonName;
 
-  if (!mine) showMessageNotification(v.name, v.text);
-});
+        let msgRow = document.createElement("div");
+        msgRow.className = "msg-row"; // Container for the bubble
 
-msgInput.addEventListener("keydown", e => {
-  if (e.key === "Enter") sendMessage();
-});
+        let msgDiv = document.createElement("div");
+        msgDiv.className = "msg " + (isMine ? "me" : "other");
+        // Add animation delay for better visual flow
+        msgDiv.style.animationDelay = '50ms';
+
+        // Message Header (Name and Time)
+        const timeString = new Date(v.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        const nameElement = `<span class="name">${isMine ? 'You' : v.name}</span>`;
+        const timeElement = `<span class="time">${timeString}</span>`;
+        
+        // If it's an 'other' message, wrap it in a msg-row with an avatar placeholder
+        if (!isMine) {
+            const avatar = document.createElement("div");
+            avatar.className = "avatar";
+            avatar.textContent = v.name.charAt(0); // First letter of the name
+            msgRow.appendChild(avatar);
+        }
+
+        // --- Content Generation ---
+        let contentHTML = `<div class="meta">${nameElement} ${timeElement}</div>`;
+
+        if (v.type === "text") {
+            // Check for emoji-only message
+            const isEmojiOnly = /^\p{Emoji_Presentation}{1,3}$/u.test(v.text.trim());
+            if (isEmojiOnly) {
+                msgDiv.classList.add('emoji-only');
+                contentHTML = v.text.trim();
+            } else {
+                contentHTML += `<p>${v.text}</p>`;
+            }
+        }
+
+        if (v.type === "image") {
+            contentHTML += `<p>Image from ${v.name}</p>`;
+            contentHTML += `<div class="attachment"><img src="${v.image}" class="chat-img" alt="User Image"></div>`;
+        }
+
+        msgDiv.innerHTML = contentHTML;
+        msgRow.appendChild(msgDiv);
+
+        // Append to container and scroll
+        messages.appendChild(msgRow);
+        messages.scrollTop = messages.scrollHeight;
+
+        // Basic notification (Only for 'other' messages)
+        if (!isMine) {
+            try {
+                // Request permission if not granted, then show notification
+                if (Notification.permission === "granted") {
+                    new Notification(v.name, {
+                        body: v.type === "text" ? v.text : "sent an image",
+                        icon: "https://placehold.co/48x48/4a90e2/ffffff?text=C"
+                    });
+                } else if (Notification.permission !== "denied") {
+                     Notification.requestPermission();
+                }
+            } catch (e) {
+                // Fail silently if notification API is unavailable
+                console.log("Notification failed:", e);
+            }
+        }
+        
+        // Update mock user count (very basic, based on unique names in the last 10 messages)
+        db.ref("megaChatChannel").limitToLast(10).once('value', snapshot => {
+            const uniqueUsers = new Set();
+            snapshot.forEach(childSnapshot => {
+                uniqueUsers.add(childSnapshot.val().name);
+            });
+            document.getElementById("userCount").textContent = `${uniqueUsers.size} active`;
+        });
+    });
+
+    // ENTER KEY SEND
+    msgInput.addEventListener("keydown", e => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault(); // Prevent newline in input
+            sendMessage();
+        }
+    });
+
+    // Initial scroll to bottom on load
+    window.onload = () => {
+        messages.scrollTop = messages.scrollHeight;
+    };
 </script>
 
 </body>
