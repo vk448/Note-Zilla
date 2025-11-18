@@ -1,992 +1,477 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mega Chat: Anonymous Glassmorphic UI</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Mega Chat — Responsive Anonymous</title>
 
-    <!-- Google Font: Inter (required by the CSS) -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
-    <!-- TailwindCSS for responsive utilities and base setup -->
-    <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Fonts & Tailwind CDN (keeps your Tailwind utilities available) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
-    <style>
-        /* ===========================
-           Mega Chat CSS — 500+ lines (Provided by user)
-           =========================== */
+  <style>
+    :root{
+      --bg-1:#071025; --bg-2:#0f1b2b; --accent:#4a90e2; --white:#fff;
+      --muted: rgba(255,255,255,0.6);
+      --radius:14px;
+      --sidebar-width:320px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:var(--white);-webkit-font-smoothing:antialiased;background:
+      radial-gradient(1200px 600px at 10% 10%, rgba(74,144,226,0.03), transparent 8%),
+      linear-gradient(180deg,var(--bg-1) 0%,var(--bg-2) 100%);}
+    /* Layout */
+    .app-wrap{
+      width:calc(100% - 32px);
+      max-width:1200px;
+      margin:16px auto;
+      display:grid;
+      grid-template-columns: var(--sidebar-width) 1fr;
+      gap:20px;
+      align-items:start;
+      min-height: calc(100vh - 32px);
+      padding-bottom:24px;
+    }
+    @media (max-width: 920px){
+      .app-wrap{grid-template-columns: 1fr; width: calc(100% - 20px); gap:12px; margin:8px;}
+    }
 
-        /* ---------- Root variables (palette + spacing + shadows) ---------- */
-        :root {
-            /* Colors */
-            --bg-1: #071025;
-            --bg-2: #0f1b2b;
-            --panel-glass: rgba(255,255,255,0.03);
-            --panel-border: rgba(255,255,255,0.04);
-            --accent: #4a90e2;
-            --accent-2: #7bd389;
-            --accent-3: #8b5cf6;
-            --muted: rgba(255,255,255,0.6);
-            --muted-2: rgba(255,255,255,0.35);
-            --danger: #ff6b6b;
-            --success: #16a34a;
-            --white: #ffffff;
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: var(--radius);
+      border:1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 6px 24px rgba(2,6,23,0.6);
+      overflow: hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:120px;
+    }
 
-            /* Message colors */
-            --me-bg: linear-gradient(135deg,#2b8cff,#4a90e2);
-            --me-text: #ffffff;
-            --other-bg: rgba(255,255,255,0.04);
-            --other-text: #e6eef8;
+    /* Sidebar */
+    .sidebar{padding:20px;min-height:360px;gap:12px}
+    .header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+    .title{display:flex;align-items:center;gap:12px}
+    .title h2{margin:0;color:var(--accent);font-size:1.05rem}
+    .sub{font-size:0.85rem;color:rgba(255,255,255,0.6)}
+    .user-search input{width:100%;padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.02);color:var(--white);outline:none}
+    .user-list{display:flex;flex-direction:column;gap:8px;margin-top:12px;overflow:auto;max-height: calc(100vh - 380px);padding-right:6px}
+    .user-item{display:flex;gap:12px;align-items:center;padding:10px;border-radius:12px;cursor:pointer;transition:all .15s}
+    .user-item:hover{transform:translateX(6px);background:linear-gradient(90deg, rgba(74,144,226,0.04), rgba(255,255,255,0.01))}
+    .avatar{width:48px;height:48px;border-radius:10px;display:grid;place-items:center;font-weight:700;font-size:.95rem;color:var(--accent);background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
+    .meta .name{font-weight:650;color:var(--white);font-size:.95rem}
+    .meta .last{color:rgba(255,255,255,0.35);font-size:.82rem}
 
-            /* Sizes */
-            --max-width: 1200px;
-            --sidebar-width: 320px;
-            --radius: 14px;
+    /* Chat column */
+    .chat{display:flex;flex-direction:column; min-height:420px; height: calc(100vh - 100px); }
+    @media (max-width:920px){ .chat{height:calc(100vh - 120px)} }
 
-            /* Spacing */
-            --space-xxs: 6px;
-            --space-xs: 8px;
-            --space-sm: 12px;
-            --space-md: 18px;
-            --space-lg: 28px;
-            --space-xl: 40px;
+    .chat-header{padding:16px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.02);background:linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0));}
+    .chat-header .left{display:flex;gap:12px;align-items:center}
+    .chat-header .title{font-size:1.05rem;font-weight:600;color:var(--accent)}
+    .chat-header .meta{color:rgba(255,255,255,0.6);font-size:0.9rem}
 
-            /* Typography */
-            --font-sans: "Inter", "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-            --base: 16px;
+    .messages{padding:16px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;flex:1;scroll-behavior:smooth}
+    .msg-row{display:flex;gap:12px;align-items:flex-end}
+    .msg{max-width:72%;padding:12px 14px;border-radius:16px;line-height:1.35;position:relative;display:inline-block;word-wrap:break-word;background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.9);border:1px solid rgba(255,255,255,0.02)}
+    .msg.me{margin-left:auto;background:linear-gradient(135deg,#2b8cff,#4a90e2);color:#fff;box-shadow:0 10px 30px rgba(42,120,210,0.18)}
+    .msg .meta{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+    .msg .meta .name{font-weight:700;font-size:.86rem}
+    .msg .meta .time{font-size:.72rem;color:rgba(255,255,255,0.6)}
+    .msg img.chat-img{max-width:220px;border-radius:10px;margin-top:6px;display:block}
 
-            /* Shadows */
-            --shadow-soft: 0 6px 24px rgba(2,6,23,0.6);
-            --shadow-sm: 0 4px 14px rgba(2,6,23,0.45);
-            --glass-shadow: 0 8px 32px rgba(10,20,40,0.5);
+    .input-area{display:flex;gap:12px;padding:12px;border-top:1px solid rgba(255,255,255,0.02);align-items:center;background:linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0))}
+    .composer{flex:1;display:flex;gap:10px;align-items:center}
+    .input{flex:1;padding:12px 14px;border-radius:999px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.02);color:var(--white);outline:none}
+    .btn-send{padding:10px 16px;border-radius:999px;background:linear-gradient(90deg,var(--accent),#3672c2);color:var(--white);border:none;cursor:pointer;font-weight:700}
+    .icon{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);cursor:pointer}
 
-            /* Motion */
-            --ease: cubic-bezier(.22,.9,.35,1);
-            --dur-fast: 150ms;
-            --dur-med: 300ms;
-            --dur-slow: 450ms;
-        }
+    .system-msg{margin:0 auto;background:rgba(255,255,255,0.03);color: rgba(255,255,255,0.8);border-radius:12px;padding:8px 12px;font-size:0.9rem;max-width:60%;text-align:center}
 
-        /* ---------- Base reset & helpers ---------- */
-        *,
-        *::before,
-        *::after { box-sizing: border-box; }
+    /* Toast */
+    .toast{position:fixed;right:16px;bottom:16px;padding:10px 14px;border-radius:12px;background:rgba(0,0,0,0.75);color:#fff;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,0.5)}
 
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            font-family: var(--font-sans);
-            background: radial-gradient(1200px 600px at 10% 10%, rgba(74,144,226,0.03), transparent 8%),
-                        linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
-            color: var(--white);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            overflow: hidden; /* Hide scrollbars that pop up before content loads */
-        }
-
-        /* Provide sensible defaults for interactive elements */
-        button, input, textarea {
-            font-family: inherit;
-            font-size: 1rem;
-            color: inherit;
-        }
-
-        /* Simple utility classes */
-        .flex { display: flex; }
-        .center { display: grid; place-items: center; }
-        .col { display: flex; flex-direction: column; }
-        .row { display: flex; flex-direction: row; }
-
-        /* ---------- App layout ---------- */
-        .app-wrap {
-            width: calc(100% - 48px);
-            max-width: var(--max-width);
-            margin: 24px auto;
-            display: grid;
-            grid-template-columns: var(--sidebar-width) 1fr;
-            gap: var(--space-lg);
-            align-items: start;
-            min-height: calc(100vh - 48px);
-            padding-bottom: 24px;
-        }
-
-        /* Mobile fallback */
-        @media (max-width: 900px) {
-            .app-wrap { grid-template-columns: 1fr; gap: 12px; padding: 12px; min-height: 100vh; }
-        }
-
-        /* Panel (glass card) */
-        .panel {
-            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-            border-radius: var(--radius);
-            border: 1px solid var(--panel-border);
-            box-shadow: var(--shadow-soft);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* ---------- Sidebar (users) ---------- */
-        .sidebar {
-            padding: var(--space-lg);
-            min-height: 420px;
-            gap: var(--space-md);
-        }
-
-        /* Sidebar header with small controls */
-        .sidebar .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 8px;
-        }
-        .sidebar .header .title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .sidebar .header h2 {
-            margin: 0;
-            font-size: 1.05rem;
-            letter-spacing: 0.2px;
-            color: var(--accent);
-        }
-        .sidebar .header .sub {
-            font-size: 0.85rem;
-            color: var(--muted-2);
-        }
-
-        /* Create a subtle search input */
-        .user-search {
-            margin-top: 4px;
-            position: relative;
-        }
-        .user-search input {
-            width: 100%;
-            padding: 10px 12px;
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.03);
-            background: rgba(255,255,255,0.02);
-            color: var(--white);
-            outline: none;
-            transition: box-shadow var(--dur-med) var(--ease), transform var(--dur-med) var(--ease);
-        }
-        .user-search input::placeholder {
-            color: rgba(255,255,255,0.35);
-        }
-        .user-search input:focus {
-            box-shadow: 0 8px 20px rgba(74,144,226,0.07);
-            transform: translateY(-2px);
-        }
-
-        /* User list container */
-        .user-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: var(--space-md);
-            overflow-y: auto;
-            padding-right: 6px;
-            max-height: calc(100vh - 340px);
-        }
-
-        /* Individual user item */
-        .user-item {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            padding: 10px;
-            border-radius: 12px;
-            transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
-            cursor: pointer;
-        }
-        .user-item:hover {
-            background: linear-gradient(90deg, rgba(74,144,226,0.04), rgba(255,255,255,0.01));
-            transform: translateX(6px);
-            box-shadow: 0 6px 18px rgba(9,18,40,0.5);
-        }
-        .user-item .avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 10px;
-            display: grid;
-            place-items: center;
-            font-weight: 700;
-            font-size: .95rem;
-            color: var(--accent);
-            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-            border: 1px solid rgba(255,255,255,0.03);
-        }
-        .user-item .meta { display: flex; flex-direction: column; gap: 4px; }
-        .user-item .meta .name { font-weight: 650; color: var(--white); font-size: 0.95rem; }
-        .user-item .meta .last { color: var(--muted-2); font-size: 0.82rem; line-height: 1; }
-
-        /* small status dot */
-        .user-item .status-dot {
-            margin-left: auto;
-            width: 10px; height: 10px; border-radius: 50%;
-            background: linear-gradient(180deg, #00e6a6, #00a873);
-            box-shadow: 0 6px 16px rgba(0,160,120,0.12);
-        }
-
-        /* ---------- Chat area ---------- */
-        .chat {
-            display: flex;
-            flex-direction: column;
-            min-height: 420px;
-            height: calc(100vh - 100px);
-        }
-
-        /* Chat header */
-        .chat-header {
-            padding: 18px 22px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.02);
-            background: linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0));
-        }
-        .chat-header .left { display:flex; gap:12px; align-items:center; }
-        .chat-header .title { font-size: 1.05rem; font-weight: 600; color: var(--accent); }
-        .chat-header .meta { color: var(--muted-2); font-size: .9rem; }
-
-        /* header actions */
-        .chat-header .actions { display: flex; gap: 8px; align-items:center; }
-        .icon-btn {
-            display: inline-grid; place-items: center;
-            width: 40px; height: 40px; border-radius: 10px;
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.03);
-            cursor: pointer;
-            transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
-        }
-        .icon-btn:hover { transform: translateY(-4px); box-shadow: 0 6px 18px rgba(9,18,40,0.45); }
-
-        /* ---------- Messages area ---------- */
-        .messages {
-            padding: var(--space-md);
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            overflow-y: auto;
-            flex: 1;
-            scroll-behavior: smooth;
-        }
-
-        /* custom scrollbar */
-        .messages::-webkit-scrollbar { width: 10px; }
-        .messages::-webkit-scrollbar-track { background: transparent; }
-        .messages::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.02);
-        }
-
-        /* individual message bubble */
-        .msg {
-            max-width: 72%;
-            padding: 12px 14px;
-            border-radius: 16px;
-            line-height: 1.35;
-            position: relative;
-            display: inline-block;
-            word-wrap: break-word;
-            box-shadow: 0 6px 20px rgba(6,12,24,0.45);
-            transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease), opacity var(--dur-fast) var(--ease);
-            opacity: 0;
-            transform: translateY(6px);
-            animation: appear var(--dur-med) var(--ease) forwards;
-        }
-
-        /* appear animation */
-        @keyframes appear {
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* message meta inside bubble */
-        .msg .meta {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            margin-bottom: 6px;
-        }
-        .msg .meta .name {
-            font-weight: 700;
-            font-size: 0.86rem;
-            color: rgba(255,255,255,0.9);
-        }
-        .msg .meta .time {
-            font-size: 0.72rem;
-            color: rgba(255,255,255,0.6);
-        }
-
-        /* ME (sender) bubble */
-        .msg.me {
-            margin-left: auto;
-            border-bottom-right-radius: 4px;
-            background: var(--me-bg);
-            color: var(--me-text);
-            box-shadow: 0 10px 30px rgba(42,120,210,0.18);
-            transform-origin: 100% 0;
-        }
-
-        /* OTHER bubble */
-        .msg.other {
-            margin-right: auto;
-            border-bottom-left-radius: 4px;
-            background: var(--other-bg);
-            color: var(--other-text);
-            border: 1px solid rgba(255,255,255,0.02);
-        }
-
-        /* small "read" badge */
-        .msg .badge {
-            position: absolute;
-            bottom: -12px;
-            right: 8px;
-            background: rgba(255,255,255,0.04);
-            color: var(--muted);
-            padding: 4px 8px;
-            font-size: 11px;
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.02);
-        }
-
-        /* quoted message style */
-        .msg .quote {
-            display: block;
-            margin-bottom: 10px;
-            padding: 8px 10px;
-            border-left: 3px solid rgba(255,255,255,0.03);
-            background: rgba(255,255,255,0.01);
-            color: rgba(255,255,255,0.7);
-            border-radius: 8px;
-            font-size: 0.9rem;
-        }
-
-        /* code block inside message */
-        .msg pre {
-            background: rgba(0,0,0,0.35);
-            padding: 8px;
-            border-radius: 8px;
-            overflow: auto;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
-            font-size: 0.86rem;
-            margin: 8px 0 0 0;
-        }
-
-        /* reactions container */
-        .msg .reactions {
-            margin-top: 8px;
-            display: flex;
-            gap: 6px;
-            align-items: center;
-        }
-        .reaction {
-            background: rgba(255,255,255,0.03);
-            padding: 6px 8px;
-            border-radius: 12px;
-            font-size: 13px;
-            cursor: pointer;
-            transition: transform var(--dur-fast) var(--ease);
-        }
-        .reaction:hover { transform: translateY(-4px); }
-
-        /* link style inside messages */
-        .msg a {
-            color: rgba(74,144,226,0.98);
-            text-decoration: underline;
-            text-underline-offset: 2px;
-        }
-
-        /* emoji-only message style */
-        .msg.emoji-only {
-            font-size: 2rem;
-            padding: 8px 12px;
-            border-radius: 18px;
-            background: transparent;
-            box-shadow: none;
-        }
-
-        /* ---------- Input area / composer ---------- */
-        .input-area {
-            display: flex;
-            gap: 12px;
-            padding: 16px;
-            align-items: center;
-            border-top: 1px solid rgba(255,255,255,0.02);
-            background: linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0));
-        }
-        .input-area .left {
-            display:flex; gap:8px; align-items:center;
-        }
-        .composer {
-            flex: 1;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        .input {
-            flex: 1;
-            padding: 12px 14px;
-            border-radius: 999px;
-            border: 1px solid rgba(255,255,255,0.03);
-            background: rgba(255,255,255,0.02);
-            color: var(--white);
-            outline: none;
-            transition: box-shadow var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
-        }
-        .input::placeholder { color: rgba(255,255,255,0.35); }
-        .input:focus {
-            box-shadow: 0 12px 30px rgba(74,144,226,0.06);
-            transform: translateY(-2px);
-        }
-
-        /* send button */
-        .btn-send {
-            padding: 10px 16px;
-            border-radius: 999px;
-            background: linear-gradient(90deg, var(--accent), #3672c2);
-            color: var(--white);
-            border: none;
-            cursor: pointer;
-            font-weight: 700;
-            box-shadow: 0 8px 30px rgba(58,120,210,0.18);
-            transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
-        }
-        .btn-send:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(58,120,210,0.22); }
-        .btn-send:active { transform: scale(.98); }
-
-        /* attachment button / icons */
-        .icon {
-            width: 44px; height: 44px; border-radius: 10px;
-            display: grid; place-items: center;
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.03);
-            cursor: pointer;
-            transition: transform var(--dur-fast) var(--ease);
-        }
-        .icon:hover { transform: translateY(-4px); }
-
-        /* ---------- Message types / variants ---------- */
-        /* system message center */
-        .msg.system {
-            margin: 0 auto;
-            background: rgba(255,255,255,0.03);
-            color: rgba(255,255,255,0.8);
-            border-radius: 12px;
-            padding: 8px 12px;
-            font-size: 0.88rem;
-            max-width: 60%;
-            text-align: center;
-        }
-
-        /* warning / error messages */
-        .msg.warn {
-            background: linear-gradient(180deg, rgba(255,160,70,0.12), rgba(255,120,0,0.06));
-            color: #fff8ea;
-            border: 1px solid rgba(255,120,0,0.12);
-        }
-        .msg.error {
-            background: linear-gradient(180deg, rgba(255,90,90,0.12), rgba(255,30,30,0.04));
-            color: #fff8f8;
-            border: 1px solid rgba(255,30,30,0.12);
-        }
-
-        /* pinned message */
-        .msg.pinned {
-            outline: 1px dashed rgba(255,255,255,0.03);
-            box-shadow: 0 10px 30px rgba(10,20,40,0.6);
-        }
-
-        /* ---------- Message grouping & day separators ---------- */
-        .day-sep {
-            display:flex; align-items:center; gap:12px;
-            color: var(--muted-2); font-size: 0.86rem;
-            margin: 6px 0;
-        }
-        .day-sep::before, .day-sep::after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.02), transparent);
-        }
-
-        /* message group wrapper (for avatar + bubble) */
-        .msg-row {
-            display: flex;
-            gap: 12px;
-            align-items: flex-end;
-        }
-
-        /* avatar for other messages */
-        .msg-row .avatar {
-            width: 44px; height: 44px; border-radius: 10px;
-            display: grid; place-items: center; font-weight: 700;
-            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-            border: 1px solid rgba(255,255,255,0.02);
-        }
-
-        /* small timestamp under message */
-        .msg .ts {
-            display:block; font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 8px;
-        }
-
-        /* ---------- Reactions popover ---------- */
-        .popover {
-            position: absolute;
-            bottom: calc(100% + 8px);
-            left: 12px;
-            display: flex;
-            gap: 6px;
-            padding: 6px;
-            border-radius: 12px;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(6px);
-            box-shadow: 0 10px 30px rgba(4,8,20,0.6);
-            z-index: 40;
-        }
-        .popover .emo {
-            padding: 6px 8px; border-radius: 8px; cursor:pointer; font-size: 14px;
-        }
-        .popover .emo:hover { transform: translateY(-4px); }
-
-        /* ---------- Attachments (images, files) ---------- */
-        .attachment {
-            margin-top: 8px;
-            display: inline-flex;
-            gap: 8px;
-            align-items: center;
-        }
-        .attachment img {
-            max-width: 220px;
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.03);
-            box-shadow: 0 6px 18px rgba(3,6,12,0.6);
-        }
-        .attachment .file {
-            padding: 8px 10px;
-            border-radius: 10px;
-            background: rgba(255,255,255,0.02);
-            display:flex; gap:8px; align-items:center;
-            border: 1px solid rgba(255,255,255,0.02);
-        }
-
-        /* ---------- Typing indicator ---------- */
-        .typing {
-            display: inline-flex;
-            gap: 6px;
-            align-items: center;
-            padding: 8px 12px;
-            border-radius: 12px;
-            background: rgba(255,255,255,0.02);
-            color: rgba(255,255,255,0.85);
-            font-style: italic;
-        }
-        .typing .dot {
-            width: 8px; height: 8px; border-radius: 50%;
-            background: rgba(255,255,255,0.6);
-            animation: blink 1.4s infinite ease-in-out;
-        }
-        .typing .dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing .dot:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes blink { 0%, 80%, 100% { opacity: 0.18; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-4px); } }
-
-        /* ---------- Floating quick actions ---------- */
-        .fab {
-            position: fixed;
-            right: 26px;
-            bottom: 28px;
-            width: 60px; height: 60px;
-            border-radius: 999px;
-            display: grid; place-items: center;
-            background: linear-gradient(90deg, var(--accent), #3672c2);
-            box-shadow: 0 12px 36px rgba(58,120,210,0.26);
-            color: white;
-            cursor: pointer;
-            z-index: 60;
-            transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
-        }
-        .fab:hover { transform: translateY(-6px); box-shadow: 0 22px 54px rgba(58,120,210,0.32); }
-
-        /* ---------- Empty / placeholder states ---------- */
-        .empty {
-            display: grid; place-items: center;
-            padding: 40px;
-            color: rgba(255,255,255,0.65);
-            text-align: center;
-        }
-        .empty h3 { margin: 0 0 8px 0; font-size: 1.05rem; }
-        .empty p { margin: 0; font-size: .95rem; }
-
-        /* ---------- Popover / modal styles ---------- */
-        .modal {
-            position: fixed; inset: 0; display: grid; place-items: center; z-index: 120;
-            background: linear-gradient(180deg, rgba(2,6,23,0.6), rgba(2,6,23,0.8));
-            padding: 24px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-        .modal.open {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .modal .card {
-            width: 100%;
-            max-width: 680px;
-            border-radius: 12px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-            padding: 20px;
-            box-shadow: var(--glass-shadow);
-        }
-        .modal-body {
-            padding: 20px;
-        }
-
-        /* Responsive tweaks */
-        @media (max-width: 900px) {
-            .sidebar { padding: 12px; min-height: auto; }
-            .panel { border-radius: 12px; }
-            .user-item .avatar { width: 40px; height: 40px; }
-            .msg { max-width: 90%; }
-            .app-wrap { gap: 12px; padding: 12px; }
-            .fab { right: 18px; bottom: 18px; width: 56px; height: 56px; }
-        }
-
-        /* Adjustments for image size inside message bubbles */
-        .msg img.chat-img {
-            max-width: 180px;
-            border-radius: 8px;
-            margin-top: 4px;
-            display: block;
-        }
-
-    </style>
+    /* Modal */
+    .modal{position:fixed;inset:0;display:grid;place-items:center;background:linear-gradient(180deg, rgba(2,6,23,0.6), rgba(2,6,23,0.8));padding:16px;opacity:0;pointer-events:none;transition:opacity .25s}
+    .modal.open{opacity:1;pointer-events:auto}
+    .modal .card{width:100%;max-width:720px;border-radius:12px;padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))}
+    .small{font-size:.9rem;color:rgba(255,255,255,0.7)}
+    /* ensure body doesn't jump on mobile when keyboard opens */
+    html.scroll-lock, body.scroll-lock { height: 100%; overflow: hidden; }
+  </style>
 </head>
-
 <body>
 
-<div class="app-wrap bg-glow">
+  <div class="app-wrap">
 
-    <!-- 1. Sidebar (Mock User List) -->
+    <!-- Sidebar -->
     <div class="panel sidebar">
-        <div class="header">
-            <div class="title">
-                <!-- Icon for users (e.g., Lucide/FontAwesome icon) -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                <h2>Online Users</h2>
-            </div>
-            <span class="sub" id="userCount">...</span>
+      <div class="header">
+        <div class="title">
+          <!-- fixed user icon -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h2>Online Users</h2>
         </div>
+        <span class="sub" id="userCount">0 active</span>
+      </div>
 
-        <div class="user-search">
-            <input type="text" placeholder="Search chats or users">
-        </div>
+      <div class="user-search">
+        <input id="searchBox" type="text" placeholder="Search chats or users" />
+      </div>
 
-        <!-- Placeholder user list -->
-        <div class="user-list">
-            <div class="user-item">
-                <div class="avatar">G</div>
-                <div class="meta">
-                    <span class="name">Guest 1337</span>
-                    <span class="last">Join the anonymous chat!</span>
-                </div>
-                <div class="status-dot"></div>
-            </div>
-            <div class="user-item">
-                <div class="avatar">A</div>
-                <div class="meta">
-                    <span class="name">Anonymous 589</span>
-                    <span class="last">Hey, what's up?</span>
-                </div>
-                <!-- <div class="status-dot"></div> -->
-            </div>
+      <div class="user-list" id="userList">
+        <div class="user-item">
+          <div class="avatar">G</div>
+          <div class="meta">
+            <span class="name">Guest 1337</span>
+            <span class="last">Join the anonymous chat!</span>
+          </div>
+          <div style="margin-left:auto;width:10px;height:10px;border-radius:50%;background:linear-gradient(180deg,#00e6a6,#00a873)"></div>
         </div>
+        <div class="user-item">
+          <div class="avatar">A</div>
+          <div class="meta">
+            <span class="name">Anonymous 589</span>
+            <span class="last">Hey, what's up?</span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- 2. Chat Area -->
-    <div class="panel chat">
-
-        <!-- Chat Header -->
-        <div class="chat-header">
-            <div class="left">
-                <div class="avatar">GC</div>
-                <div>
-                    <div class="title">Global Anonymous Channel by note-zilla</div>
-                    <div class="meta" id="anonNameDisplay">Your Name: Loading...</div>
-                </div>
-            </div>
-            <div class="actions">
-                <div class="icon-btn" onclick="openModal()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 17h3a5 5 0 0 0 0-10h-3"/><path d="M8 20l-4-4 4-4"/><path d="M18 16H4"/></svg>
-                </div>
-            </div>
+    <!-- Chat -->
+    <div class="panel chat" aria-live="polite">
+      <div class="chat-header">
+        <div class="left">
+          <div class="avatar">GC</div>
+          <div>
+            <div class="title">Global Anonymous Channel by note-zilla</div>
+            <div class="meta" id="anonNameDisplay">Your Name: Loading...</div>
+          </div>
         </div>
-
-        <!-- Messages Container -->
-        <div id="messages" class="messages">
-            <div class="msg system">
-                Welcome to Mega Chat! You are connected anonymously. Say hello!
-            </div>
-            <!-- Messages will be injected here -->
+        <div class="actions" style="display:flex;gap:8px;align-items:center">
+          <button class="icon" title="Info" onclick="openModal()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 8v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
+          </button>
         </div>
+      </div>
 
-        <!-- Input Area / Composer -->
-        <div class="input-area">
-            <input type="file" id="imgInput" accept="image/*" style="display:none;">
+      <div id="messages" class="messages" role="log" aria-live="polite">
+        <div class="system-msg">Welcome to Mega Chat! You are connected anonymously. Say hello!</div>
+      </div>
 
-            <!-- Attachment Button -->
-            <button id="imgBtn" class="icon center" title="Send Image">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 8v.01"/><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M3 16l6-6c.928-.928 2.072-1.232 3.14-.98c.571.134 1.121.378 1.63.74L21 15.5"/></svg>
-            </button>
+      <div class="input-area">
+        <input type="file" id="imgInput" accept="image/*" style="display:none" />
+        <button id="imgBtn" class="icon" title="Send Image">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 15V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 15l-5-5-3 3-4-4L3 15" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
 
-            <!-- Text Input -->
-            <div class="composer">
-                <input id="msgInput"
-                       type="text"
-                       placeholder="Send a message..."
-                       class="input">
-                <button onclick="sendMessage()" class="btn-send">
-                    Send
-                </button>
-            </div>
+        <div class="composer">
+          <input id="msgInput" class="input" type="text" placeholder="Send a message..." autocomplete="off" />
+          <button id="sendBtn" class="btn-send">Send</button>
         </div>
+      </div>
     </div>
-</div>
+  </div>
 
-<!-- Modal for Info/Help -->
-<div id="infoModal" class="modal" onclick="closeModal(event)">
+  <!-- Modal -->
+  <div id="infoModal" class="modal" onclick="closeModal(event)" aria-hidden="true">
     <div class="card" onclick="event.stopPropagation()">
-        <div class="chat-header border-none">
-            <div class="title">App Information</div>
-            <div class="icon-btn" onclick="closeModal()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-            </div>
-        </div>
-        <div class="modal-body text-sm text-gray-400">
-            <p>This is a real-time, anonymous chat application using the **Mega Chat** UI theme.</p>
-            <ul class="list-disc ml-5 mt-4 space-y-2">
-                <li><strong class="text-white">Anonymity:</strong> Your name is randomly generated (e.g., <span id="modalAnonName" class="text-accent-2"></span>).</li>
-                <li><strong class="text-white">Real-Time:</strong> Messages are synchronized instantly using **Firebase Realtime Database**.</li>
-                <li><strong class="text-white">Features:</strong> You can send text messages and Base64-encoded images.</li>
-                <li><strong class="text-white">Compatibility:</strong> The stunning glassmorphic look is achieved with the comprehensive CSS provided.</li>
-            </ul>
-        </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-size:1.05rem;font-weight:700;color:var(--accent)">App Information</div>
+        <button class="icon" onclick="closeModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <div class="small">
+        <p>This is a real-time, anonymous chat application using the <strong>Mega Chat</strong> UI theme.</p>
+        <ul style="margin-top:8px;line-height:1.5">
+          <li><strong>Anonymity:</strong> Your name is randomly generated (e.g., <span id="modalAnonName"></span>).</li>
+          <li><strong>Real-Time:</strong> Messages are synchronized using Firebase Realtime Database.</li>
+          <li><strong>Features:</strong> Text messages and Base64-encoded images (size-limited) are supported.</li>
+        </ul>
+      </div>
     </div>
-</div>
+  </div>
 
+  <!-- Toast container (simple) -->
+  <div id="toastHolder" aria-live="polite" style="position:fixed;right:16px;bottom:16px;z-index:9999"></div>
 
-<!-- JS START -->
-<script>
-    // -----------------------------------------------------------
-    // Global Constants and Setup
-    // -----------------------------------------------------------
-    const messages = document.getElementById("messages");
-    const msgInput = document.getElementById("msgInput");
-    const imgInput = document.getElementById("imgInput");
-    const modal = document.getElementById("infoModal");
+  <script>
+    // -------------------------
+    // Basic elements
+    // -------------------------
+    const messagesEl = document.getElementById('messages');
+    const msgInput = document.getElementById('msgInput');
+    const imgInput = document.getElementById('imgInput');
+    const imgBtn = document.getElementById('imgBtn');
+    const sendBtn = document.getElementById('sendBtn');
+    const anonNameDisplay = document.getElementById('anonNameDisplay');
+    const modal = document.getElementById('infoModal');
+    const modalAnonName = document.getElementById('modalAnonName');
+    const userCountEl = document.getElementById('userCount');
 
-    // Firebase Config (Replace with your actual config if needed)
-    // NOTE: Using a public test database path for demonstration.
+    // -------------------------
+    // Firebase config (kept from your file)
+    // Replace with your own if needed
+    // -------------------------
     const firebaseConfig = {
-        apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
-        authDomain: "chat-box-e01e5.firebaseapp.com",
-        databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
-        projectId: "chat-box-e01e5",
-        storageBucket: "chat-box-e01e5.appspot.com",
-        messagingSenderId: "77418949896",
-        appId: "1:77418949896:web:e789dca08f4a6e9af86e49",
+      apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
+      authDomain: "chat-box-e01e5.firebaseapp.com",
+      databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
+      projectId: "chat-box-e01e5",
+      storageBucket: "chat-box-e01e5.appspot.com",
+      messagingSenderId: "77418949896",
+      appId: "1:77418949896:web:e789dca08f4a6e9af86e49",
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Anonymous Name Generation
-    let anonName = "User-" + Math.floor(Math.random() * 9000 + 1000);
-    document.getElementById("anonNameDisplay").textContent = `You are: ${anonName}`;
+    // -------------------------
+    // Anonymous Name
+    // -------------------------
+    let anonName = localStorage.getItem('megaAnonName') || ("User-" + Math.floor(Math.random() * 9000 + 1000));
+    localStorage.setItem('megaAnonName', anonName);
+    anonNameDisplay.textContent = `You are: ${anonName}`;
+    modalAnonName.textContent = anonName;
 
-    // -----------------------------------------------------------
-    // UI Logic (Modal and Toast)
-    // -----------------------------------------------------------
-
-    function openModal() {
-        document.getElementById("modalAnonName").textContent = anonName;
-        modal.classList.add('open');
+    // -------------------------
+    // Toast helper
+    // -------------------------
+    function showToast(text, isError=false, duration=3000){
+      const el = document.createElement('div');
+      el.className = 'toast';
+      el.style.background = isError ? 'linear-gradient(90deg,#ff6b6b,#ff4c4c)' : 'rgba(0,0,0,0.75)';
+      el.textContent = text;
+      document.getElementById('toastHolder').appendChild(el);
+      setTimeout(()=> {
+        el.style.transition = 'opacity .2s, transform .2s';
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(8px)';
+        setTimeout(()=> el.remove(), 220);
+      }, duration);
     }
 
-    function closeModal(event) {
-        // Only close if click is on backdrop or close button
-        if (!event || event.target.closest('.icon-btn') || event.target === modal) {
-            modal.classList.remove('open');
-        }
+    // -------------------------
+    // Modal control
+    // -------------------------
+    function openModal(){ modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); }
+    function closeModal(e){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); }
+    window.openModal = openModal; window.closeModal = closeModal;
+
+    // -------------------------
+    // Send message
+    // -------------------------
+    function sendMessage(){
+      const text = msgInput.value.trim();
+      if(!text) return;
+      const payload = { name: anonName, text, type: 'text', time: Date.now() };
+      db.ref('megaChatChannel').push(payload)
+        .catch(e=> { console.error(e); showToast('Failed to send message.', true); });
+      msgInput.value = '';
+      // keep focus on input for mobile typing experience
+      msgInput.focus();
     }
-
-    // Function to handle custom UI alerts (instead of alert())
-    function showToast(text, isError = false) {
-        let div = document.createElement("div");
-        div.className = `fixed bottom-4 right-4 z-50 p-3 rounded-xl shadow-lg transition-opacity duration-300 ${isError ? 'bg-danger text-white' : 'bg-gray-800 text-white'}`;
-        div.textContent = text;
-        document.body.appendChild(div);
-        setTimeout(() => {
-            div.style.opacity = '0';
-            div.style.transform = 'translateY(10px)';
-            setTimeout(() => div.remove(), 300);
-        }, 3000);
-    }
-
-    // -----------------------------------------------------------
-    // Messaging Logic
-    // -----------------------------------------------------------
-
-    function sendMessage() {
-        let text = msgInput.value.trim();
-        if (!text) return;
-
-        db.ref("megaChatChannel").push({
-            name: anonName,
-            text,
-            type: "text",
-            time: Date.now()
-        }).catch(e => {
-            showToast("Failed to send message.", true);
-            console.error(e);
-        });
-
-        msgInput.value = "";
-    }
-
-    // Send Image (Base64)
-    document.getElementById("imgBtn").onclick = () => {
-        imgInput.click();
-    };
-
-    imgInput.addEventListener("change", function() {
-        let file = this.files[0];
-        if (!file || !file.type.startsWith('image/')) {
-            showToast("Please select a valid image file.", true);
-            return;
-        }
-        if (file.size > 500 * 1024) { // Limit image size to 500KB for Base64 embedding
-            showToast("Image is too large. Max 500KB allowed.", true);
-            return;
-        }
-
-        let reader = new FileReader();
-        reader.onload = function() {
-            db.ref("megaChatChannel").push({
-                name: anonName,
-                image: reader.result, // Base64 image
-                type: "image",
-                time: Date.now()
-            }).catch(e => {
-                showToast("Failed to send image.", true);
-                console.error(e);
-            });
-            imgInput.value = ""; // Clear file input
-        };
-        reader.readAsDataURL(file);
+    sendBtn.addEventListener('click', sendMessage);
+    msgInput.addEventListener('keydown', e => {
+      if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); }
     });
 
-    // Receive Messages and Render
-    db.ref("megaChatChannel").on("child_added", snap => {
-        let v = snap.val();
-        let isMine = v.name === anonName;
+    // -------------------------
+    // Image sending (Base64, limited)
+    // -------------------------
+    imgBtn.addEventListener('click', ()=> imgInput.click());
+    imgInput.addEventListener('change', function(){
+      const file = this.files[0];
+      if(!file){ return; }
+      if(!file.type.startsWith('image/')){ showToast('Select an image file.', true); imgInput.value=''; return;}
+      if(file.size > 500 * 1024){ showToast('Image too large. Max 500KB.', true); imgInput.value=''; return; }
 
-        let msgRow = document.createElement("div");
-        msgRow.className = "msg-row"; // Container for the bubble
+      const reader = new FileReader();
+      reader.onload = function(e){
+        const payload = { name: anonName, image: e.target.result, type: 'image', time: Date.now() };
+        db.ref('megaChatChannel').push(payload)
+          .catch(err => { console.error(err); showToast('Failed to send image', true); });
+        imgInput.value = '';
+      };
+      reader.readAsDataURL(file);
+    });
 
-        let msgDiv = document.createElement("div");
-        msgDiv.className = "msg " + (isMine ? "me" : "other");
-        // Add animation delay for better visual flow
-        msgDiv.style.animationDelay = '50ms';
+    // -------------------------
+    // Render message
+    // -------------------------
+    function renderMessage(v){
+      if(!v) return;
+      const isMine = v.name === anonName;
+      const row = document.createElement('div');
+      row.className = 'msg-row';
 
-        // Message Header (Name and Time)
-        const timeString = new Date(v.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      if(!isMine){
+        const avatar = document.createElement('div');
+        avatar.className = 'avatar';
+        avatar.textContent = (v.name && v.name.charAt(0)) || '?';
+        row.appendChild(avatar);
+      }
 
-        const nameElement = `<span class="name">${isMine ? 'You' : v.name}</span>`;
-        const timeElement = `<span class="time">${timeString}</span>`;
-        
-        // If it's an 'other' message, wrap it in a msg-row with an avatar placeholder
-        if (!isMine) {
-            const avatar = document.createElement("div");
-            avatar.className = "avatar";
-            avatar.textContent = v.name.charAt(0); // First letter of the name
-            msgRow.appendChild(avatar);
+      const bubble = document.createElement('div');
+      bubble.className = 'msg ' + (isMine ? 'me' : 'other');
+
+      const date = new Date(v.time || Date.now());
+      const timeString = date.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+
+      // header meta
+      const metaDiv = document.createElement('div');
+      metaDiv.className = 'meta';
+      const nameSpan = document.createElement('span'); nameSpan.className = 'name'; nameSpan.textContent = isMine ? 'You' : (v.name || 'Anon');
+      const timeSpan = document.createElement('span'); timeSpan.className='time'; timeSpan.textContent = timeString;
+      metaDiv.appendChild(nameSpan); metaDiv.appendChild(timeSpan);
+      bubble.appendChild(metaDiv);
+
+      // content
+      if(v.type === 'image' && v.image){
+        const p = document.createElement('p');
+        p.textContent = (isMine ? 'You' : v.name) + ' sent an image';
+        bubble.appendChild(p);
+        const img = document.createElement('img');
+        img.className = 'chat-img';
+        img.src = v.image;
+        img.alt = 'User image';
+        bubble.appendChild(img);
+      } else if(v.type === 'text' && v.text){
+        // detect emoji-only (simple heuristic)
+        const trimmed = v.text.trim();
+        const emojiOnly = /^\p{Extended_Pictographic}+$/u.test(trimmed);
+        if(emojiOnly && trimmed.length <= 4){
+          bubble.classList.add('emoji-only');
+          bubble.textContent = trimmed;
+        } else {
+          const p = document.createElement('p');
+          p.textContent = v.text;
+          bubble.appendChild(p);
         }
+      }
 
-        // --- Content Generation ---
-        let contentHTML = `<div class="meta">${nameElement} ${timeElement}</div>`;
+      row.appendChild(bubble);
+      messagesEl.appendChild(row);
+      // scroll to bottom
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
 
-        if (v.type === "text") {
-            // Check for emoji-only message
-            const isEmojiOnly = /^\p{Emoji_Presentation}{1,3}$/u.test(v.text.trim());
-            if (isEmojiOnly) {
-                msgDiv.classList.add('emoji-only');
-                contentHTML = v.text.trim();
-            } else {
-                contentHTML += `<p>${v.text}</p>`;
+    // -------------------------
+    // Listen to DB for new messages
+    // -------------------------
+    db.ref('megaChatChannel').limitToLast(200).on('child_added', snap => {
+      const v = snap.val();
+      renderMessage(v);
+
+      // Desktop/mobile notifications for others
+      if(v.name !== anonName){
+        try {
+          if("Notification" in window){
+            if(Notification.permission === 'granted'){
+              new Notification(v.name, {
+                body: v.type === 'text' ? v.text : 'sent an image',
+                icon: 'https://placehold.co/48x48/4a90e2/ffffff?text=C'
+              });
+            } else if(Notification.permission !== 'denied'){
+              Notification.requestPermission();
             }
-        }
+          }
+        } catch(e){ console.error('Notification error', e); }
+      }
 
-        if (v.type === "image") {
-            contentHTML += `<p>Image from ${v.name}</p>`;
-            contentHTML += `<div class="attachment"><img src="${v.image}" class="chat-img" alt="User Image"></div>`;
-        }
-
-        msgDiv.innerHTML = contentHTML;
-        msgRow.appendChild(msgDiv);
-
-        // Append to container and scroll
-        messages.appendChild(msgRow);
-        messages.scrollTop = messages.scrollHeight;
-
-        // Basic notification (Only for 'other' messages)
-        if (!isMine) {
-            try {
-                // Request permission if not granted, then show notification
-                if (Notification.permission === "granted") {
-                    new Notification(v.name, {
-                        body: v.type === "text" ? v.text : "sent an image",
-                        icon: "https://placehold.co/48x48/4a90e2/ffffff?text=C"
-                    });
-                } else if (Notification.permission !== "denied") {
-                     Notification.requestPermission();
-                }
-            } catch (e) {
-                // Fail silently if notification API is unavailable
-                console.log("Notification failed:", e);
-            }
-        }
-        
-        // Update mock user count (very basic, based on unique names in the last 10 messages)
-        db.ref("megaChatChannel").limitToLast(10).once('value', snapshot => {
-            const uniqueUsers = new Set();
-            snapshot.forEach(childSnapshot => {
-                uniqueUsers.add(childSnapshot.val().name);
-            });
-            document.getElementById("userCount").textContent = `${uniqueUsers.size} active`;
+      // update user count (based on last 30 messages)
+      db.ref('megaChatChannel').limitToLast(30).once('value', snap => {
+        const set = new Set();
+        snap.forEach(ch => {
+          const val = ch.val();
+          if(val && val.name) set.add(val.name);
         });
+        userCountEl.textContent = `${set.size} active`;
+      });
     });
 
-    // ENTER KEY SEND
-    msgInput.addEventListener("keydown", e => {
-        if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault(); // Prevent newline in input
-            sendMessage();
-        }
+    // -------------------------
+    // Notification permission prompt (gentle)
+    // -------------------------
+    setTimeout(() => {
+      if("Notification" in window && Notification.permission === 'default'){
+        // gentle prompt using toast
+        const el = document.createElement('div');
+        el.className = 'toast';
+        el.textContent = 'Enable notifications for new messages?';
+        const btn = document.createElement('button');
+        btn.textContent = 'Enable';
+        btn.style.marginLeft = '8px';
+        btn.style.border = 'none';
+        btn.style.background = 'transparent';
+        btn.style.color = '#fff';
+        btn.style.cursor = 'pointer';
+        btn.onclick = () => Notification.requestPermission().then(()=> { showToast('Notifications updated'); el.remove(); });
+        el.appendChild(btn);
+        document.getElementById('toastHolder').appendChild(el);
+        setTimeout(()=> { if(el.parentNode) el.remove(); }, 8000);
+      }
+    }, 2500);
+
+    // -------------------------
+    // Small helpers: search filter
+    // -------------------------
+    const searchBox = document.getElementById('searchBox');
+    searchBox.addEventListener('input', e => {
+      const q = e.target.value.trim().toLowerCase();
+      const items = document.querySelectorAll('.user-list .user-item');
+      items.forEach(it => {
+        const name = it.querySelector('.meta .name').textContent.toLowerCase();
+        const last = it.querySelector('.meta .last').textContent.toLowerCase();
+        it.style.display = (!q || name.includes(q) || last.includes(q)) ? 'flex' : 'none';
+      });
     });
 
-    // Initial scroll to bottom on load
-    window.onload = () => {
-        messages.scrollTop = messages.scrollHeight;
-    };
-</script>
+    // -------------------------
+    // Ensure mobile viewport height works well (CSS vh issues)
+    // -------------------------
+    function setVh(){
+      document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+    }
+    window.addEventListener('resize', setVh);
+    setVh();
 
+    // -------------------------
+    // Keep focus behavior smooth on mobile
+    // -------------------------
+    msgInput.addEventListener('focus', () => {
+      // On some mobile browsers, locking scroll helps maintain layout
+      document.documentElement.classList.add('scroll-lock');
+      document.body.classList.add('scroll-lock');
+      setTimeout(()=> messagesEl.scrollTop = messagesEl.scrollHeight, 300);
+    });
+    msgInput.addEventListener('blur', () => {
+      document.documentElement.classList.remove('scroll-lock');
+      document.body.classList.remove('scroll-lock');
+    });
+
+    // -------------------------
+    // Initial scroll to bottom after load
+    // -------------------------
+    window.addEventListener('load', () => {
+      setTimeout(()=> messagesEl.scrollTop = messagesEl.scrollHeight, 200);
+    });
+
+    // -------------------------
+    // Accessibility: announce incoming messages (optional)
+    // -------------------------
+    // Already set aria-live on container
+
+    // -------------------------
+    // Export sendMessage for inline onclick compatibility
+    // -------------------------
+    window.sendMessage = sendMessage;
+
+    // Done — small confirmation in console
+    console.log('Mega Chat ready — anonName=', anonName);
+  </script>
 </body>
 </html>
