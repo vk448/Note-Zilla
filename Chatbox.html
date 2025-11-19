@@ -2,638 +2,209 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Mega Chat — Responsive Anonymous</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0e1f" />
+  <title>Mega Chat — Global Anonymous Room</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
   <style>
-    :root{
-      --bg-1:#071025; --bg-2:#0f1b2b; --accent:#4a90e2; --white:#fff;
-      --muted: rgba(255,255,255,0.6);
-      --radius:14px;
-      --sidebar-width:320px;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:var(--white);-webkit-font-smoothing:antialiased;background:
-      radial-gradient(1200px 600px at 10% 10%, rgba(74,144,226,0.03), transparent 8%),
-      linear-gradient(180deg,var(--bg-1) 0%,var(--bg-2) 100%);}
-    /* Layout */
-    .app-wrap{
-      width:calc(100% - 32px);
-      max-width:1200px;
-      margin:16px auto;
-      display:grid;
-      grid-template-columns: var(--sidebar-width) 1fr;
-      gap:20px;
-      align-items:start;
-      min-height: calc(100vh - 32px);
-      padding-bottom:24px;
-    }
-    @media (max-width: 920px){
-      .app-wrap{grid-template-columns: 1fr; width: calc(100% - 20px); gap:12px; margin:8px;}
+    html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; font-family: 'Inter', sans-serif; background: #0a0e1f; }
+    .glass { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(0, 231, 255, 0.2); border-radius: 20px; }
+    #messages { height: calc(100vh - 170px); overflow-y: auto; padding: 20px 16px 140px 16px; }
+    .input-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      padding: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom));
+      background: #0a0e1f; border-top: 1px solid rgba(0,231,255,0.2); z-index: 9999;
     }
 
-    .panel{
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius: var(--radius);
-      border:1px solid rgba(255,255,255,0.04);
-      box-shadow: 0 6px 24px rgba(2,6,23,0.6);
-      overflow: hidden;
-      display:flex;
-      flex-direction:column;
-      min-height:120px;
-    }
-
-    /* Sidebar */
-    .sidebar{padding:20px;min-height:360px;gap:12px}
-    .header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
-    .title{display:flex;align-items:center;gap:12px}
-    .title h2{margin:0;color:var(--accent);font-size:1.05rem}
-    .sub{font-size:0.85rem;color:rgba(255,255,255,0.6)}
-    .user-search input{width:100%;padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.02);color:var(--white);outline:none}
-    .user-list{display:flex;flex-direction:column;gap:8px;margin-top:12px;overflow:auto;max-height: calc(100vh - 380px);padding-right:6px}
-    .user-item{display:flex;gap:12px;align-items:center;padding:10px;border-radius:12px;cursor:pointer;transition:all .15s}
-    .user-item:hover{transform:translateX(6px);background:linear-gradient(90deg, rgba(74,144,226,0.04), rgba(255,255,255,0.01))}
-    .avatar{width:48px;height:48px;border-radius:10px;display:grid;place-items:center;font-weight:700;font-size:.95rem;color:var(--accent);background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
-    .meta .name{font-weight:650;color:var(--white);font-size:.95rem}
-    .meta .last{color:rgba(255,255,255,0.35);font-size:.82rem}
-
-    /* Chat column */
-    .chat{display:flex;flex-direction:column; min-height:420px; height: calc(100vh - 100px); }
-    @media (max-width:920px){ .chat{height:calc(100vh - 120px)} }
-
-    .chat-header{padding:16px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.02);background:linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0));}
-    .chat-header .left{display:flex;gap:12px;align-items:center}
-    .chat-header .title{font-size:1.05rem;font-weight:600;color:var(--accent)}
-    .chat-header .meta{color:rgba(255,255,255,0.6);font-size:0.9rem}
-
-    .messages{padding:16px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;flex:1;scroll-behavior:smooth}
-    .msg-row{display:flex;gap:12px;align-items:flex-end}
-    .msg{max-width:72%;padding:12px 14px;border-radius:16px;line-height:1.35;position:relative;display:inline-block;word-wrap:break-word;background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.9);border:1px solid rgba(255,255,255,0.02)}
-    .msg.me{margin-left:auto;background:linear-gradient(135deg,#2b8cff,#4a90e2);color:#fff;box-shadow:0 10px 30px rgba(42,120,210,0.18)}
-    .msg .meta{display:flex;gap:8px;align-items:center;margin-bottom:8px}
-    .msg .meta .name{font-weight:700;font-size:.86rem}
-    .msg .meta .time{font-size:.72rem;color:rgba(255,255,255,0.6)}
-    .msg img.chat-img{max-width:220px;border-radius:10px;margin-top:6px;display:block; cursor:pointer;} 
-    .msg video{max-width:220px;border-radius:10px;margin-top:6px;display:block;}
-
-    .input-area{display:flex;gap:12px;padding:12px;border-top:1px solid rgba(255,255,255,0.02);align-items:center;background:linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0))}
-    .composer{flex:1;display:flex;gap:10px;align-items:center}
-    .input{flex:1;padding:12px 14px;border-radius:999px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.02);color:var(--white);outline:none}
-    .btn-send{padding:10px 16px;border-radius:999px;background:linear-gradient(90deg,var(--accent),#3672c2);color:var(--white);border:none;cursor:pointer;font-weight:700}
-    .icon{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);cursor:pointer}
-
-    .system-msg{margin:0 auto;background:rgba(255,255,255,0.03);color: rgba(255,255,255,0.8);border-radius:12px;padding:8px 12px;font-size:0.9rem;max-width:60%;text-align:center}
-
-    /* Toast */
-    .toast{position:fixed;right:16px;bottom:16px;padding:10px 14px;border-radius:12px;background:rgba(0,0,0,0.75);color:#fff;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,0.5)}
-
-    /* Modal */
-    .modal{position:fixed;inset:0;display:grid;place-items:center;background:linear-gradient(180deg, rgba(2,6,23,0.6), rgba(2,6,23,0.8));padding:16px;opacity:0;pointer-events:none;transition:opacity .25s}
-    .modal.open{opacity:1;pointer-events:auto}
-    .modal .card{width:100%;max-width:720px;border-radius:12px;padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))}
-    .small{font-size:.9rem;color:rgba(255,255,255,0.7)}
-    /* ensure body doesn't jump on mobile when keyboard opens */
-    html.scroll-lock, body.scroll-lock { height: 100%; overflow: hidden; }
-    
-    /* Image Viewer Modal Styles */
+    /* IMAGE VIEWER MODAL */
     #imageViewerModal {
-      background: rgba(0, 0, 0, 0.9); 
-      z-index: 10000;
-      opacity: 0;
-      transition: opacity .3s;
+      position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 99999;
+      display: none; align-items: center; justify-content: center; padding: 20px;
     }
-    #imageViewerModal.open {
-      opacity: 1;
+    #imageViewerModal.show { display: flex; }
+    #viewerImage {
+      max-width: 100%; max-height: 100%; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+      object-fit: contain; cursor: zoom-in;
     }
-    #imageViewerModal .image-content {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-    #imageViewerModal img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-      border-radius: 8px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    }
-    #imageViewerModal .close-btn {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      padding: 10px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 50%;
-      cursor: pointer;
-      z-index: 10;
+    #viewerImage.zoomed { cursor: zoom-out; transform: scale(2); transition: transform 0.3s; }
+    .close-viewer {
+      position: absolute; top: 20px; right: 20px; width: 50px; height: 50px;
+      background: rgba(255,255,255,0.2); border-radius: 50%; display: grid; place-items: center;
+      font-size: 28px; cursor: pointer; z-index: 100;
     }
   </style>
 </head>
-<body>
+<body class="text-white">
 
-  <div class="app-wrap">
-
-    <div class="panel sidebar">
-      <div class="header">
-        <div class="title">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <h2>Online Users</h2>
-        </div>
-        <span class="sub" id="userCount">0 active</span>
-      </div>
-
-      <div class="user-search">
-        <input id="searchBox" type="text" placeholder="Search chats or users" />
-      </div>
-
-      <div class="user-list" id="userList">
-        <div class="user-item">
-          <div class="avatar">G</div>
-          <div class="meta">
-            <span class="name">Guest 1337</span>
-            <span class="last">Join the anonymous chat!</span>
-          </div>
-          <div style="margin-left:auto;width:10px;height:10px;border-radius:50%;background:linear-gradient(180deg,#00e6a6,#00a873)"></div>
-        </div>
-        <div class="user-item">
-          <div class="avatar">A</div>
-          <div class="meta">
-            <span class="name">Anonymous 589</span>
-            <span class="last">Hey, what's up?</span>
-          </div>
+  <!-- Header -->
+  <header class="glass mx-4 mt-4 rounded-2xl p-5 shadow-2xl">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-2xl font-black">MZ</div>
+        <div>
+          <h1 class="text-2xl font-bold bg-gradient-to-r from-cyan-300 to-purple-400 bg-clip-text text-transparent">
+            Global Anonymous Room
+          </h1>
+          <p class="text-sm opacity-80" id="anonNameDisplay">You are: Loading...</p>
         </div>
       </div>
     </div>
+  </header>
 
-    <div class="panel chat" aria-live="polite">
-      <div class="chat-header">
-        <div class="left">
-          <div class="avatar">GC</div>
-          <div>
-            <div class="title">Global Anonymous Channel by note-zilla</div>
-            <div class="meta" id="anonNameDisplay">Your Name: Loading...</div>
-          </div>
-        </div>
-        <div class="actions" style="display:flex;gap:8px;align-items:center">
-          <button class="icon" title="Info" onclick="openInfoModal()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 8v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
-          </button>
-        </div>
-      </div>
-
-      <div id="messages" class="messages" role="log" aria-live="polite">
-        <div class="system-msg">Welcome to Mega Chat! You are connected anonymously. Say hello!</div>
-      </div>
-
-      <div class="input-area">
-        <input type="file" id="mediaInput" accept="image/*,video/*" style="display:none" />
-        <button id="mediaBtn" class="icon" title="Send Media (Image, GIF, Video)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 15V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 15l-5-5-3 3-4-4L3 15" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-
-        <div class="composer">
-          <input id="msgInput" class="input" type="text" placeholder="Send a message or YouTube link..." autocomplete="off" />
-          <button id="sendBtn" class="btn-send">Send</button>
-        </div>
-      </div>
-    </div>
+  <!-- Messages -->
+  <div id="messages" class="px-4">
+    <div class="text-center text-sm opacity-60 py-32">Welcome to Mega Chat 👋</div>
   </div>
 
-  <div id="infoModal" class="modal" onclick="closeInfoModal(event)" aria-hidden="true">
-    <div class="card" onclick="event.stopPropagation()">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <div style="font-size:1.05rem;font-weight:700;color:var(--accent)">App Information</div>
-        <button class="icon" onclick="closeInfoModal()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <!-- Fixed Input Bar -->
+  <div class="input-bar">
+    <div class="max-w-5xl mx-auto">
+      <div class="glass shadow-2xl flex items-center gap-3 p-4 rounded-2xl">
+        <input type="file" id="mediaInput" accept="image/*,video/*" hidden>
+        <button id="mediaBtn" class="p-4 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+        </button>
+        <input id="msgInput" type="text" placeholder="Message or YouTube link..."
+               class="flex-1 px-5 py-4 bg-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-cyan-500/40 text-base">
+        <button id="sendBtn" class="px-9 py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-purple-600 font-bold shadow-lg active:scale-95">
+          Send
         </button>
       </div>
-      <div class="small">
-        <p>This is a real-time, anonymous chat application using the <strong>Mega Chat</strong> UI theme.</p>
-        <ul style="margin-top:8px;line-height:1.5">
-          <li><strong>Anonymity:</strong> Your name is randomly generated (e.g., <span id="modalAnonName"></span>).</li>
-          <li><strong>Real-Time:</strong> Messages are synchronized using Firebase Realtime Database.</li>
-          <li><strong>Media Limits:</strong> Images (max 500KB), GIFs (max 1MB), Videos (max 2MB) are supported via Base64 encoding.</li>
-        </ul>
-      </div>
     </div>
   </div>
 
-  <div id="imageViewerModal" class="modal" onclick="closeImageViewer(event)" aria-hidden="true">
-    <div class="image-content">
-      <button class="close-btn" onclick="closeImageViewer()">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-      </button>
-      <img id="viewerImage" src="" alt="Full-size chat image" />
-    </div>
+  <!-- IMAGE VIEWER MODAL (NEW & BEAUTIFUL) -->
+  <div id="imageViewerModal" onclick="closeImageViewer()">
+    <div class="close-viewer" onclick="closeImageViewer()">×</div>
+    <img id="viewerImage" src="" alt="Full view" onclick="event.stopPropagation(); this.classList.toggle('zoomed')">
   </div>
 
-  <div id="toastHolder" aria-live="polite" style="position:fixed;right:16px;bottom:16px;z-index:9999"></div>
+  <!-- Toast -->
+  <div id="toastHolder" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 space-y-2"></div>
 
+  <!-- FULL SCRIPT WITH IMAGE VIEWER SUPPORT -->
   <script>
-    // -------------------------
-    // Basic elements
-    // -------------------------
     const messagesEl = document.getElementById('messages');
     const msgInput = document.getElementById('msgInput');
     const mediaInput = document.getElementById('mediaInput');
     const mediaBtn = document.getElementById('mediaBtn');
     const sendBtn = document.getElementById('sendBtn');
     const anonNameDisplay = document.getElementById('anonNameDisplay');
-    const infoModal = document.getElementById('infoModal'); 
-    const modalAnonName = document.getElementById('modalAnonName');
-    const userCountEl = document.getElementById('userCount');
     const imageViewerModal = document.getElementById('imageViewerModal');
     const viewerImage = document.getElementById('viewerImage');
 
-
-    // -------------------------
-    // Firebase config 
-    // !!! REMEMBER TO REPLACE THIS WITH YOUR OWN FIREBASE CONFIG !!!
-    // -------------------------
     const firebaseConfig = {
       apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
       authDomain: "chat-box-e01e5.firebaseapp.com",
       databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
       projectId: "chat-box-e01e5",
-      storageBucket: "chat-box-e01e5.appspot.com",
-      messagingSenderId: "77418949896",
-      appId: "1:77418949896:web:e789dca08f4a6e9af86e49",
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // -------------------------
-    // Size Limits (Constants)
-    // -------------------------
-    const MAX_IMAGE_SIZE = 500 * 1024; // 500KB
-    const MAX_GIF_SIZE = 1 * 1024 * 1024; // 1MB
-    const MAX_VIDEO_SIZE = 2 * 1024 * 1024; // 2MB (Be cautious with this size for Base64)
-
-    // -------------------------
-    // Anonymous Name
-    // -------------------------
     let anonName = localStorage.getItem('megaAnonName') || ("User-" + Math.floor(Math.random() * 9000 + 1000));
     localStorage.setItem('megaAnonName', anonName);
     anonNameDisplay.textContent = `You are: ${anonName}`;
-    modalAnonName.textContent = anonName;
 
-    // -------------------------
-    // Toast helper
-    // -------------------------
-    function showToast(text, isError=false, duration=3000){
-      const el = document.createElement('div');
-      el.className = 'toast';
-      el.style.background = isError ? 'linear-gradient(90deg,#ff6b6b,#ff4c4c)' : 'rgba(0,0,0,0.75)';
-      el.textContent = text;
-      document.getElementById('toastHolder').appendChild(el);
-      setTimeout(()=> {
-        el.style.transition = 'opacity .2s, transform .2s';
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(8px)';
-        setTimeout(()=> el.remove(), 220);
-      }, duration);
+    function showToast(t, err = false) {
+      const d = document.createElement('div');
+      d.className = 'glass px-6 py-3 rounded-xl';
+      d.style.background = err ? 'rgba(255,0,0,0.5)' : 'rgba(0,200,0,0.4)';
+      d.textContent = t;
+      document.getElementById('toastHolder').appendChild(d);
+      setTimeout(() => d.remove(), 3000);
     }
 
-    // -------------------------
-    // Modal controls
-    // -------------------------
-    function openInfoModal(){ infoModal.classList.add('open'); infoModal.setAttribute('aria-hidden','false'); }
-    function closeInfoModal(e){ 
-        if (e && e.target !== infoModal) return;
-        infoModal.classList.remove('open'); 
-        infoModal.setAttribute('aria-hidden','true'); 
+    // IMAGE VIEWER FUNCTIONS
+    function openImageViewer(url) {
+      viewerImage.src = url;
+      imageViewerModal.classList.add('show');
     }
-    window.openInfoModal = openInfoModal; window.closeInfoModal = closeInfoModal; 
-    
-    function openImageViewer(imageUrl) {
-        viewerImage.src = imageUrl;
-        imageViewerModal.classList.add('open');
-        imageViewerModal.setAttribute('aria-hidden', 'false');
+    function closeImageViewer() {
+      imageViewerModal.classList.remove('show');
+      viewerImage.src = '';
+      viewerImage.classList.remove('zoomed');
     }
-    
-    function closeImageViewer(e) {
-        if (e && e.target !== imageViewerModal) return; 
-        imageViewerModal.classList.remove('open');
-        imageViewerModal.setAttribute('aria-hidden', 'true');
-        viewerImage.src = ''; 
-    }
-    window.openImageViewer = openImageViewer; 
 
-    // -------------------------
-    // YouTube Helper
-    // -------------------------
-    function getYouTubeId(url) {
-      const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
-      const match = url.match(regex);
-      return (match && match[1].length === 11) ? match[1] : null;
-    }
-    
-    // -------------------------
-    // Send message (Text/Link logic)
-    // -------------------------
-    function sendMessage(){
+    function sendMessage() {
       const text = msgInput.value.trim();
-      if(!text) return;
-      
-      const youtubeId = getYouTubeId(text);
-      let payload;
-      
-      if (youtubeId) {
-        // Option 1: YouTube link detected
-        payload = { name: anonName, videoId: youtubeId, text: text, type: 'video_link', time: Date.now() };
-      } else {
-        // Option 2: Standard text message
-        payload = { name: anonName, text, type: 'text', time: Date.now() };
-      }
-      
-      db.ref('megaChatChannel').push(payload)
-        .catch(e=> { console.error(e); showToast('Failed to send message.', true); });
+      if (!text) return;
+      const yt = text.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/i);
+      const payload = yt ? 
+        { name: anonName, videoId: yt[1], text, type: 'video_link', time: Date.now() } :
+        { name: anonName, text, type: 'text', time: Date.now() };
+      db.ref('megaChatChannel').push(payload);
       msgInput.value = '';
-      msgInput.focus();
     }
-    sendBtn.addEventListener('click', sendMessage);
+
+    sendBtn.onclick = sendMessage;
     msgInput.addEventListener('keydown', e => {
-      if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); }
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
     });
 
-    // -------------------------
-    // Unified Media File Sending (Image, GIF, Video)
-    // -------------------------
-    mediaBtn.addEventListener('click', () => mediaInput.click());
-    mediaInput.addEventListener('change', function(){
-        const file = this.files[0];
-        if (!file) return;
+    mediaBtn.onclick = () => mediaInput.click();
+    mediaInput.onchange = () => {
+      const file = mediaInput.files[0];
+      if (!file) return;
+      if (file.size > 2*1024*1024) return showToast('Max 2MB', true);
+      const reader = new FileReader();
+      reader.onload = e => {
+        db.ref('megaChatChannel').push({
+          name: anonName,
+          type: file.type.startsWith('image/') ? 'image' : 'video_file',
+          [file.type.startsWith('image/') ? 'image' : 'video']: e.target.result,
+          time: Date.now()
+        });
+        mediaInput.value = '';
+      };
+      reader.readAsDataURL(file);
+    };
 
-        const fileType = file.type;
-        let typeToSend, max_size, dataField, friendlyName;
-
-        if (fileType.startsWith('image/gif')) {
-            // GIF File
-            typeToSend = 'gif';
-            max_size = MAX_GIF_SIZE;
-            dataField = 'image';
-            friendlyName = 'GIF';
-        } else if (fileType.startsWith('image/')) {
-            // Static Image File (PNG, JPEG, etc.)
-            typeToSend = 'image';
-            max_size = MAX_IMAGE_SIZE;
-            dataField = 'image';
-            friendlyName = 'Image';
-        } else if (fileType.startsWith('video/')) {
-            // Video File
-            typeToSend = 'video_file';
-            max_size = MAX_VIDEO_SIZE;
-            dataField = 'video';
-            friendlyName = 'Video';
-        } else {
-            // Unaccepted File Type
-            showToast('Unsupported media file type.', true);
-            mediaInput.value = '';
-            return;
-        }
-
-        // --- Validation Check ---
-        if (file.size > max_size) {
-            showToast(`${friendlyName} too large. Max ${max_size / 1024 / 1024}MB.`, true);
-            mediaInput.value = '';
-            return;
-        }
-
-        // --- Encoding and Sending ---
-        const reader = new FileReader();
-        reader.onload = function(e){
-            const payload = { 
-                name: anonName, 
-                type: typeToSend, 
-                time: Date.now() 
-            };
-            // Dynamically assign the Base64 data to the correct field (image or video)
-            payload[dataField] = e.target.result; 
-
-            db.ref('megaChatChannel').push(payload)
-                .catch(err => { console.error(err); showToast('Failed to send media', true); });
-            mediaInput.value = '';
-        };
-        reader.readAsDataURL(file);
-    });
-
-    // -------------------------
-    // Render message
-    // -------------------------
-    function renderMessage(v){
-      if(!v) return;
-      const isMine = v.name === anonName;
+    function render(v) {
+      if (!v) return;
+      const mine = v.name === anonName;
       const row = document.createElement('div');
-      row.className = 'msg-row';
+      row.className = `flex gap-3 items-end mb-4 ${mine ? 'flex-row-reverse' : ''}`;
 
-      if(!isMine){
-        const avatar = document.createElement('div');
-        avatar.className = 'avatar';
-        avatar.textContent = (v.name && v.name.charAt(0)) || '?';
-        row.appendChild(avatar);
+      if (!mine) {
+        const av = document.createElement('div');
+        av.className = 'w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center font-bold text-sm';
+        av.textContent = v.name[0];
+        row.appendChild(av);
       }
 
       const bubble = document.createElement('div');
-      bubble.className = 'msg ' + (isMine ? 'me' : 'other');
+      bubble.className = `max-w-xs px-5 py-3 rounded-2xl glass ${mine ? 'bg-gradient-to-r from-cyan-500 to-purple-600' : 'bg-white/10'}`;
+      const time = new Date(v.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      bubble.innerHTML = `<div class="text-xs opacity-70 mb-1">${mine ? 'You' : v.name} • ${time}</div>`;
 
-      const date = new Date(v.time || Date.now());
-      const timeString = date.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-
-      // header meta
-      const metaDiv = document.createElement('div');
-      metaDiv.className = 'meta';
-      const nameSpan = document.createElement('span'); nameSpan.className = 'name'; nameSpan.textContent = isMine ? 'You' : (v.name || 'Anon');
-      const timeSpan = document.createElement('span'); timeSpan.className='time'; timeSpan.textContent = timeString;
-      metaDiv.appendChild(nameSpan); metaDiv.appendChild(timeSpan);
-      bubble.appendChild(metaDiv);
-
-      // content
-      if(v.type === 'image' && v.image){
-        const p = document.createElement('p');
-        p.textContent = (isMine ? 'You' : v.name) + ' sent an image';
-        bubble.appendChild(p);
-        
-        const img = document.createElement('img');
-        img.className = 'chat-img';
-        img.src = v.image;
-        img.alt = 'User image';
-        img.addEventListener('click', () => openImageViewer(v.image));
-        
-        bubble.appendChild(img);
-
-      } else if(v.type === 'gif' && v.image){
-        const p = document.createElement('p');
-        p.textContent = (isMine ? 'You' : v.name) + ' sent a GIF';
-        bubble.appendChild(p);
-        
-        const img = document.createElement('img');
-        img.className = 'chat-img';
-        img.src = v.image;
-        img.alt = 'User GIF file';
-        img.style.cursor = 'default';
-        
-        bubble.appendChild(img);
-        
-      } else if(v.type === 'video_file' && v.video){
-        const p = document.createElement('p');
-        p.textContent = (isMine ? 'You' : v.name) + ' sent a video file';
-        bubble.appendChild(p);
-
-        const videoEl = document.createElement('video');
-        videoEl.src = v.video;
-        videoEl.controls = true; 
-        videoEl.style.maxWidth = '250px';
-        videoEl.style.borderRadius = '10px';
-        videoEl.style.marginTop = '6px';
-        videoEl.alt = 'User video file';
-        
-        const downloadLink = document.createElement('a');
-        downloadLink.href = v.video;
-        downloadLink.download = `${v.name}_video_${Date.now()}.mp4`; 
-        downloadLink.textContent = ' (Download)';
-        downloadLink.style.fontSize = '0.75rem';
-        downloadLink.style.color = 'rgba(255,255,255,0.7)';
-        
-        p.appendChild(downloadLink);
-        bubble.appendChild(videoEl);
-
-      } else if(v.type === 'video_link' && v.videoId){
-        const p = document.createElement('p');
-        p.textContent = (isMine ? 'You' : v.name) + ' shared a YouTube link:';
-        bubble.appendChild(p);
-        
-        const videoLink = document.createElement('a');
-        videoLink.className = 'chat-video';
-        videoLink.href = `https://www.youtube.com/watch?v=${v.videoId}`;
-        videoLink.target = '_blank'; 
-        videoLink.style.display = 'block';
-        videoLink.style.marginTop = '8px';
-        videoLink.style.borderRadius = '10px';
-        videoLink.style.overflow = 'hidden';
-        videoLink.style.position = 'relative';
-        
-        const thumbnail = document.createElement('img');
-        thumbnail.src = `https://img.youtube.com/vi/${v.videoId}/hqdefault.jpg`;
-        thumbnail.style.maxWidth = '250px';
-        thumbnail.style.display = 'block';
-        thumbnail.style.width = '100%';
-        thumbnail.alt = 'YouTube Video Preview';
-        
-        const playOverlay = document.createElement('div');
-        playOverlay.style.position = 'absolute';
-        playOverlay.style.inset = '0';
-        playOverlay.style.display = 'grid';
-        playOverlay.style.placeItems = 'center';
-        playOverlay.style.background = 'rgba(0,0,0,0.2)';
-        playOverlay.innerHTML = `<svg width="30" height="30" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
-        
-        videoLink.appendChild(thumbnail);
-        videoLink.appendChild(playOverlay);
-        bubble.appendChild(videoLink);
-        
-      } else if(v.type === 'text' && v.text){
-        const trimmed = v.text.trim();
-        const emojiOnly = /^\p{Extended_Pictographic}+$/u.test(trimmed);
-        if(emojiOnly && trimmed.length <= 4){
-          bubble.classList.add('emoji-only');
-          bubble.textContent = trimmed;
-        } else {
-          const p = document.createElement('p');
-          p.textContent = v.text;
-          bubble.appendChild(p);
-        }
+      if (v.type === 'image' || (v.image && v.type !== 'video_file')) {
+        bubble.innerHTML += `<img src="${v.image}" class="max-w-full rounded-xl mt-2 cursor-pointer" onclick="openImageViewer('${v.image}')">`;
+      } else if (v.type === 'video_file') {
+        bubble.innerHTML += `<video src="${v.video}" controls class="max-w-full rounded-xl mt-2"></video>`;
+      } else if (v.type === 'video_link') {
+        bubble.innerHTML += `<a href="https://youtube.com/watch?v=${v.videoId}" target="_blank" class="block">
+          <img src="https://img.youtube.com/vi/${v.videoId}/hqdefault.jpg" class="w-full rounded-xl">
+          <div class="text-center mt-2 text-sm">▶ Play on YouTube</div></a>`;
+      } else {
+        bubble.innerHTML += `<p class="break-words">${(v.text||'').replace(/\n/g,'<br>')}</p>`;
       }
 
       row.appendChild(bubble);
       messagesEl.appendChild(row);
-      // scroll to bottom
       messagesEl.scrollTop = messagesEl.scrollHeight;
     }
 
-    // -------------------------
-    // Listen to DB for new messages
-    // -------------------------
-    db.ref('megaChatChannel').limitToLast(200).on('child_added', snap => {
-      const v = snap.val();
-      renderMessage(v);
-
-      // update user count
-      db.ref('megaChatChannel').limitToLast(30).once('value', snap => {
-        const set = new Set();
-        snap.forEach(ch => {
-          const val = ch.val();
-          if(val && val.name) set.add(val.name);
-        });
-        userCountEl.textContent = `${set.size} active`;
-      });
-    });
-
-    // -------------------------
-    // Utility functions (Search, scroll locks, etc.)
-    // -------------------------
-    setTimeout(() => {
-      if("Notification" in window && Notification.permission === 'default'){
-        const el = document.createElement('div');
-        el.className = 'toast';
-        el.textContent = 'Enable notifications for new messages?';
-        const btn = document.createElement('button');
-        btn.textContent = 'Enable';
-        btn.style.marginLeft = '8px';
-        btn.style.border = 'none';
-        btn.style.background = 'transparent';
-        btn.style.color = '#fff';
-        btn.style.cursor = 'pointer';
-        btn.onclick = () => Notification.requestPermission().then(()=> { showToast('Notifications updated'); el.remove(); });
-        el.appendChild(btn);
-        document.getElementById('toastHolder').appendChild(el);
-        setTimeout(()=> { if(el.parentNode) el.remove(); }, 8000);
-      }
-    }, 2500);
-
-    const searchBox = document.getElementById('searchBox');
-    searchBox.addEventListener('input', e => {
-      const q = e.target.value.trim().toLowerCase();
-      const items = document.querySelectorAll('.user-list .user-item');
-      items.forEach(it => {
-        const name = it.querySelector('.meta .name').textContent.toLowerCase();
-        const last = it.querySelector('.meta .last').textContent.toLowerCase();
-        it.style.display = (!q || name.includes(q) || last.includes(q)) ? 'flex' : 'none';
-      });
-    });
-
-    function setVh(){
-      document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
-    }
-    window.addEventListener('resize', setVh);
-    setVh();
-
-    msgInput.addEventListener('focus', () => {
-      document.documentElement.classList.add('scroll-lock');
-      document.body.classList.add('scroll-lock');
-      setTimeout(()=> messagesEl.scrollTop = messagesEl.scrollHeight, 300);
-    });
-    msgInput.addEventListener('blur', () => {
-      document.documentElement.classList.remove('scroll-lock');
-      document.body.classList.remove('scroll-lock');
-    });
-
-    window.addEventListener('load', () => {
-      setTimeout(()=> messagesEl.scrollTop = messagesEl.scrollHeight, 200);
-    });
-
-    window.sendMessage = sendMessage;
-
-    console.log('Mega Chat fully loaded — anonName=', anonName);
+    db.ref('megaChatChannel').limitToLast(200).on('child_added', s => render(s.val()));
   </script>
 </body>
 </html>

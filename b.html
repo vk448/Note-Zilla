@@ -1,416 +1,639 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mega Chat: Mobile Anonymous UI (Firestore)</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Mega Chat — Responsive Anonymous</title>
 
-    <!-- Google Font: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
-    <!-- TailwindCSS for responsive utilities and base setup -->
-    <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
 
-    <style>
-        /* ===========================
-           Mega Chat CSS — Mobile-First Adaptations
-           =========================== */
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
-        :root {
-            /* Colors */
-            --bg-1: #071025;
-            --bg-2: #0f1b2b;
-            --accent: #4a90e2;
-            --other-bg: rgba(255,255,255,0.04);
-            /* Sizes */
-            --radius: 14px;
-            /* Spacing */
-            --space-md: 18px;
-            --dur-med: 300ms;
-        }
+  <style>
+    :root{
+      --bg-1:#071025; --bg-2:#0f1b2b; --accent:#4a90e2; --white:#fff;
+      --muted: rgba(255,255,255,0.6);
+      --radius:14px;
+      --sidebar-width:320px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:var(--white);-webkit-font-smoothing:antialiased;background:
+      radial-gradient(1200px 600px at 10% 10%, rgba(74,144,226,0.03), transparent 8%),
+      linear-gradient(180deg,var(--bg-1) 0%,var(--bg-2) 100%);}
+    /* Layout */
+    .app-wrap{
+      width:calc(100% - 32px);
+      max-width:1200px;
+      margin:16px auto;
+      display:grid;
+      grid-template-columns: var(--sidebar-width) 1fr;
+      gap:20px;
+      align-items:start;
+      min-height: calc(100vh - 32px);
+      padding-bottom:24px;
+    }
+    @media (max-width: 920px){
+      .app-wrap{grid-template-columns: 1fr; width: calc(100% - 20px); gap:12px; margin:8px;}
+    }
 
-        /* Base setup for full screen */
-        *, *::before, *::after { box-sizing: border-box; }
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-            background: radial-gradient(1200px 600px at 10% 10%, rgba(74,144,226,0.03), transparent 8%),
-                        linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
-            color: #ffffff;
-            -webkit-font-smoothing: antialiased;
-            overflow: hidden; /* Prevent body scroll */
-        }
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: var(--radius);
+      border:1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 6px 24px rgba(2,6,23,0.6);
+      overflow: hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:120px;
+    }
 
-        /* -------------------------------------------
-           MOBILE-FIRST LAYOUT (Full Screen App)
-           ------------------------------------------- */
-        .app-wrap {
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+    /* Sidebar */
+    .sidebar{padding:20px;min-height:360px;gap:12px}
+    .header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+    .title{display:flex;align-items:center;gap:12px}
+    .title h2{margin:0;color:var(--accent);font-size:1.05rem}
+    .sub{font-size:0.85rem;color:rgba(255,255,255,0.6)}
+    .user-search input{width:100%;padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.02);color:var(--white);outline:none}
+    .user-list{display:flex;flex-direction:column;gap:8px;margin-top:12px;overflow:auto;max-height: calc(100vh - 380px);padding-right:6px}
+    .user-item{display:flex;gap:12px;align-items:center;padding:10px;border-radius:12px;cursor:pointer;transition:all .15s}
+    .user-item:hover{transform:translateX(6px);background:linear-gradient(90deg, rgba(74,144,226,0.04), rgba(255,255,255,0.01))}
+    .avatar{width:48px;height:48px;border-radius:10px;display:grid;place-items:center;font-weight:700;font-size:.95rem;color:var(--accent);background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
+    .meta .name{font-weight:650;color:var(--white);font-size:.95rem}
+    .meta .last{color:rgba(255,255,255,0.35);font-size:.82rem}
 
-        .panel {
-            background: none; /* Make chat background transparent to show body gradient */
-            box-shadow: none;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-        }
+    /* Chat column */
+    .chat{display:flex;flex-direction:column; min-height:420px; height: calc(100vh - 100px); }
+    @media (max-width:920px){ .chat{height:calc(100vh - 120px)} }
 
-        /* -------------------------------------------
-           SIDEBAR (User List) - Hidden/Modal on Mobile
-           ------------------------------------------- */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 80%; /* Takes 80% of mobile width */
-            max-width: 320px;
-            height: 100vh;
-            transform: translateX(-100%);
-            transition: transform var(--dur-med) cubic-bezier(.22,.9,.35,1);
-            z-index: 50;
-            padding: var(--space-md);
-            background: var(--bg-1); /* Solid background for modal overlay */
-            border-right: 1px solid rgba(255,255,255,0.08);
-        }
-        .sidebar.open { transform: translateX(0); }
+    .chat-header{padding:16px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.02);background:linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0));}
+    .chat-header .left{display:flex;gap:12px;align-items:center}
+    .chat-header .title{font-size:1.05rem;font-weight:600;color:var(--accent)}
+    .chat-header .meta{color:rgba(255,255,255,0.6);font-size:0.9rem}
 
-        /* Backdrop for the sidebar */
-        .backdrop {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 40;
-            opacity: 0; pointer-events: none;
-            transition: opacity var(--dur-med) cubic-bezier(.22,.9,.35,1);
-        }
-        .backdrop.open { opacity: 1; pointer-events: auto; }
+    .messages{padding:16px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;flex:1;scroll-behavior:smooth}
+    .msg-row{display:flex;gap:12px;align-items:flex-end}
+    .msg{max-width:72%;padding:12px 14px;border-radius:16px;line-height:1.35;position:relative;display:inline-block;word-wrap:break-word;background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.9);border:1px solid rgba(255,255,255,0.02)}
+    .msg.me{margin-left:auto;background:linear-gradient(135deg,#2b8cff,#4a90e2);color:#fff;box-shadow:0 10px 30px rgba(42,120,210,0.18)}
+    .msg .meta{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+    .msg .meta .name{font-weight:700;font-size:.86rem}
+    .msg .meta .time{font-size:.72rem;color:rgba(255,255,255,0.6)}
+    .msg img.chat-img{max-width:220px;border-radius:10px;margin-top:6px;display:block; cursor:pointer;} 
+    .msg video{max-width:220px;border-radius:10px;margin-top:6px;display:block;}
 
-        /* -------------------------------------------
-           CHAT AREA
-           ------------------------------------------- */
-        .chat-header {
-            background: rgba(255,255,255,0.02);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            z-index: 10;
-        }
-        .messages {
-            padding: 12px;
-            flex: 1; /* Takes up all available space */
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
+    .input-area{display:flex;gap:12px;padding:12px;border-top:1px solid rgba(255,255,255,0.02);align-items:center;background:linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0))}
+    .composer{flex:1;display:flex;gap:10px;align-items:center}
+    .input{flex:1;padding:12px 14px;border-radius:999px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.02);color:var(--white);outline:none}
+    .btn-send{padding:10px 16px;border-radius:999px;background:linear-gradient(90deg,var(--accent),#3672c2);color:var(--white);border:none;cursor:pointer;font-weight:700}
+    .icon{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);cursor:pointer}
 
-        /* -------------------------------------------
-           Generic Component Styles
-           ------------------------------------------- */
-        .user-list { display: flex; flex-direction: column; gap: 8px; margin-top: var(--space-md); }
-        .user-item { display: flex; gap: 12px; align-items: center; padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.03); }
-        .user-item .avatar { width: 40px; height: 40px; border-radius: 8px; display: grid; place-items: center; font-weight: 700; color: var(--accent); background: var(--other-bg); }
+    .system-msg{margin:0 auto;background:rgba(255,255,255,0.03);color: rgba(255,255,255,0.8);border-radius:12px;padding:8px 12px;font-size:0.9rem;max-width:60%;text-align:center}
 
-        .icon-btn { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.03); cursor: pointer; transition: 0.1s; }
-        .icon-btn:active { transform: scale(0.95); }
+    /* Toast */
+    .toast{position:fixed;right:16px;bottom:16px;padding:10px 14px;border-radius:12px;background:rgba(0,0,0,0.75);color:#fff;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,0.5)}
 
-        .input {
-            flex: 1; padding: 12px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.03);
-            background: rgba(255,255,255,0.02); color: #ffffff; outline: none;
-        }
-        .btn-send {
-            padding: 10px 16px; border-radius: 999px; background: linear-gradient(90deg, var(--accent), #3672c2); color: #ffffff;
-            border: none; cursor: pointer; font-weight: 700; transition: 0.1s;
-        }
-        .btn-send:active { transform: scale(0.95); }
-
-        .msg { max-width: 90%; padding: 10px 12px; border-radius: 14px; margin-bottom: 8px; }
-        .msg.me {
-            margin-left: auto; border-bottom-right-radius: 4px; background: linear-gradient(135deg,#2b8cff,#4a90e2);
-            color: #ffffff;
-        }
-        .msg.other {
-            margin-right: auto; border-bottom-left-radius: 4px; background: var(--other-bg);
-            color: #e6eef8; border: 1px solid rgba(255,255,255,0.02);
-        }
-        .msg-row { display: flex; gap: 10px; align-items: flex-end; }
-        .msg .meta .name { font-weight: 700; font-size: 0.86rem; color: rgba(255,255,255,0.9); }
-        .msg .meta .time { font-size: 0.72rem; color: rgba(255,255,255,0.6); }
-
-        /* Hide desktop elements on mobile/default */
-        @media (max-width: 900px) {
-            .app-wrap { margin: 0; padding: 0; }
-        }
-
-        /* Show menu button only on smaller screens */
-        .menu-toggle { display: flex; }
-        @media (min-width: 900px) {
-            .sidebar, .backdrop { display: none; } /* On desktop, hide sidebar and only show chat */
-        }
-    </style>
+    /* Modal */
+    .modal{position:fixed;inset:0;display:grid;place-items:center;background:linear-gradient(180deg, rgba(2,6,23,0.6), rgba(2,6,23,0.8));padding:16px;opacity:0;pointer-events:none;transition:opacity .25s}
+    .modal.open{opacity:1;pointer-events:auto}
+    .modal .card{width:100%;max-width:720px;border-radius:12px;padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))}
+    .small{font-size:.9rem;color:rgba(255,255,255,0.7)}
+    /* ensure body doesn't jump on mobile when keyboard opens */
+    html.scroll-lock, body.scroll-lock { height: 100%; overflow: hidden; }
+    
+    /* Image Viewer Modal Styles */
+    #imageViewerModal {
+      background: rgba(0, 0, 0, 0.9); 
+      z-index: 10000;
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    #imageViewerModal.open {
+      opacity: 1;
+    }
+    #imageViewerModal .image-content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    #imageViewerModal img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+    #imageViewerModal .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 10;
+    }
+  </style>
 </head>
-
 <body>
 
-<!-- 0. Sidebar Backdrop -->
-<div class="backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+  <div class="app-wrap">
 
-<div class="app-wrap">
-
-    <!-- 1. Sidebar (User List) - Slide-out menu for mobile -->
-    <div class="panel sidebar" id="sidebar">
-        <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            Active Users
-        </h2>
-        <div class="flex-1 overflow-y-auto" id="userListContainer">
-            <div class="user-list" id="userList">
-                <p class="text-sm text-gray-500">Loading users...</p>
-            </div>
+    <div class="panel sidebar">
+      <div class="header">
+        <div class="title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h2>Online Users</h2>
         </div>
-        <p class="text-xs text-gray-600 mt-4">Your User ID: <span id="authUserId">...</span></p>
+        <span class="sub" id="userCount">0 active</span>
+      </div>
+
+      <div class="user-search">
+        <input id="searchBox" type="text" placeholder="Search chats or users" />
+      </div>
+
+      <div class="user-list" id="userList">
+        <div class="user-item">
+          <div class="avatar">G</div>
+          <div class="meta">
+            <span class="name">Guest 1337</span>
+            <span class="last">Join the anonymous chat!</span>
+          </div>
+          <div style="margin-left:auto;width:10px;height:10px;border-radius:50%;background:linear-gradient(180deg,#00e6a6,#00a873)"></div>
+        </div>
+        <div class="user-item">
+          <div class="avatar">A</div>
+          <div class="meta">
+            <span class="name">Anonymous 589</span>
+            <span class="last">Hey, what's up?</span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- 2. Chat Area - Full Screen -->
-    <div class="panel chat">
-
-        <!-- Chat Header -->
-        <div class="chat-header p-4 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <!-- Toggle Menu Button (Visible on Mobile) -->
-                <button class="icon-btn menu-toggle" onclick="toggleSidebar()" title="View Users">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" x2="21" y1="12" y2="12"/><line x1="3" x2="21" y1="6" y2="6"/><line x1="3" x2="21" y1="18" y2="18"/></svg>
-                </button>
-                <div class="text-white">
-                    <div class="text-lg font-bold">Global Channel</div>
-                    <div class="text-xs text-gray-400" id="anonNameDisplay">Connecting...</div>
-                </div>
-            </div>
-            <span class="text-sm text-gray-500" id="userCount">0 online</span>
+    <div class="panel chat" aria-live="polite">
+      <div class="chat-header">
+        <div class="left">
+          <div class="avatar">GC</div>
+          <div>
+            <div class="title">Global Anonymous Channel by note-zilla</div>
+            <div class="meta" id="anonNameDisplay">Your Name: Loading...</div>
+          </div>
         </div>
-
-        <!-- Messages Container -->
-        <div id="messages" class="messages flex flex-col-reverse">
-            <!-- Messages will be injected here (flex-col-reverse makes it feel like a chat app) -->
+        <div class="actions" style="display:flex;gap:8px;align-items:center">
+          <button class="icon" title="Info" onclick="openInfoModal()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 8v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
+          </button>
         </div>
+      </div>
 
-        <!-- Input Area / Composer -->
-        <div class="input-area p-3 border-t border-gray-800 flex items-center gap-2 bg-gray-900">
-            <div class="composer flex flex-1 gap-2">
-                <input id="msgInput"
-                       type="text"
-                       placeholder="Type your message..."
-                       class="input">
-                <button id="sendBtn" onclick="sendMessage()" class="btn-send">
-                    Send
-                </button>
-            </div>
+      <div id="messages" class="messages" role="log" aria-live="polite">
+        <div class="system-msg">Welcome to Mega Chat! You are connected anonymously. Say hello!</div>
+      </div>
+
+      <div class="input-area">
+        <input type="file" id="mediaInput" accept="image/*,video/*" style="display:none" />
+        <button id="mediaBtn" class="icon" title="Send Media (Image, GIF, Video)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 15V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 15l-5-5-3 3-4-4L3 15" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+
+        <div class="composer">
+          <input id="msgInput" class="input" type="text" placeholder="Send a message or YouTube link..." autocomplete="off" />
+          <button id="sendBtn" class="btn-send">Send</button>
         </div>
+      </div>
     </div>
-</div>
+  </div>
 
-<!-- JS START -->
-<script>
-    // -----------------------------------------------------------
-    // Global Constants and Setup
-    // -----------------------------------------------------------
-    const messages = document.getElementById("messages");
-    const msgInput = document.getElementById("msgInput");
-    const imgInput = document.getElementById("imgInput");
-    const modal = document.getElementById("infoModal");
+  <div id="infoModal" class="modal" onclick="closeInfoModal(event)" aria-hidden="true">
+    <div class="card" onclick="event.stopPropagation()">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-size:1.05rem;font-weight:700;color:var(--accent)">App Information</div>
+        <button class="icon" onclick="closeInfoModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <div class="small">
+        <p>This is a real-time, anonymous chat application using the <strong>Mega Chat</strong> UI theme.</p>
+        <ul style="margin-top:8px;line-height:1.5">
+          <li><strong>Anonymity:</strong> Your name is randomly generated (e.g., <span id="modalAnonName"></span>).</li>
+          <li><strong>Real-Time:</strong> Messages are synchronized using Firebase Realtime Database.</li>
+          <li><strong>Media Limits:</strong> Images (max 500KB), GIFs (max 1MB), Videos (max 2MB) are supported via Base64 encoding.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
 
-    // Firebase Config (Replace with your actual config if needed)
-    // NOTE: Using a public test database path for demonstration.
+  <div id="imageViewerModal" class="modal" onclick="closeImageViewer(event)" aria-hidden="true">
+    <div class="image-content">
+      <button class="close-btn" onclick="closeImageViewer()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <img id="viewerImage" src="" alt="Full-size chat image" />
+    </div>
+  </div>
+
+  <div id="toastHolder" aria-live="polite" style="position:fixed;right:16px;bottom:16px;z-index:9999"></div>
+
+  <script>
+    // -------------------------
+    // Basic elements
+    // -------------------------
+    const messagesEl = document.getElementById('messages');
+    const msgInput = document.getElementById('msgInput');
+    const mediaInput = document.getElementById('mediaInput');
+    const mediaBtn = document.getElementById('mediaBtn');
+    const sendBtn = document.getElementById('sendBtn');
+    const anonNameDisplay = document.getElementById('anonNameDisplay');
+    const infoModal = document.getElementById('infoModal'); 
+    const modalAnonName = document.getElementById('modalAnonName');
+    const userCountEl = document.getElementById('userCount');
+    const imageViewerModal = document.getElementById('imageViewerModal');
+    const viewerImage = document.getElementById('viewerImage');
+
+
+    // -------------------------
+    // Firebase config 
+    // !!! REMEMBER TO REPLACE THIS WITH YOUR OWN FIREBASE CONFIG !!!
+    // -------------------------
     const firebaseConfig = {
-        apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
-        authDomain: "chat-box-e01e5.firebaseapp.com",
-        databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
-        projectId: "chat-box-e01e5",
-        storageBucket: "chat-box-e01e5.appspot.com",
-        messagingSenderId: "77418949896",
-        appId: "1:77418949896:web:e789dca08f4a6e9af86e49",
+      apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
+      authDomain: "chat-box-e01e5.firebaseapp.com",
+      databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
+      projectId: "chat-box-e01e5",
+      storageBucket: "chat-box-e01e5.appspot.com",
+      messagingSenderId: "77418949896",
+      appId: "1:77418949896:web:e789dca08f4a6e9af86e49",
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Anonymous Name Generation
-    let anonName = "User-" + Math.floor(Math.random() * 9000 + 1000);
-    document.getElementById("anonNameDisplay").textContent = `You are: ${anonName}`;
+    // -------------------------
+    // Size Limits (Constants)
+    // -------------------------
+    const MAX_IMAGE_SIZE = 500 * 1024; // 500KB
+    const MAX_GIF_SIZE = 1 * 1024 * 1024; // 1MB
+    const MAX_VIDEO_SIZE = 2 * 1024 * 1024; // 2MB (Be cautious with this size for Base64)
 
-    // -----------------------------------------------------------
-    // UI Logic (Modal and Toast)
-    // -----------------------------------------------------------
+    // -------------------------
+    // Anonymous Name
+    // -------------------------
+    let anonName = localStorage.getItem('megaAnonName') || ("User-" + Math.floor(Math.random() * 9000 + 1000));
+    localStorage.setItem('megaAnonName', anonName);
+    anonNameDisplay.textContent = `You are: ${anonName}`;
+    modalAnonName.textContent = anonName;
 
-    function openModal() {
-        document.getElementById("modalAnonName").textContent = anonName;
-        modal.classList.add('open');
+    // -------------------------
+    // Toast helper
+    // -------------------------
+    function showToast(text, isError=false, duration=3000){
+      const el = document.createElement('div');
+      el.className = 'toast';
+      el.style.background = isError ? 'linear-gradient(90deg,#ff6b6b,#ff4c4c)' : 'rgba(0,0,0,0.75)';
+      el.textContent = text;
+      document.getElementById('toastHolder').appendChild(el);
+      setTimeout(()=> {
+        el.style.transition = 'opacity .2s, transform .2s';
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(8px)';
+        setTimeout(()=> el.remove(), 220);
+      }, duration);
     }
 
-    function closeModal(event) {
-        // Only close if click is on backdrop or close button
-        if (!event || event.target.closest('.icon-btn') || event.target === modal) {
-            modal.classList.remove('open');
-        }
+    // -------------------------
+    // Modal controls
+    // -------------------------
+    function openInfoModal(){ infoModal.classList.add('open'); infoModal.setAttribute('aria-hidden','false'); }
+    function closeInfoModal(e){ 
+        if (e && e.target !== infoModal) return;
+        infoModal.classList.remove('open'); 
+        infoModal.setAttribute('aria-hidden','true'); 
     }
-
-    // Function to handle custom UI alerts (instead of alert())
-    function showToast(text, isError = false) {
-        let div = document.createElement("div");
-        div.className = `fixed bottom-4 right-4 z-50 p-3 rounded-xl shadow-lg transition-opacity duration-300 ${isError ? 'bg-danger text-white' : 'bg-gray-800 text-white'}`;
-        div.textContent = text;
-        document.body.appendChild(div);
-        setTimeout(() => {
-            div.style.opacity = '0';
-            div.style.transform = 'translateY(10px)';
-            setTimeout(() => div.remove(), 300);
-        }, 3000);
+    window.openInfoModal = openInfoModal; window.closeInfoModal = closeInfoModal; 
+    
+    function openImageViewer(imageUrl) {
+        viewerImage.src = imageUrl;
+        imageViewerModal.classList.add('open');
+        imageViewerModal.setAttribute('aria-hidden', 'false');
     }
-
-    // -----------------------------------------------------------
-    // Messaging Logic
-    // -----------------------------------------------------------
-
-    function sendMessage() {
-        let text = msgInput.value.trim();
-        if (!text) return;
-
-        db.ref("megaChatChannel").push({
-            name: anonName,
-            text,
-            type: "text",
-            time: Date.now()
-        }).catch(e => {
-            showToast("Failed to send message.", true);
-            console.error(e);
-        });
-
-        msgInput.value = "";
+    
+    function closeImageViewer(e) {
+        if (e && e.target !== imageViewerModal) return; 
+        imageViewerModal.classList.remove('open');
+        imageViewerModal.setAttribute('aria-hidden', 'true');
+        viewerImage.src = ''; 
     }
+    window.openImageViewer = openImageViewer; 
 
-    // Send Image (Base64)
-    document.getElementById("imgBtn").onclick = () => {
-        imgInput.click();
-    };
+    // -------------------------
+    // YouTube Helper
+    // -------------------------
+    function getYouTubeId(url) {
+      const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+      const match = url.match(regex);
+      return (match && match[1].length === 11) ? match[1] : null;
+    }
+    
+    // -------------------------
+    // Send message (Text/Link logic)
+    // -------------------------
+    function sendMessage(){
+      const text = msgInput.value.trim();
+      if(!text) return;
+      
+      const youtubeId = getYouTubeId(text);
+      let payload;
+      
+      if (youtubeId) {
+        // Option 1: YouTube link detected
+        payload = { name: anonName, videoId: youtubeId, text: text, type: 'video_link', time: Date.now() };
+      } else {
+        // Option 2: Standard text message
+        payload = { name: anonName, text, type: 'text', time: Date.now() };
+      }
+      
+      db.ref('megaChatChannel').push(payload)
+        .catch(e=> { console.error(e); showToast('Failed to send message.', true); });
+      msgInput.value = '';
+      msgInput.focus();
+    }
+    sendBtn.addEventListener('click', sendMessage);
+    msgInput.addEventListener('keydown', e => {
+      if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); }
+    });
 
-    imgInput.addEventListener("change", function() {
-        let file = this.files[0];
-        if (!file || !file.type.startsWith('image/')) {
-            showToast("Please select a valid image file.", true);
+    // -------------------------
+    // Unified Media File Sending (Image, GIF, Video)
+    // -------------------------
+    mediaBtn.addEventListener('click', () => mediaInput.click());
+    mediaInput.addEventListener('change', function(){
+        const file = this.files[0];
+        if (!file) return;
+
+        const fileType = file.type;
+        let typeToSend, max_size, dataField, friendlyName;
+
+        if (fileType.startsWith('image/gif')) {
+            // GIF File
+            typeToSend = 'gif';
+            max_size = MAX_GIF_SIZE;
+            dataField = 'image';
+            friendlyName = 'GIF';
+        } else if (fileType.startsWith('image/')) {
+            // Static Image File (PNG, JPEG, etc.)
+            typeToSend = 'image';
+            max_size = MAX_IMAGE_SIZE;
+            dataField = 'image';
+            friendlyName = 'Image';
+        } else if (fileType.startsWith('video/')) {
+            // Video File
+            typeToSend = 'video_file';
+            max_size = MAX_VIDEO_SIZE;
+            dataField = 'video';
+            friendlyName = 'Video';
+        } else {
+            // Unaccepted File Type
+            showToast('Unsupported media file type.', true);
+            mediaInput.value = '';
             return;
         }
-        if (file.size > 500 * 1024) { // Limit image size to 500KB for Base64 embedding
-            showToast("Image is too large. Max 500KB allowed.", true);
+
+        // --- Validation Check ---
+        if (file.size > max_size) {
+            showToast(`${friendlyName} too large. Max ${max_size / 1024 / 1024}MB.`, true);
+            mediaInput.value = '';
             return;
         }
 
-        let reader = new FileReader();
-        reader.onload = function() {
-            db.ref("megaChatChannel").push({
-                name: anonName,
-                image: reader.result, // Base64 image
-                type: "image",
-                time: Date.now()
-            }).catch(e => {
-                showToast("Failed to send image.", true);
-                console.error(e);
-            });
-            imgInput.value = ""; // Clear file input
+        // --- Encoding and Sending ---
+        const reader = new FileReader();
+        reader.onload = function(e){
+            const payload = { 
+                name: anonName, 
+                type: typeToSend, 
+                time: Date.now() 
+            };
+            // Dynamically assign the Base64 data to the correct field (image or video)
+            payload[dataField] = e.target.result; 
+
+            db.ref('megaChatChannel').push(payload)
+                .catch(err => { console.error(err); showToast('Failed to send media', true); });
+            mediaInput.value = '';
         };
         reader.readAsDataURL(file);
     });
 
-    // Receive Messages and Render
-    db.ref("megaChatChannel").on("child_added", snap => {
-        let v = snap.val();
-        let isMine = v.name === anonName;
+    // -------------------------
+    // Render message
+    // -------------------------
+    function renderMessage(v){
+      if(!v) return;
+      const isMine = v.name === anonName;
+      const row = document.createElement('div');
+      row.className = 'msg-row';
 
-        let msgRow = document.createElement("div");
-        msgRow.className = "msg-row"; // Container for the bubble
+      if(!isMine){
+        const avatar = document.createElement('div');
+        avatar.className = 'avatar';
+        avatar.textContent = (v.name && v.name.charAt(0)) || '?';
+        row.appendChild(avatar);
+      }
 
-        let msgDiv = document.createElement("div");
-        msgDiv.className = "msg " + (isMine ? "me" : "other");
-        // Add animation delay for better visual flow
-        msgDiv.style.animationDelay = '50ms';
+      const bubble = document.createElement('div');
+      bubble.className = 'msg ' + (isMine ? 'me' : 'other');
 
-        // Message Header (Name and Time)
-        const timeString = new Date(v.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const date = new Date(v.time || Date.now());
+      const timeString = date.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
 
-        const nameElement = `<span class="name">${isMine ? 'You' : v.name}</span>`;
-        const timeElement = `<span class="time">${timeString}</span>`;
+      // header meta
+      const metaDiv = document.createElement('div');
+      metaDiv.className = 'meta';
+      const nameSpan = document.createElement('span'); nameSpan.className = 'name'; nameSpan.textContent = isMine ? 'You' : (v.name || 'Anon');
+      const timeSpan = document.createElement('span'); timeSpan.className='time'; timeSpan.textContent = timeString;
+      metaDiv.appendChild(nameSpan); metaDiv.appendChild(timeSpan);
+      bubble.appendChild(metaDiv);
+
+      // content
+      if(v.type === 'image' && v.image){
+        const p = document.createElement('p');
+        p.textContent = (isMine ? 'You' : v.name) + ' sent an image';
+        bubble.appendChild(p);
         
-        // If it's an 'other' message, wrap it in a msg-row with an avatar placeholder
-        if (!isMine) {
-            const avatar = document.createElement("div");
-            avatar.className = "avatar";
-            avatar.textContent = v.name.charAt(0); // First letter of the name
-            msgRow.appendChild(avatar);
-        }
-
-        // --- Content Generation ---
-        let contentHTML = `<div class="meta">${nameElement} ${timeElement}</div>`;
-
-        if (v.type === "text") {
-            // Check for emoji-only message
-            const isEmojiOnly = /^\p{Emoji_Presentation}{1,3}$/u.test(v.text.trim());
-            if (isEmojiOnly) {
-                msgDiv.classList.add('emoji-only');
-                contentHTML = v.text.trim();
-            } else {
-                contentHTML += `<p>${v.text}</p>`;
-            }
-        }
-
-        if (v.type === "image") {
-            contentHTML += `<p>Image from ${v.name}</p>`;
-            contentHTML += `<div class="attachment"><img src="${v.image}" class="chat-img" alt="User Image"></div>`;
-        }
-
-        msgDiv.innerHTML = contentHTML;
-        msgRow.appendChild(msgDiv);
-
-        // Append to container and scroll
-        messages.appendChild(msgRow);
-        messages.scrollTop = messages.scrollHeight;
-
-        // Basic notification (Only for 'other' messages)
-        if (!isMine) {
-            try {
-                // Request permission if not granted, then show notification
-                if (Notification.permission === "granted") {
-                    new Notification(v.name, {
-                        body: v.type === "text" ? v.text : "sent an image",
-                        icon: "https://placehold.co/48x48/4a90e2/ffffff?text=C"
-                    });
-                } else if (Notification.permission !== "denied") {
-                     Notification.requestPermission();
-                }
-            } catch (e) {
-                // Fail silently if notification API is unavailable
-                console.log("Notification failed:", e);
-            }
-        }
+        const img = document.createElement('img');
+        img.className = 'chat-img';
+        img.src = v.image;
+        img.alt = 'User image';
+        img.addEventListener('click', () => openImageViewer(v.image));
         
-        // Update mock user count (very basic, based on unique names in the last 10 messages)
-        db.ref("megaChatChannel").limitToLast(10).once('value', snapshot => {
-            const uniqueUsers = new Set();
-            snapshot.forEach(childSnapshot => {
-                uniqueUsers.add(childSnapshot.val().name);
-            });
-            document.getElementById("userCount").textContent = `${uniqueUsers.size} active`;
+        bubble.appendChild(img);
+
+      } else if(v.type === 'gif' && v.image){
+        const p = document.createElement('p');
+        p.textContent = (isMine ? 'You' : v.name) + ' sent a GIF';
+        bubble.appendChild(p);
+        
+        const img = document.createElement('img');
+        img.className = 'chat-img';
+        img.src = v.image;
+        img.alt = 'User GIF file';
+        img.style.cursor = 'default';
+        
+        bubble.appendChild(img);
+        
+      } else if(v.type === 'video_file' && v.video){
+        const p = document.createElement('p');
+        p.textContent = (isMine ? 'You' : v.name) + ' sent a video file';
+        bubble.appendChild(p);
+
+        const videoEl = document.createElement('video');
+        videoEl.src = v.video;
+        videoEl.controls = true; 
+        videoEl.style.maxWidth = '250px';
+        videoEl.style.borderRadius = '10px';
+        videoEl.style.marginTop = '6px';
+        videoEl.alt = 'User video file';
+        
+        const downloadLink = document.createElement('a');
+        downloadLink.href = v.video;
+        downloadLink.download = `${v.name}_video_${Date.now()}.mp4`; 
+        downloadLink.textContent = ' (Download)';
+        downloadLink.style.fontSize = '0.75rem';
+        downloadLink.style.color = 'rgba(255,255,255,0.7)';
+        
+        p.appendChild(downloadLink);
+        bubble.appendChild(videoEl);
+
+      } else if(v.type === 'video_link' && v.videoId){
+        const p = document.createElement('p');
+        p.textContent = (isMine ? 'You' : v.name) + ' shared a YouTube link:';
+        bubble.appendChild(p);
+        
+        const videoLink = document.createElement('a');
+        videoLink.className = 'chat-video';
+        videoLink.href = `https://www.youtube.com/watch?v=${v.videoId}`;
+        videoLink.target = '_blank'; 
+        videoLink.style.display = 'block';
+        videoLink.style.marginTop = '8px';
+        videoLink.style.borderRadius = '10px';
+        videoLink.style.overflow = 'hidden';
+        videoLink.style.position = 'relative';
+        
+        const thumbnail = document.createElement('img');
+        thumbnail.src = `https://img.youtube.com/vi/${v.videoId}/hqdefault.jpg`;
+        thumbnail.style.maxWidth = '250px';
+        thumbnail.style.display = 'block';
+        thumbnail.style.width = '100%';
+        thumbnail.alt = 'YouTube Video Preview';
+        
+        const playOverlay = document.createElement('div');
+        playOverlay.style.position = 'absolute';
+        playOverlay.style.inset = '0';
+        playOverlay.style.display = 'grid';
+        playOverlay.style.placeItems = 'center';
+        playOverlay.style.background = 'rgba(0,0,0,0.2)';
+        playOverlay.innerHTML = `<svg width="30" height="30" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+        
+        videoLink.appendChild(thumbnail);
+        videoLink.appendChild(playOverlay);
+        bubble.appendChild(videoLink);
+        
+      } else if(v.type === 'text' && v.text){
+        const trimmed = v.text.trim();
+        const emojiOnly = /^\p{Extended_Pictographic}+$/u.test(trimmed);
+        if(emojiOnly && trimmed.length <= 4){
+          bubble.classList.add('emoji-only');
+          bubble.textContent = trimmed;
+        } else {
+          const p = document.createElement('p');
+          p.textContent = v.text;
+          bubble.appendChild(p);
+        }
+      }
+
+      row.appendChild(bubble);
+      messagesEl.appendChild(row);
+      // scroll to bottom
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    // -------------------------
+    // Listen to DB for new messages
+    // -------------------------
+    db.ref('megaChatChannel').limitToLast(200).on('child_added', snap => {
+      const v = snap.val();
+      renderMessage(v);
+
+      // update user count
+      db.ref('megaChatChannel').limitToLast(30).once('value', snap => {
+        const set = new Set();
+        snap.forEach(ch => {
+          const val = ch.val();
+          if(val && val.name) set.add(val.name);
         });
+        userCountEl.textContent = `${set.size} active`;
+      });
     });
 
-    // ENTER KEY SEND
-    msgInput.addEventListener("keydown", e => {
-        if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault(); // Prevent newline in input
-            sendMessage();
-        }
+    // -------------------------
+    // Utility functions (Search, scroll locks, etc.)
+    // -------------------------
+    setTimeout(() => {
+      if("Notification" in window && Notification.permission === 'default'){
+        const el = document.createElement('div');
+        el.className = 'toast';
+        el.textContent = 'Enable notifications for new messages?';
+        const btn = document.createElement('button');
+        btn.textContent = 'Enable';
+        btn.style.marginLeft = '8px';
+        btn.style.border = 'none';
+        btn.style.background = 'transparent';
+        btn.style.color = '#fff';
+        btn.style.cursor = 'pointer';
+        btn.onclick = () => Notification.requestPermission().then(()=> { showToast('Notifications updated'); el.remove(); });
+        el.appendChild(btn);
+        document.getElementById('toastHolder').appendChild(el);
+        setTimeout(()=> { if(el.parentNode) el.remove(); }, 8000);
+      }
+    }, 2500);
+
+    const searchBox = document.getElementById('searchBox');
+    searchBox.addEventListener('input', e => {
+      const q = e.target.value.trim().toLowerCase();
+      const items = document.querySelectorAll('.user-list .user-item');
+      items.forEach(it => {
+        const name = it.querySelector('.meta .name').textContent.toLowerCase();
+        const last = it.querySelector('.meta .last').textContent.toLowerCase();
+        it.style.display = (!q || name.includes(q) || last.includes(q)) ? 'flex' : 'none';
+      });
     });
 
-    // Initial scroll to bottom on load
-    window.onload = () => {
-        messages.scrollTop = messages.scrollHeight;
-    };
-</script>
+    function setVh(){
+      document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+    }
+    window.addEventListener('resize', setVh);
+    setVh();
+
+    msgInput.addEventListener('focus', () => {
+      document.documentElement.classList.add('scroll-lock');
+      document.body.classList.add('scroll-lock');
+      setTimeout(()=> messagesEl.scrollTop = messagesEl.scrollHeight, 300);
+    });
+    msgInput.addEventListener('blur', () => {
+      document.documentElement.classList.remove('scroll-lock');
+      document.body.classList.remove('scroll-lock');
+    });
+
+    window.addEventListener('load', () => {
+      setTimeout(()=> messagesEl.scrollTop = messagesEl.scrollHeight, 200);
+    });
+
+    window.sendMessage = sendMessage;
+
+    console.log('Mega Chat fully loaded — anonName=', anonName);
+  </script>
 </body>
 </html>
