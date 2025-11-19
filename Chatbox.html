@@ -20,7 +20,6 @@
       padding: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom));
       background: #0a0e1f; border-top: 1px solid rgba(0,231,255,0.2); z-index: 9999;
     }
-    /* IMAGE VIEWER */
     #imageViewerModal {
       position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 99999;
       display: none; align-items: center; justify-content: center; padding: 20px;
@@ -50,32 +49,28 @@
 
   <!-- Messages -->
   <div id="messages" class="px-4">
-    <div class="text-center text-sm opacity-60 py-32">Welcome to Mega Chat 👋<br>Type a message and press Enter</div>
+    <div class="text-center text-sm opacity-60 py-32">Welcome! Keep chat clean 😊</div>
   </div>
 
-  <!-- Fixed Input Bar — SEND BUTTON REMOVED -->
+  <!-- Fixed Input Bar -->
   <div class="input-bar">
     <div class="max-w-5xl mx-auto">
       <div class="glass shadow-2xl flex items-center gap-3 p-4 rounded-2xl">
         <input type="file" id="mediaInput" accept="image/*,video/*" hidden>
-
-        <button id="mediaBtn" class="p-4 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 transition">
+        <button id="mediaBtn" class="p-4 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <rect x="3" y="3" width="18" height="18" rx="2"/>
             <circle cx="8.5" cy="8.5" r="1.5"/>
             <polyline points="21 15 16 10 5 21"/>
           </svg>
         </button>
-
         <input id="msgInput" type="text" placeholder="Message or YouTube link..." autofocus
                class="flex-1 px-5 py-4 bg-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-cyan-500/40 text-base">
-
-        <!-- SEND BUTTON COMPLETELY REMOVED -->
       </div>
     </div>
   </div>
 
-  <!-- Image Viewer Modal -->
+  <!-- Image Viewer -->
   <div id="imageViewerModal" onclick="closeImageViewer()">
     <div class="close-viewer" onclick="closeImageViewer()">×</div>
     <img id="viewerImage" src="" alt="Full view" onclick="event.stopPropagation(); this.classList.toggle('zoomed')">
@@ -84,7 +79,6 @@
   <!-- Toast -->
   <div id="toastHolder" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 space-y-2"></div>
 
-  <!-- SCRIPT (Send on Enter only) -->
   <script>
     const messagesEl = document.getElementById('messages');
     const msgInput = document.getElementById('msgInput');
@@ -94,12 +88,7 @@
     const imageViewerModal = document.getElementById('imageViewerModal');
     const viewerImage = document.getElementById('viewerImage');
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
-      authDomain: "chat-box-e01e5.firebaseapp.com",
-      databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
-      projectId: "chat-box-e01e5",
-    };
+    const firebaseConfig = { apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E", authDomain: "chat-box-e01e5.firebaseapp.com", databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com", projectId: "chat-box-e01e5" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
@@ -107,30 +96,61 @@
     localStorage.setItem('megaAnonName', anonName);
     anonNameDisplay.textContent = `You are: ${anonName}`;
 
-    function showToast(t, err = false) {
-      const d = document.createElement('div');
-      d.className = 'glass px-6 py-3 rounded-xl';
-      d.style.background = err ? 'rgba(255,0,0,0.5)' : 'rgba(0,200,0,0.4)';
-      d.textContent = t;
-      document.getElementById('toastHolder').appendChild(d);
-      setTimeout(() => d.remove(), 3000);
+    // Abuse words list (Hindi + English)
+    const abuseWords = ["madarchod","bhenchod","chutiya","gandu","randi","harami","kutte","kamine","bc","mc","fuck","shit","asshole","bastard","cunt","nigger","faggot","chut","loda","lund","gaand","bhosdike","saala","kutta","suwar","bhosda","hijra","chakka","chod","randwa"];
+
+    // Exponential backoff ban system
+    let isBanned = false;
+    let currentBanLevel = 0; // 0 = no ban, 1 = 60s, 2 = 120s, 3 = 240s etc.
+    let banTimer;
+
+    function showToast(text, error = false) {
+      const t = document.createElement('div');
+      t.className = 'glass px-6 py-3 rounded-xl shadow-2xl';
+      t.style.background = error ? 'rgba(255,0,0,0.7)' : 'rgba(0,200,0,0.4)';
+      t.textContent = text;
+      document.getElementById('toastHolder').appendChild(t);
+      setTimeout(() => t.remove(), 4000);
     }
 
-    // Image Viewer
-    function openImageViewer(url) {
-      viewerImage.src = url;
-      imageViewerModal.classList.add('show');
-    }
-    function closeImageViewer() {
-      imageViewerModal.classList.remove('show');
-      viewerImage.src = '';
-      viewerImage.classList.remove('zoomed');
+    function containsAbuse(text) {
+      const lower = text.toLowerCase();
+      return abuseWords.some(word => lower.includes(word));
     }
 
-    // SEND ON ENTER ONLY (No Send Button)
+    // Double ban timer on repeated offense
+    function applyBan() {
+      currentBanLevel++;
+      const banSeconds = 60 * Math.pow(2, currentBanLevel - 1); // 60, 120, 240, 480...
+      const banMinutes = Math.floor(banSeconds / 60);
+
+      isBanned = true;
+      msgInput.disabled = true;
+      msgInput.placeholder = `Banned! Wait ${banMinutes}m ${banSeconds % 60}s...`;
+
+      showToast(`Abuse detected! Banned for ${banMinutes > 0 ? banMinutes + ' min' : ''} ${banSeconds % 60}s`, true);
+
+      clearTimeout(banTimer);
+      banTimer = setTimeout(() => {
+        isBanned = false;
+        msgInput.disabled = false;
+        msgInput.placeholder = "Message or YouTube link...";
+        showToast("You can chat again!");
+        // Reset level after successful cooldown
+        currentBanLevel = Math.max(0, currentBanLevel - 1);
+      }, banSeconds * 1000);
+    }
+
     function sendMessage() {
+      if (isBanned) return;
       const text = msgInput.value.trim();
       if (!text) return;
+
+      if (containsAbuse(text)) {
+        applyBan();
+        msgInput.value = '';
+        return;
+      }
 
       const yt = text.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/i);
       const payload = yt ? 
@@ -148,12 +168,11 @@
       }
     });
 
-    // Media
-    mediaBtn.onclick = () => mediaInput.click();
+    mediaBtn.onclick = () => { if (!isBanned) mediaInput.click(); else showToast("Banned!", true); };
     mediaInput.onchange = () => {
+      if (isBanned) return showToast("Banned!", true);
       const file = mediaInput.files[0];
-      if (!file) return;
-      if (file.size > 2*1024*1024) return showToast('Max 2MB', true);
+      if (!file || file.size > 2*1024*1024) return showToast('Max 2MB', true);
 
       const reader = new FileReader();
       reader.onload = e => {
@@ -168,7 +187,9 @@
       reader.readAsDataURL(file);
     };
 
-    // Render messages
+    function openImageViewer(url) { viewerImage.src = url; imageViewerModal.classList.add('show'); }
+    function closeImageViewer() { imageViewerModal.classList.remove('show'); viewerImage.src = ''; viewerImage.classList.remove('zoomed'); }
+
     function render(v) {
       if (!v) return;
       const mine = v.name === anonName;
