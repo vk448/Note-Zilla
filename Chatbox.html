@@ -20,23 +20,15 @@
       padding: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom));
       background: #0a0e1f; border-top: 1px solid rgba(0,231,255,0.2); z-index: 9999;
     }
-
-    /* IMAGE VIEWER MODAL */
+    /* IMAGE VIEWER */
     #imageViewerModal {
       position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 99999;
       display: none; align-items: center; justify-content: center; padding: 20px;
     }
     #imageViewerModal.show { display: flex; }
-    #viewerImage {
-      max-width: 100%; max-height: 100%; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-      object-fit: contain; cursor: zoom-in;
-    }
+    #viewerImage { max-width: 100%; max-height: 100%; border-radius: 16px; object-fit: contain; cursor: zoom-in; }
     #viewerImage.zoomed { cursor: zoom-out; transform: scale(2); transition: transform 0.3s; }
-    .close-viewer {
-      position: absolute; top: 20px; right: 20px; width: 50px; height: 50px;
-      background: rgba(255,255,255,0.2); border-radius: 50%; display: grid; place-items: center;
-      font-size: 28px; cursor: pointer; z-index: 100;
-    }
+    .close-viewer { position: absolute; top: 20px; right: 20px; width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 50%; display: grid; place-items: center; font-size: 28px; cursor: pointer; }
   </style>
 </head>
 <body class="text-white">
@@ -58,29 +50,32 @@
 
   <!-- Messages -->
   <div id="messages" class="px-4">
-    <div class="text-center text-sm opacity-60 py-32">Welcome to Mega Chat 👋</div>
+    <div class="text-center text-sm opacity-60 py-32">Welcome to Mega Chat 👋<br>Type a message and press Enter</div>
   </div>
 
-  <!-- Fixed Input Bar -->
+  <!-- Fixed Input Bar — SEND BUTTON REMOVED -->
   <div class="input-bar">
     <div class="max-w-5xl mx-auto">
       <div class="glass shadow-2xl flex items-center gap-3 p-4 rounded-2xl">
         <input type="file" id="mediaInput" accept="image/*,video/*" hidden>
-        <button id="mediaBtn" class="p-4 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95">
+
+        <button id="mediaBtn" class="p-4 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 transition">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <rect x="3" y="3" width="18" height="18" rx="2"/>
             <circle cx="8.5" cy="8.5" r="1.5"/>
             <polyline points="21 15 16 10 5 21"/>
           </svg>
         </button>
-        <input id="msgInput" type="text" placeholder="Message or YouTube link..."
+
+        <input id="msgInput" type="text" placeholder="Message or YouTube link..." autofocus
                class="flex-1 px-5 py-4 bg-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-cyan-500/40 text-base">
-       
+
+        <!-- SEND BUTTON COMPLETELY REMOVED -->
       </div>
     </div>
   </div>
 
-  <!-- IMAGE VIEWER MODAL (NEW & BEAUTIFUL) -->
+  <!-- Image Viewer Modal -->
   <div id="imageViewerModal" onclick="closeImageViewer()">
     <div class="close-viewer" onclick="closeImageViewer()">×</div>
     <img id="viewerImage" src="" alt="Full view" onclick="event.stopPropagation(); this.classList.toggle('zoomed')">
@@ -89,13 +84,12 @@
   <!-- Toast -->
   <div id="toastHolder" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 space-y-2"></div>
 
-  <!-- FULL SCRIPT WITH IMAGE VIEWER SUPPORT -->
+  <!-- SCRIPT (Send on Enter only) -->
   <script>
     const messagesEl = document.getElementById('messages');
     const msgInput = document.getElementById('msgInput');
     const mediaInput = document.getElementById('mediaInput');
     const mediaBtn = document.getElementById('mediaBtn');
-    const sendBtn = document.getElementById('sendBtn');
     const anonNameDisplay = document.getElementById('anonNameDisplay');
     const imageViewerModal = document.getElementById('imageViewerModal');
     const viewerImage = document.getElementById('viewerImage');
@@ -122,7 +116,7 @@
       setTimeout(() => d.remove(), 3000);
     }
 
-    // IMAGE VIEWER FUNCTIONS
+    // Image Viewer
     function openImageViewer(url) {
       viewerImage.src = url;
       imageViewerModal.classList.add('show');
@@ -133,27 +127,34 @@
       viewerImage.classList.remove('zoomed');
     }
 
+    // SEND ON ENTER ONLY (No Send Button)
     function sendMessage() {
       const text = msgInput.value.trim();
       if (!text) return;
+
       const yt = text.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/i);
       const payload = yt ? 
         { name: anonName, videoId: yt[1], text, type: 'video_link', time: Date.now() } :
         { name: anonName, text, type: 'text', time: Date.now() };
+
       db.ref('megaChatChannel').push(payload);
       msgInput.value = '';
     }
 
-    sendBtn.onclick = sendMessage;
     msgInput.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
     });
 
+    // Media
     mediaBtn.onclick = () => mediaInput.click();
     mediaInput.onchange = () => {
       const file = mediaInput.files[0];
       if (!file) return;
       if (file.size > 2*1024*1024) return showToast('Max 2MB', true);
+
       const reader = new FileReader();
       reader.onload = e => {
         db.ref('megaChatChannel').push({
@@ -167,6 +168,7 @@
       reader.readAsDataURL(file);
     };
 
+    // Render messages
     function render(v) {
       if (!v) return;
       const mine = v.name === anonName;
@@ -185,7 +187,7 @@
       const time = new Date(v.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
       bubble.innerHTML = `<div class="text-xs opacity-70 mb-1">${mine ? 'You' : v.name} • ${time}</div>`;
 
-      if (v.type === 'image' || (v.image && v.type !== 'video_file')) {
+      if (v.type === 'image') {
         bubble.innerHTML += `<img src="${v.image}" class="max-w-full rounded-xl mt-2 cursor-pointer" onclick="openImageViewer('${v.image}')">`;
       } else if (v.type === 'video_file') {
         bubble.innerHTML += `<video src="${v.video}" controls class="max-w-full rounded-xl mt-2"></video>`;
