@@ -12,96 +12,264 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
   <style>
-    html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; font-family: 'Inter', sans-serif; background: #0a0e1f; }
-    .glass { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(0, 231, 255, 0.2); border-radius: 20px; }
-    #messages { height: calc(100vh - 170px); overflow-y: auto; padding: 20px 16px 140px 16px; }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: 'Inter', sans-serif;
+      background: #0a0e1f;
+    }
+
+    .glass {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(0, 231, 255, 0.2);
+      border-radius: 20px;
+    }
+
+    #messages {
+      height: calc(100vh - 170px);
+      overflow-y: auto;
+      padding: 20px 16px 140px 16px;
+    }
+
+    /* Input Bar */
     .input-bar {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      padding: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom));
-      background: #0a0e1f; border-top: 1px solid rgba(0,231,255,0.2); z-index: 9999;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px;
+      padding-bottom: calc(12px + env(safe-area-inset-bottom));
+      background: #0a0e1f;
+      border-top: 1px solid rgba(0,231,255,0.2);
+      z-index: 9999;
     }
+
+    /* ⭐ RESPONSIVE MESSAGE INPUT */
+    #msgInput {
+      flex: 1;
+      padding: 12px 20px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 16px;
+      font-size: 16px;
+      height: 52px;
+      line-height: 24px;
+      padding-right: 70px;
+    }
+
+    @media (max-width: 780px) {
+      #msgInput {
+        height: 46px;
+        font-size: 15px;
+        padding: 10px 16px;
+        padding-right: 65px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      #msgInput {
+        height: 42px;
+        font-size: 14px;
+        padding: 8px 14px;
+        padding-right: 60px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      #msgInput {
+        height: 38px;
+        font-size: 13px;
+        padding: 6px 12px;
+        padding-right: 58px;
+      }
+    }
+
+    /* ⭐ RESPONSIVE SEND BUTTON */
+    #sendBtn {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%) scale(0.8);
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+      color: white;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 28px;
+      font-weight: bold;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s;
+      box-shadow: 0 4px 20px rgba(139, 92, 246, 0.5);
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    #sendBtn.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(-50%) scale(1);
+    }
+
+    @media (max-width: 480px) {
+      #sendBtn {
+        width: 46px;
+        height: 46px;
+        font-size: 22px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      #sendBtn {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+      }
+    }
+
+    /* Image Viewer */
     #imageViewerModal {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 99999;
-      display: none; align-items: center; justify-content: center; padding: 20px;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.95);
+      z-index: 99999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
+
     #imageViewerModal.show { display: flex; }
-    #viewerImage { max-width: 100%; max-height: 100%; border-radius: 16px; object-fit: contain; cursor: zoom-in; }
-    #viewerImage.zoomed { cursor: zoom-out; transform: scale(2); transition: transform 0.3s; }
-    .close-viewer { position: absolute; top: 20px; right: 20px; width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 50%; display: grid; place-items: center; font-size: 28px; cursor: pointer; }
+    #viewerImage {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 16px;
+      object-fit: contain;
+      cursor: zoom-in;
+    }
+
+    #viewerImage.zoomed {
+      cursor: zoom-out;
+      transform: scale(2);
+      transition: transform 0.3s;
+    }
+
+    /* Delete Button */
+    .delete-btn {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: #ef4444;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      cursor: pointer;
+      opacity: 0;
+      transition: 0.2s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+    .message-wrapper:hover .delete-btn,
+    .message-wrapper.long-press .delete-btn {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+
   </style>
 </head>
+
 <body class="text-white">
 
-  <!-- Header -->
-  <header class="glass mx-4 mt-4 rounded-2xl p-5 shadow-2xl">
-    <div class="flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-2xl font-black">MZ</div>
-        <div>
-          <h1 class="text-2xl font-bold bg-gradient-to-r from-cyan-300 to-purple-400 bg-clip-text text-transparent">
-            Global Anonymous Room
-          </h1>
-          <p class="text-sm opacity-80" id="anonNameDisplay">You are: Loading...</p>
-        </div>
+<!-- HEADER -->
+<header class="glass mx-4 mt-4 rounded-2xl p-5 shadow-2xl">
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-2xl font-black">MZ</div>
+      <div>
+        <h1 class="text-2xl font-bold bg-gradient-to-r from-cyan-300 to-purple-400 bg-clip-text text-transparent">
+          Global Anonymous Room
+        </h1>
+        <p class="text-sm opacity-80" id="anonNameDisplay">You are: Loading...</p>
       </div>
     </div>
-  </header>
-
-  <!-- Messages -->
-  <div id="messages" class="px-4">
-    <div class="text-center text-sm opacity-60 py-32">Welcome! Keep chat clean 😊</div>
   </div>
+</header>
 
-  <!-- Fixed Input Bar -->
-  <div class="input-bar">
-    <div class="max-w-5xl mx-auto">
-      <div class="glass shadow-2xl flex items-center gap-3 p-4 rounded-2xl">
+<!-- MESSAGES -->
+<div id="messages" class="px-4">
+  <div class="text-center text-sm opacity-60 py-32">Welcome! Keep chat clean 😊</div>
+</div>
+
+<!-- INPUT BAR -->
+<div class="input-bar">
+  <div class="max-w-5xl mx-auto">
+    <div class="glass shadow-2xl rounded-2xl relative overflow-hidden">
+      <div class="flex items-center gap-3 p-4">
         <input type="file" id="mediaInput" accept="image/*,video/*" hidden>
-        <button id="mediaBtn" class="p-4 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95">
+        <button id="mediaBtn" class="p-4 rounded-xl bg-white/10 hover:bg-white/20 transition">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <rect x="3" y="3" width="18" height="18" rx="2"/>
             <circle cx="8.5" cy="8.5" r="1.5"/>
             <polyline points="21 15 16 10 5 21"/>
           </svg>
         </button>
-        <input id="msgInput" type="text" placeholder="Message or YouTube link..." autofocus
-               class="flex-1 px-5 py-4 bg-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-cyan-500/40 text-base">
+
+        <input id="msgInput" type="text" placeholder="Message or YouTube link..." class="flex-1">
+
+        <button id="sendBtn">↑</button>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Image Viewer -->
-  <div id="imageViewerModal" onclick="closeImageViewer()">
-    <div class="close-viewer" onclick="closeImageViewer()">×</div>
-    <img id="viewerImage" src="" alt="Full view" onclick="event.stopPropagation(); this.classList.toggle('zoomed')">
-  </div>
+<!-- IMAGE VIEWER -->
+<div id="imageViewerModal" onclick="closeImageViewer()">
+  <div class="close-viewer">×</div>
+  <img id="viewerImage" src="">
+</div>
 
-  <!-- Toast -->
-  <div id="toastHolder" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 space-y-2"></div>
+<!-- TOAST -->
+<div id="toastHolder" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 space-y-2"></div>
 
-  <script>
+ <script>
+    // Elements
     const messagesEl = document.getElementById('messages');
     const msgInput = document.getElementById('msgInput');
+    const sendBtn = document.getElementById('sendBtn');
     const mediaInput = document.getElementById('mediaInput');
     const mediaBtn = document.getElementById('mediaBtn');
     const anonNameDisplay = document.getElementById('anonNameDisplay');
     const imageViewerModal = document.getElementById('imageViewerModal');
     const viewerImage = document.getElementById('viewerImage');
 
-    const firebaseConfig = { apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E", authDomain: "chat-box-e01e5.firebaseapp.com", databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com", projectId: "chat-box-e01e5" };
+    // Firebase
+    const firebaseConfig = { 
+      apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E", 
+      authDomain: "chat-box-e01e5.firebaseapp.com", 
+      databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com", 
+      projectId: "chat-box-e01e5" 
+    };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+    const chatRef = db.ref('megaChatChannel');
 
+    // Anonymous Name
     let anonName = localStorage.getItem('megaAnonName') || ("User-" + Math.floor(Math.random() * 9000 + 1000));
     localStorage.setItem('megaAnonName', anonName);
     anonNameDisplay.textContent = `You are: ${anonName}`;
 
-    // Abuse words list (Hindi + English)
-    const abuseWords = ["madarchod","bhenchod","chutiya","gandu","randi","harami","kutte","kamine","bc","mc","fuck","shit","asshole","bastard","cunt","nigger","faggot","chut","loda","lund","gaand","bhosdike","saala","kutta","suwar","bhosda","hijra","chakka","chod","randwa","bc"];
-
-    // Exponential backoff ban system
+    // Abuse Filter
+    const abuseWords = ["madarchod","bhenchod","chutiya","gandu","randi","harami","kutte","kamine","bc","mc","fuck","shit","asshole","bastard","cunt","nigger","faggot","chut","loda","lund","gaand","bhosdike","saala","kutta","suwar","bhosda","hijra","chakka","chod","randwa"];
     let isBanned = false;
-    let currentBanLevel = 0; // 0 = no ban, 1 = 60s, 2 = 120s, 3 = 240s etc.
+    let currentBanLevel = 0;
     let banTimer;
 
     function showToast(text, error = false) {
@@ -114,21 +282,17 @@
     }
 
     function containsAbuse(text) {
-      const lower = text.toLowerCase();
-      return abuseWords.some(word => lower.includes(word));
+      return abuseWords.some(word => text.toLowerCase().includes(word));
     }
 
-    // Double ban timer on repeated offense
     function applyBan() {
       currentBanLevel++;
-      const banSeconds = 60 * Math.pow(2, currentBanLevel - 1); // 60, 120, 240, 480...
+      const banSeconds = 60 * Math.pow(2, currentBanLevel - 1);
       const banMinutes = Math.floor(banSeconds / 60);
-
       isBanned = true;
       msgInput.disabled = true;
       msgInput.placeholder = `Banned! Wait ${banMinutes}m ${banSeconds % 60}s...`;
-
-      showToast(`Abuse detected! Banned for ${banMinutes > 0 ? banMinutes + ' min' : ''} ${banSeconds % 60}s`, true);
+      showToast(`Abuse detected! Banned for ${banMinutes}m`, true);
 
       clearTimeout(banTimer);
       banTimer = setTimeout(() => {
@@ -136,19 +300,20 @@
         msgInput.disabled = false;
         msgInput.placeholder = "Message or YouTube link...";
         showToast("You can chat again!");
-        // Reset level after successful cooldown
         currentBanLevel = Math.max(0, currentBanLevel - 1);
       }, banSeconds * 1000);
     }
 
+    // SEND MESSAGE FUNCTION (Fixed)
     function sendMessage() {
-      if (isBanned) return;
+      if (isBanned) return showToast("You're banned!", true);
       const text = msgInput.value.trim();
       if (!text) return;
 
       if (containsAbuse(text)) {
         applyBan();
         msgInput.value = '';
+        sendBtn.classList.remove('show');
         return;
       }
 
@@ -157,10 +322,12 @@
         { name: anonName, videoId: yt[1], text, type: 'video_link', time: Date.now() } :
         { name: anonName, text, type: 'text', time: Date.now() };
 
-      db.ref('megaChatChannel').push(payload);
+      chatRef.push(payload);
       msgInput.value = '';
+      sendBtn.classList.remove('show');
     }
 
+    // Enter key to send
     msgInput.addEventListener('keydown', e => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
@@ -168,7 +335,20 @@
       }
     });
 
-    mediaBtn.onclick = () => { if (!isBanned) mediaInput.click(); else showToast("Banned!", true); };
+    // Show/Hide Send Button
+    msgInput.addEventListener('input', () => {
+      if (msgInput.value.trim().length > 0) {
+        sendBtn.classList.add('show');
+      } else {
+        sendBtn.classList.remove('show');
+      }
+    });
+
+    // Click Send Button
+    sendBtn.addEventListener('click', sendMessage);
+
+    // Media Upload
+    mediaBtn.onclick = () => isBanned ? showToast("Banned!", true) : mediaInput.click();
     mediaInput.onchange = () => {
       if (isBanned) return showToast("Banned!", true);
       const file = mediaInput.files[0];
@@ -176,7 +356,7 @@
 
       const reader = new FileReader();
       reader.onload = e => {
-        db.ref('megaChatChannel').push({
+        chatRef.push({
           name: anonName,
           type: file.type.startsWith('image/') ? 'image' : 'video_file',
           [file.type.startsWith('image/') ? 'image' : 'video']: e.target.result,
@@ -187,20 +367,45 @@
       reader.readAsDataURL(file);
     };
 
+    // Image Viewer
     function openImageViewer(url) { viewerImage.src = url; imageViewerModal.classList.add('show'); }
     function closeImageViewer() { imageViewerModal.classList.remove('show'); viewerImage.src = ''; viewerImage.classList.remove('zoomed'); }
 
-    function render(v) {
+    // Delete Message
+    function deleteMessage(key) {
+      if (confirm("Delete this message?")) {
+        chatRef.child(key).remove()
+          .then(() => showToast("Deleted"))
+          .catch(() => showToast("Failed", true));
+      }
+    }
+
+    // Long press for mobile delete
+    let longPressTimer;
+    const startLongPress = el => longPressTimer = setTimeout(() => el.classList.add('long-press'), 600);
+    const cancelLongPress = el => { clearTimeout(longPressTimer); el.classList.remove('long-press'); };
+
+    // Render Messages
+    function render(snapshot) {
+      const v = snapshot.val();
+      const key = snapshot.key;
       if (!v) return;
+
       const mine = v.name === anonName;
-      const row = document.createElement('div');
-      row.className = `flex gap-3 items-end mb-4 ${mine ? 'flex-row-reverse' : ''}`;
+      const wrapper = document.createElement('div');
+      wrapper.className = `message-wrapper relative flex gap-3 items-end mb-4 ${mine ? 'flex-row-reverse' : ''}`;
+
+      // Long press delete (mobile)
+      wrapper.addEventListener('touchstart', () => mine && startLongPress(wrapper));
+      wrapper.addEventListener('touchend', () => cancelLongPress(wrapper));
+      wrapper.addEventListener('touchmove', () => cancelLongPress(wrapper));
+      wrapper.addEventListener('contextmenu', e => { if (mine) { e.preventDefault(); deleteMessage(key); } });
 
       if (!mine) {
         const av = document.createElement('div');
         av.className = 'w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center font-bold text-sm';
-        av.textContent = v.name[0];
-        row.appendChild(av);
+        av.textContent = v.name[0].toUpperCase();
+        wrapper.appendChild(av);
       }
 
       const bubble = document.createElement('div');
@@ -220,12 +425,30 @@
         bubble.innerHTML += `<p class="break-words">${(v.text||'').replace(/\n/g,'<br>')}</p>`;
       }
 
-      row.appendChild(bubble);
-      messagesEl.appendChild(row);
+      wrapper.appendChild(bubble);
+
+      // Delete button (only own messages)
+      if (mine) {
+        const del = document.createElement('div');
+        del.className = 'delete-btn';
+        del.innerHTML = '×';
+        del.onclick = e => { e.stopPropagation(); deleteMessage(key); };
+        wrapper.appendChild(del);
+      }
+
+      messagesEl.appendChild(wrapper);
       messagesEl.scrollTop = messagesEl.scrollHeight;
     }
 
-    db.ref('megaChatChannel').limitToLast(200).on('child_added', s => render(s.val()));
+    // Load messages
+    chatRef.limitToLast(200).on('child_added', render);
+
+    // Refresh on delete
+    chatRef.on('child_removed', () => {
+      messagesEl.innerHTML = '<div class="text-center text-sm opacity-60 py-32">Welcome! Keep chat clean 😊</div>';
+      chatRef.limitToLast(200).once('value', snap => snap.forEach(render));
+    });
   </script>
+
 </body>
 </html>
