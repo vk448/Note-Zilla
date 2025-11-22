@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NoteZilla — Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;} 
+body{background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);display:flex;justify-content:center;align-items:center;min-height:100vh;overflow:hidden;}
+
+/* Loader */
+#loaderOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:9999;
+  justify-content:center;align-items:center;flex-direction:column;color:#fff;font-size:1.4rem;}
+.spinner{border:8px solid rgba(255,255,255,0.3);border-top:8px solid #fff;border-radius:50%;width:60px;height:60px;
+  animation:spin 1s linear infinite;margin-bottom:15px;}
+@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+
+/* Login Container */
+.container{width:100%;max-width:400px;background:#fff;border-radius:15px;padding:40px 30px;text-align:center;
+  box-shadow:0 10px 40px rgba(0,0,0,0.4);}
+h1{font-size:2.2rem;color:#203a43;margin-bottom:10px;}
+h2{font-size:1.5rem;color:#333;margin-bottom:20px;}
+input{width:100%;padding:15px;margin:12px 0;border-radius:10px;border:2px solid #ddd;font-size:16px;transition:0.3s;}
+input:focus{border-color:#2c5364;outline:none;box-shadow:0 0 10px rgba(44,83,100,0.4);}
+button{width:100%;padding:15px;background:linear-gradient(135deg,#203a43,#2c5364);color:#fff;font-weight:600;
+  border:none;border-radius:10px;cursor:pointer;font-size:1.1rem;transition:0.3s;}
+button:hover{transform:scale(1.03);}
+.notice{margin-top:20px;font-size:0.95rem;color:#555;}
+.notice a{color:#2c5364;font-weight:600;text-decoration:none;}
+.notice a:hover{text-decoration:underline;}
+
+/* Dashboard */
+.dashboard{display:none;height:100vh;width:100vw;background:#f1f4f8;}
+
+/* Sidebar */
+.sidebar{width:270px;background:#1b2838;color:#fff;padding:20px 15px;box-shadow:4px 0 20px rgba(0,0,0,0.3);}
+.sidebar img{width:100px;height:100px;border-radius:50%;border:5px solid #4fc3f7;margin-bottom:15px;object-fit:cover;}
+.sidebar h3{font-size:1.3rem;margin-bottom:25px;text-align:center;color:#4fc3f7;}
+.sidebar button{width:100%;margin:10px 0;padding:14px;background:transparent;color:#ddd;
+  border:none;border-radius:10px;text-align:left;font-size:1rem;cursor:pointer;
+  display:flex;align-items:center;gap:15px;transition:0.3s;padding-left:20px;}
+.sidebar button:hover{background:#203a43;color:#fff;}
+.sidebar button.active{background:#4fc3f7;color:#1b2838;font-weight:700;}
+.sidebar i{font-size:1.2rem;width:25px;text-align:center;}
+.logout-btn{background:#e74c3c!important;margin-top:auto;}
+.logout-btn:hover{background:#c0392b!important;}
+
+/* Collapsed Sidebar */
+.sidebar.collapsed{width:85px;align-items:center;}
+.sidebar.collapsed img,.sidebar.collapsed h3,.sidebar.collapsed button span{display:none;}
+.sidebar.collapsed button{justify-content:center;padding:14px;}
+
+/* Main Content */
+.main{flex:1;display:flex;flex-direction:column;}
+.topbar{background:#fff;display:flex;align-items:center;justify-content:space-between;
+  padding:15px 25px;border-bottom:3px solid #eee;box-shadow:0 3px 15px rgba(0,0,0,0.1);}
+.topbar h2{color:#203a43;font-size:1.5rem;font-weight:700;}
+.menu-icon{font-size:30px;cursor:pointer;color:#203a43;font-weight:bold;}
+iframe{flex:1;width:100%;border:none;background:#fff;}
+
+/* Mobile */
+@media(max-width:768px){
+  .sidebar{position:absolute;left:-270px;top:0;height:100%;z-index:100;transition:left 0.3s;}
+  .sidebar.active{left:0;}
+}
+</style>
+</head>
+<body>
+
+<!-- Loader -->
+<div id="loaderOverlay">
+  <div class="spinner"></div>
+  <div>Logging in...</div>
+</div>
+
+<!-- Login Page -->
+<div class="container" id="loginContainer">
+  <h1>NoteZilla</h1>
+  <h2>Admin Panel</h2>
+  <form id="loginForm">
+    <input type="text" id="username" placeholder="Username or Email" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button type="submit">Login Now</button>
+  </form>
+  <div class="notice">Not registered? <a href="admin-register.html">Register Here</a></div>
+</div>
+
+<!-- Dashboard -->
+<div class="dashboard" id="dashboard">
+  <div class="sidebar" id="sidebar">
+    <img id="adminPhoto" src="" alt="Profile">
+    <h3 id="adminName">Loading...</h3>
+    <button onclick="loadPage('upload-work-data-base-admin-co-admin.html', this)"><i class="fa-solid fa-database"></i><span>Notes Database</span></button>
+    <button onclick="loadPage('https://docs.google.com/spreadsheets/d/18ZuLufS0Vkulej9N_mtAKKw4WGulKTYyhdxjKIs-Y-A/edit', this)"><i class="fa-solid fa-calendar-days"></i><span>Time Table</span></button>
+    <button onclick="loadPage('delete-database-work-admin-owner-notezilla-database-work-add-on.html', this)"><i class="fa-solid fa-pen-to-square"></i><span>Edit Notes</span></button>
+    <button onclick="loadPage('credits.html', this)"><i class="fa-solid fa-id-card"></i><span>Credits</span></button>
+    <button onclick="window.open('https://note-zilla.netlify.app/', '_blank')"><i class="fa-solid fa-globe"></i><span>Visit Site</span></button>
+    <button class="logout-btn" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></button>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="menu-icon" onclick="toggleSidebar()">Menu</div>
+      <h2>NoteZilla Admin Panel</h2>
+    </div>
+    <iframe id="frameBox" src="welcome.html"></iframe>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+<<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
+    authDomain: "chat-box-e01e5.firebaseapp.com",
+    databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
+    projectId: "chat-box-e01e5",
+    storageBucket: "chat-box-e01e5.firebasestorage.app",
+    messagingSenderId: "597491149800",
+    appId: "1:597491149800:web:7bd908925f70b62018125d",
+    measurementId: "G-FJ6PKK2FNQ"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  const loader = document.getElementById("loaderOverlay");
+  const loginContainer = document.getElementById("loginContainer");
+  const dashboard = document.getElementById("dashboard");
+  const adminName = document.getElementById("adminName");
+  const adminPhoto = document.getElementById("adminPhoto");
+
+  // Beautiful Message Function (Same as Register Page)
+  function showMessage(text, type = "success") {
+    const messageDiv = document.createElement("div");
+    messageDiv.style.cssText = `
+      position:fixed;top:20px;left:50%;transform:translateX(-50%);
+      background:${type === "success" ? "#d4edda" : "#f8d7da"};
+      color:${type === "success" ? "#155724" : "#721c24"};
+      border:1px solid ${type === "success" ? "#c3e6cb" : "#f5c6cb"};
+      padding:16px 35px;border-radius:12px;font-size:1.1rem;
+      font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,0.25);
+      z-index:10000;display:flex;align-items:center;gap:12px;
+      animation:slideDown 0.5s ease;
+    `;
+    messageDiv.innerHTML = `
+      ${type === "success" ? "Success" : "Error"} ${text}
+    `;
+    document.body.appendChild(messageDiv);
+
+    setTimeout(() => {
+      messageDiv.style.animation = "slideUp 0.5s ease forwards";
+      setTimeout(() => messageDiv.remove(), 500);
+    }, 4000);
+  }
+
+  // Add Animation CSS
+  const style = document.createElement("style");
+  style.textContent = `
+    @keyframes slideDown {
+      from {opacity:0;transform:translateX(-50%) translateY(-50px);}
+      to {opacity:1;transform:translateX(-50%) translateY(0);}
+    }
+    @keyframes slideUp {
+      to {opacity:0;transform:translateX(-50%) translateY(-50px);}
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Auto Login
+  window.onload = () => {
+    const user = sessionStorage.getItem("currentUser");
+    if (user) {
+      showDashboard(JSON.parse(user));
+    }
+  };
+
+  // Login Form Submit
+  document.getElementById("loginForm").onsubmit = async (e) => {
+    e.preventDefault();
+    const identifier = document.getElementById("username").value.trim().toLowerCase();
+    const password = document.getElementById("password").value;
+
+    loader.style.display = "flex";
+
+    try {
+      const snapshot = await db.ref("admins").once("value");
+      let found = null;
+
+      snapshot.forEach(child => {
+        const user = child.val();
+        if ((user.username?.toLowerCase() === identifier || user.email?.toLowerCase() === identifier) &&
+            atob(user.password) === password) {
+          found = { id: child.key, ...user };
+        }
+      });
+
+      if (found) {
+        sessionStorage.setItem("currentUser", JSON.stringify(found));
+        showMessage(`Welcome back, ${found.fullName}!`, "success");
+        setTimeout(() => showDashboard(found), 1500);
+      } else {
+        showMessage("Wrong username/email or password!", "error");
+      }
+    } catch (err) {
+      showMessage("Login failed: " + err.message, "error");
+    } finally {
+      loader.style.display = "none";
+    }
+  };
+
+  function showDashboard(user) {
+    loginContainer.style.display = "none";
+    dashboard.style.display = "flex";
+    adminName.textContent = `${user.fullName} (${user.role})`;
+    adminPhoto.src = user.photoURL?.startsWith("data:") 
+      ? user.photoURL 
+      : (user.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`);
+
+    // Role-based access
+    const isAdmin = ["Admin", "Co-Admin", "owner"].includes(user.role);
+    document.querySelectorAll(".sidebar button:not(.logout-btn)").forEach(btn => {
+      btn.style.display = isAdmin ? "flex" : "none";
+    });
+  }
+
+  // Logout
+  document.getElementById("logoutBtn").onclick = () => {
+    sessionStorage.clear();
+    showMessage("Logged out successfully!", "success");
+    setTimeout(() => {
+      loginContainer.style.display = "block";
+      dashboard.style.display = "none";
+      document.getElementById("loginForm").reset();
+    }, 1000);
+  };
+
+  // Load Page
+  function loadPage(url, btn) {
+    if (url.includes("http")) {
+      window.open(url, "_blank");
+      return;
+    }
+    document.getElementById("frameBox").src = url;
+    document.querySelectorAll(".sidebar button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+  }
+
+  // Toggle Sidebar
+  function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    if (window.innerWidth <= 768) {
+      sidebar.classList.toggle("active");
+    } else {
+      sidebar.classList.toggle("collapsed");
+    }
+  }
+</script>
+</body>
+</html>

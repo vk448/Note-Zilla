@@ -7,7 +7,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-    body{background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);min-height:100vh;color:white;}
+    body{background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);min-height:100vh;color:white;overflow-y:auto;overflow-x:hidden;}
+
     .header{background:rgba(255,255,255,0.1);padding:25px;text-align:center;border-bottom:2px solid #2c5364;}
     .header h1{font-size:2.5rem;color:#fff;margin-bottom:8px;}
     .stats{padding:25px;text-align:center;}
@@ -26,27 +27,36 @@
     .role{background:#2c5364;padding:6px 14px;border-radius:20px;font-size:0.85rem;font-weight:600;}
     .password-field{
       background:#333;color:#fff;padding:8px 12px;border-radius:8px;
-      font-family:monospace;letter-spacing:3px;cursor:pointer;
+      font-family:monospace;letter-spacing:3px;cursor:pointer;font-size:1rem;
     }
     .password-field:hover{background:#555;}
 
     .login-box{
       max-width:400px;margin:50px auto;background:rgba(255,255,255,0.15);
-      padding:30px;border-radius:15px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.4);
+      padding:35px;border-radius:20px;text-align:center;box-shadow:0 15px 40px rgba(0,0,0,0.5);
     }
-    .login-box input{width:100%;padding:14px;margin:10px 0;border-radius:10px;border:none;font-size:16px;}
-    .login-box button{width:100%;padding:14px;background:#4fc3f7;color:#1b2838;border:none;
-      border-radius:10px;font-weight:700;cursor:pointer;margin-top:10px;}
-    .login-box button:hover{background:#29b6f6;}
+    .login-box input{width:100%;padding:15px;margin:12px 0;border-radius:12px;border:none;font-size:16px;}
+    .login-box button{width:100%;padding:15px;background:#4fc3f7;color:#1b2838;border:none;
+      border-radius:12px;font-weight:700;cursor:pointer;margin-top:10px;font-size:1.1rem;}
+    .login-box button:hover{background:#29b6f6;transform:scale(1.03);}
 
     #loader{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);
       display:flex;justify-content:center;align-items:center;z-index:9999;flex-direction:column;color:white;font-size:1.6rem;}
     .spinner{width:70px;height:70px;border:10px solid rgba(255,255,255,0.3);border-top:10px solid white;
       border-radius:50%;animation:spin 1s linear infinite;margin-bottom:25px;}
-    @keyframes spin{to{transform:rotate(360deg);}}
+    @keyframes spin{to{transform:rotate(360deg)}}
 
     .back-btn{position:fixed;bottom:30px;left:30px;background:#2c5364;padding:15px 30px;
-      border-radius:50px;color:white;text-decoration:none;font-weight:600;box-shadow:0 5px 15px rgba(0,0,0,0.4);}
+      border-radius:50px;color:white;text-decoration:none;font-weight:600;box-shadow:0 5px 15px rgba(0,0,0,0.4);z-index:100;}
+
+    /* Toast Messages */
+    .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:16px 40px;border-radius:12px;
+      color:white;font-weight:600;z-index:10000;box-shadow:0 10px 30px rgba(0,0,0,0.4);opacity:0;
+      animation:slideDown 0.5s ease forwards;font-size:1.1rem;}
+    .toast.success{background:#28a745;}
+    .toast.error{background:#dc3545;}
+    @keyframes slideDown{from{opacity:0;transform:translateX(-50%) translateY(-50px);}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+    @keyframes slideUp{to{opacity:0;transform:translateX(-50%) translateY(-50px)}}
   </style>
 </head>
 <body>
@@ -66,13 +76,13 @@
     <p>Total Users Registered</p>
   </div>
 
-  <!-- Agar login nahi hai → Login Box dikhega -->
+  <!-- Login Box -->
   <div id="loginBox" class="login-box" style="display:none;">
-    <h2 style="margin-bottom:20px;color:#fff;">Login to View Users</h2>
+    <h2 style="margin-bottom:20px;color:#fff;">Login Required</h2>
     <input type="text" id="loginUsername" placeholder="Username or Email" required>
     <input type="password" id="loginPassword" placeholder="Password" required>
     <button onclick="performLogin()">Login Now</button>
-    <p style="margin-top:15px;color:#ccc;">
+    <p style="margin-top:20px;color:#ccc;">
       Not registered? <a href="admin-register.html" style="color:#4fc3f7;">Register Here</a>
     </p>
   </div>
@@ -107,7 +117,19 @@
 
     let currentUser = null;
 
-    // Check if already logged in
+    // Toast Message Function
+    function toast(text, type = "success") {
+      const t = document.createElement("div");
+      t.className = `toast ${type}`;
+      t.innerHTML = text;
+      document.body.appendChild(t);
+      setTimeout(() => {
+        t.style.animation = "slideUp 0.5s ease forwards";
+        setTimeout(() => t.remove(), 500);
+      }, 5000);
+    }
+
+    // Check Login
     window.onload = () => {
       const saved = sessionStorage.getItem("currentUser");
       if (saved) {
@@ -125,7 +147,7 @@
       const password = document.getElementById("loginPassword").value;
 
       if (!identifier || !password) {
-        alert("Please fill both fields!");
+        toast("Please fill both fields!", "error");
         return;
       }
 
@@ -147,20 +169,21 @@
           currentUser = found;
           sessionStorage.setItem("currentUser", JSON.stringify(found));
           loginBox.style.display = "none";
+          toast(`Welcome, ${found.fullName}!`, "success");
           loadUsers();
         } else {
-          alert("Wrong username/email or password!");
+          toast("Wrong username/email or password!", "error");
         }
       } catch (err) {
-        alert("Login failed: " + err.message);
+        toast("Login failed: " + err.message, "error");
       } finally {
         document.getElementById("loader").style.display = "none";
       }
     }
 
-    // Load All Users
+    // Load Users
     async function loadUsers() {
-      const isAdmin = currentUser && ["Admin", "owner"].includes(currentUser.role);
+      const isAdmin = currentUser && ["Admin", "Co-Admin", "owner"].includes(currentUser.role);
 
       db.ref("admins").once("value").then(snapshot => {
         document.getElementById("loader").style.display = "none";
@@ -170,7 +193,7 @@
         totalUsers.textContent = total;
 
         if (total === 0) {
-          userList.innerHTML = "<p style='text-align:center;color:#aaa;font-size:1.5rem;'>No users yet!</p>";
+          userList.innerHTML = "<p style='text-align:center;color:#aaa;font-size:1.5rem;'>No users registered yet!</p>";
           return;
         }
 
@@ -191,7 +214,7 @@
                 <p><strong>@${u.username}</strong> • ${u.email}</p>
                 <p>Phone: ${u.phone || "N/A"} • Gender: ${u.gender}</p>
                 <p>Joined: ${new Date(u.createdAt).toLocaleDateString()}</p>
-                <p>Password: <span class="password-field" ${isAdmin ? `onclick="navigator.clipboard.writeText('${realPass}'); alert('Copied!')"` : ''}>
+                <p>Password: <span class="password-field" ${isAdmin ? `onclick="navigator.clipboard.writeText('${realPass}'); toast('Password copied!', 'success')"` : ''}>
                   ${displayPass}
                 </span></p>
                 <span class="role">${u.role}</span>
