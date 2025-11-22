@@ -102,15 +102,14 @@
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
-
   const adminList = document.getElementById("adminList");
 
-  db.ref("admins").orderByChild("role").once("value").then(snapshot => {
+  db.ref("admins").once("value").then(snapshot => {
     const admins = [];
-    
+
     snapshot.forEach(child => {
       const user = child.val();
-      if (user.role === "Admin" || user.role === "Co-Admin" || user.role === "owner") {
+      if (user.role === "owner" || user.role === "Co-Admin" || user.role === "Admin") {
         admins.push(user);
       }
     });
@@ -119,6 +118,12 @@
       adminList.innerHTML = "<p class='no-admin'>No Admin or Co-Admin registered yet!</p>";
       return;
     }
+
+    // Custom sorting: owner first, then Admin, then Co-Admin
+    admins.sort((a, b) => {
+      const order = { "owner": 1, "Admin": 2, "Co-Admin": 3 };
+      return order[a.role] - order[b.role];
+    });
 
     let html = "";
     admins.forEach(user => {
@@ -131,7 +136,7 @@
           <img src="${photo}" alt="${user.fullName}">
           <div class="info">
             <h3>${user.fullName}</h3>
-            <p class="role">${user.role}</p>
+            <p class="role">${user.role === "owner" ? "Owner" : user.role}</p>
             <p class="email">${user.email}</p>
           </div>
         </div>
