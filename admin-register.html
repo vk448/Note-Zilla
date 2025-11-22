@@ -1,188 +1,220 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Admin Registration | NoteZilla</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-  *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-     body{background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);display:flex;justify-content:center;align-items:center;min-height:100vh;padding:10px;} 
- h1{font-size:2rem;color:#203a43;margin-bottom:5px;} 
-  .container{
-    width:100%;max-width:400px;background:#fff;border-radius:15px;padding:30px 25px;text-align:center;position:relative;z-index:2;box-shadow:0 8px 30px rgba(0,0,0,0.2);
-  }
-  h2{font-size:1.7rem;color:#1b1b1b;margin-bottom:8px;}
-  p{color:#666;font-size:0.9rem;margin-bottom:20px;}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Registration | NoteZilla</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+    body{background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px;}
+    .container{max-width:420px;width:100%;background:#fff;border-radius:16px;padding:35px 30px;box-shadow:0 10px 40px rgba(0,0,0,0.3);text-align:center;}
+    h1{font-size:2.2rem;color:#203a43;margin-bottom:8px;}
+    h2{font-size:1.8rem;color:#1a1a1a;margin-bottom:10px;}
+    label{display:block;margin:10px 0 6px;font-weight:600;text-align:left;color:#333;}
+    input, select{width:100%;padding:14px;border:2px solid #ddd;border-radius:10px;font-size:15px;transition:0.3s;}
+    input:focus, select:focus{border-color:#2c5364;outline:none;box-shadow:0 0 8px rgba(44,83,100,0.3);}
+    button{width:100%;padding:15px;background:linear-gradient(135deg,#203a43,#2c5364);color:white;font-size:1.1rem;border:none;border-radius:10px;cursor:pointer;margin-top:20px;font-weight:600;}
+    button:hover{transform:translateY(-2px);}
+    button:disabled{background:#888;cursor:not-allowed;}
 
-  input,select,button{
-    width:100%;padding:12px;margin-bottom:12px;border-radius:8px;border:1.5px solid #ddd;font-size:14px;transition:0.3s;
-  }
-  input:focus,select:focus{border-color:#2c5364;outline:none;box-shadow:0 0 5px rgba(44,83,100,0.3);}
-  button{background:linear-gradient(135deg,#203a43,#2c5364);color:#fff;font-weight:600;cursor:pointer;border:none;}
-  button:hover{transform:scale(1.02);background:linear-gradient(135deg,#2c5364,#203a43);}
+    .upload-box{
+      border:3px dashed #2c5364;border-radius:12px;padding:25px;cursor:pointer;background:#f8fdff;margin:20px 0;text-align:center;transition:0.3s;
+    }
+    .upload-box:hover{background:#e8f4f8;}
+    .upload-box img{width:130px;height:130px;object-fit:cover;border-radius:50%;margin-top:10px;border:4px solid #2c5364;display:none;}
 
-  .notice{font-size:0.9rem;color:#555;margin-top:12px;}
-  .notice a{color:#2c5364;font-weight:600;text-decoration:none;}
-  .notice a:hover{text-decoration:underline;}
-
-  /* Loader Overlay */
-  #loaderOverlay{
-    display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.25);
-    z-index:9999;justify-content:center;align-items:center;flex-direction:column;color:#fff;font-size:1.2rem;
-  }
-  .spinner{border:6px solid rgba(255,255,255,0.3);border-top:6px solid #fff;border-radius:50%;width:50px;height:50px;animation:spin 1s linear infinite;margin-bottom:12px;}
-  @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
-
-  @media(max-width:420px){.container{padding:25px 20px;}h2{font-size:1.5rem;}}
-form p {
-  text-align: left;
-  margin-bottom: 5px;
-  color: black;
-  font-weight: 600;
-  margin-top: 10px;
-}
-</style>
+    #loader{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;
+      justify-content:center;align-items:center;flex-direction:column;color:white;font-size:1.4rem;}
+    .spinner{width:60px;height:60px;border:8px solid rgba(255,255,255,0.3);border-top:8px solid white;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:20px;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+  </style>
 </head>
 <body>
 
-<div id="loaderOverlay">
-  <div class="spinner"></div>
-  <div>Submitting registration...</div>
-</div>
-
-<div class="container">
-  <h1>NoteZilla</h1>
-  <h2>Admin Registration</h2>
-  <p>Fill official details below</p>
-
-  <form id="registerForm">
-    <div>
-      <p>Full Name *</p>
-    <input type="text" name="Full Name" placeholder="Full Name" required>
-    </div>
-    <div>
-   <p>Username *</p>
-    <input type="text" name="Username" placeholder="Username" required>
-    </div>
-<div>
-  <p>Email *</p>
-    <input type="email" name="Email" placeholder="Email Address" required>
-    </div>
-<div>
-  <p>Password *</p>
-    <input type="password" name="Password" placeholder="Password" required>
-    </div>
-    <div>
-      <P>Confirm Password *</P>
-    <input type="password" name="Confirm Password" placeholder="Confirm Password" required>
-    </div>
-    <div>
-      <p>Class *</p>
-    <input type="number" name="Class" placeholder="Class">
-    </div>
-    <div>
-      <p>Your Phone Number *</p>
-    <input type="tel" name="Phone" placeholder="Phone Number" pattern="[0-9]{10}" required>
-    </div>
-<div>
-  <p>Select Your Gender *</p>
-    <select name="Gender" required>
-      <option value="">Select Gender</option>
-      <option>Male</option>
-      <option>Female</option>
-      <option>Other</option>
-    </select>
-    </div>
-    <div>
-      <p>Select Your Role *</p>
-    <select name="Role" required>
-      <option value="">Select Role</option>
-      <option>Admin</option>
-      <option>Co-Admin</option>
-      <option>Teacher</option>
-      <option>User</option>
-    </select>
-    </div>
-    <button type="submit">Register</button>
-  </form>
-
-  <div class="notice">
-    Already registered? <a href="admin-login.html">Login Here</a>
+  <div id="loader">
+    <div class="spinner"></div>
+    <div>Creating Account...</div>
   </div>
-</div>
-<script>
-const scriptUrl="https://script.google.com/macros/s/AKfycbyMnEs9EDAY58adzpya3fTPij3IHrmGeYC7d8OxCMaeAo_nw-dDUR8zhxdaUOmzgg/exec";
-const loader=document.getElementById("loaderOverlay");
 
-document.getElementById("registerForm").addEventListener("submit", e=>{
-  e.preventDefault();
-  const form=new FormData(e.target);
-  const pass=form.get("Password");
-  const confirm=form.get("Confirm Password");
-  if(pass!==confirm){
-    alert("⚠️ Passwords do not match!");
-    return;
+  <div class="container">
+    <h1>NoteZilla</h1>
+    <h2>Admin Registration</h2>
+    <p style="color:#555;margin-bottom:20px;">Upload photo (saved as text)</p>
+
+    <form id="registerForm">
+
+      <div class="upload-box" id="uploadBox">
+        <p style="margin:0;font-weight:600;color:#2c5364;">Tap to Upload Photo</p>
+        <input type="file" id="photoInput" accept="image/*" style="display:none;">
+        <img id="photoPreview" alt="Preview">
+        <small style="color:#777;">Max 1MB recommended</small>
+      </div>
+
+      <div><label>Full Name *</label><input type="text" id="fullName" required></div>
+      <div><label>Username *</label><input type="text" id="username" required></div>
+      <div><label>Email *</label><input type="email" id="email" required></div>
+      <div><label>Password *</label><input type="password" id="password" required minlength="6"></div>
+      <div><label>Confirm Password *</label><input type="password" id="confirmPassword" required></div>
+      <div><label>Phone Number *</label><input type="tel" id="phone" pattern="[0-9]{10}" required></div>
+      <div><label>Gender *</label>
+        <select id="gender" required>
+          <option value="">Select</option>
+          <option>Male</option><option>Female</option><option>Other</option>
+        </select>
+      </div>
+      <div><label>Role *</label>
+        <select id="role" required>
+          <option value="">Select Role</option>
+          <option>Admin</option><option>Co-Admin</option><option>Teacher</option><option>User</option><option>owner</option>
+        </select>
+      </div>
+
+      <button type="submit" id="submitBtn">Register Now</button>
+    </form>
+
+    <p style="margin-top:25px;color:#666;">
+      Already registered? <a href="admin-login.html" style="color:#2c5364;font-weight:600;">Login Here</a>
+    </p>
+  </div>
+
+  <!-- Only Database Needed (No Storage!) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+ <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
+    authDomain: "chat-box-e01e5.firebaseapp.com",
+    databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
+    projectId: "chat-box-e01e5",
+    storageBucket: "chat-box-e01e5.firebasestorage.app",
+    messagingSenderId: "597491149800",
+    appId: "1:597491149800:web:7bd908925f70b62018125d",
+    measurementId: "G-FJ6PKK2FNQ"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  const uploadBox = document.getElementById("uploadBox");
+  const photoInput = document.getElementById("photoInput");
+  const photoPreview = document.getElementById("photoPreview");
+  let base64Image = null;
+
+  uploadBox.onclick = () => photoInput.click();
+
+  photoInput.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 1 * 1024 * 1024) {
+      showMessage("Image too large! Max 1MB allowed.", "error");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      base64Image = ev.target.result;
+      photoPreview.src = base64Image;
+      photoPreview.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Success Message Function (Beautiful UI)
+  function showMessage(text, type = "success") {
+    const messageDiv = document.createElement("div");
+    messageDiv.style.cssText = `
+      position:fixed;top:20px;left:50%;transform:translateX(-50%);
+      background:${type === "success" ? "#d4edda" : "#f8d7da"};
+      color:${type === "success" ? "#155724" : "#721c24"};
+      border:1px solid ${type === "success" ? "#c3e6cb" : "#f5c6cb"};
+      padding:16px 30px;border-radius:12px;font-size:1.1rem;
+      font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,0.2);
+      z-index:10000;display:flex;align-items:center;gap:12px;
+      animation:slideDown 0.5s ease;
+    `;
+    messageDiv.innerHTML = `
+      ${type === "success" ? "Success" : "Error"}
+      <span style="margin-left:10px;">${text}</span>
+    `;
+    document.body.appendChild(messageDiv);
+
+    setTimeout(() => {
+      messageDiv.style.animation = "slideUp 0.5s ease forwards";
+      setTimeout(() => messageDiv.remove(), 500);
+    }, 4000);
   }
 
-  loader.style.display="flex"; // show loader
-  fetch(scriptUrl,{method:"POST",body:form})
-    .then(res=>res.text())
-    .then(txt=>{
-      loader.style.display="none";
-      if(txt.includes("Success")){
-        // Instead of redirecting, show success message
-        const container = document.querySelector(".container");
-        container.innerHTML = `
-          <h2>✅ Registration Successful!</h2>
-          <p>Your account has been created successfully.</p>
-          <div class="notice">
-            <a href="admin-login.html">Click here to Login</a>
-          </div>
-        `;
-      } else { 
-        alert("❌ Error: "+txt); 
-      }
-    }).catch(err=>{
-      loader.style.display="none";
-      alert("⚠️ Server Error: "+err.message);
-    });
-});
-</script>
-<script src="https://formspree.io/js/formbutton-v1.min.js" defer></script>
-<script>
-  /* paste this line in verbatim */
-  window.formbutton=window.formbutton||function(){(formbutton.q=formbutton.q||[]).push(arguments)};
-  /* customize formbutton below*/     
-  formbutton("create", {
-    action: "https://formspree.io/f/xeokweek",
-    title: "How can we help?",
-    fields: [
-      { 
-        type: "email", 
-        label: "Email:", 
-        name: "email",
-        required: true,
-        placeholder: "your@email.com"
-      },
-      {
-        type: "textarea",
-        label: "Message:",
-        name: "message",
-        placeholder: "What's on your mind?",
-      },
-      { type: "submit" }      
-    ],
-    styles: {
-      title: {
-        backgroundColor: "gray"
-      },
-      button: {
-        backgroundColor: "gray"
-      }
+  // Animations
+  const style = document.createElement("style");
+  style.textContent = `
+    @keyframes slideDown {
+      from {opacity:0;transform:translateX(-50%) translateY(-50px);}
+      to {opacity:1;transform:translateX(-50%) translateY(0);}
     }
-  });
-</script>
+    @keyframes slideUp {
+      to {opacity:0;transform:translateX(-50%) translateY(-50px);}
+    }
+  `;
+  document.head.appendChild(style);
 
+  // Registration Form Submit
+  document.getElementById("registerForm").onsubmit = async (e) => {
+    e.preventDefault();
+
+    const fullName = document.getElementById("fullName").value.trim();
+    const username = document.getElementById("username").value.trim().toLowerCase();
+    const email = document.getElementById("email").value.trim().toLowerCase();
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+    const phone = document.getElementById("phone").value;
+    const gender = document.getElementById("gender").value;
+    const role = document.getElementById("role").value;
+
+    if (password !== confirmPassword) {
+      showMessage("Passwords do not match!", "error");
+      return;
+    }
+    if (password.length < 6) {
+      showMessage("Password must be 6+ characters!", "error");
+      return;
+    }
+
+    document.getElementById("loader").style.display = "flex";
+    document.getElementById("submitBtn").disabled = true;
+
+    try {
+      // Check duplicates
+      const userSnap = await db.ref("admins").orderByChild("username").equalTo(username).once("value");
+      if (userSnap.exists()) throw new Error("Username already taken!");
+
+      const emailSnap = await db.ref("admins").orderByChild("email").equalTo(email).once("value");
+      if (emailSnap.exists()) throw new Error("Email already registered!");
+
+      const photoURL = base64Image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`;
+
+      await db.ref("admins").push({
+        fullName, username, email, phone, gender, role, photoURL,
+        createdAt: new Date().toISOString(),
+        password: btoa(password)
+      });
+
+      // Success Message + Redirect
+      showMessage(`Registration Successful! Welcome ${fullName}`, "success");
+
+      setTimeout(() => {
+        window.location.href = "admin-login.html";
+      }, 2000);
+
+    } catch (err) {
+      showMessage("Registration Failed: " + err.message, "error");
+    } finally {
+      document.getElementById("loader").style.display = "none";
+      document.getElementById("submitBtn").disabled = false;
+    }
+  };
+</script>
 </body>
 </html>

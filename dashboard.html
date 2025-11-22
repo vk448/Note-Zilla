@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Registered Users | NoteZilla</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+    body{background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);min-height:100vh;color:white;}
+    .header{background:rgba(255,255,255,0.1);padding:20px;text-align:center;border-bottom:2px solid #2c5364;}
+    .header h1{font-size:2.5rem;color:#fff;}
+    .stats{padding:25px;text-align:center;}
+    .stats h2{font-size:3.5rem;margin:10px 0;color:#fff;}
+    .stats p{font-size:1.3rem;color:#a0d8ef;}
+    .user-list{max-width:900px;margin:20px auto;padding:20px;}
+    .user-card{
+      background:rgba(255,255,255,0.12);border-radius:15px;padding:18px;margin:15px 0;
+      display:flex;align-items:center;gap:20px;transition:0.3s;border:1px solid rgba(255,255,255,0.1);
+    }
+    .user-card:hover{transform:translateY(-5px);box-shadow:0 10px 30px rgba(0,0,0,0.5);}
+    .user-card img{width:85px;height:85px;border-radius:50%;object-fit:cover;border:4px solid #2c5364;}
+    .info h3{font-size:1.4rem;margin-bottom:6px;color:#fff;}
+    .info p{margin:5px 0;color:#b0e0e6;font-size:1rem;}
+    .role{background:#2c5364;padding:6px 14px;border-radius:20px;font-size:0.85rem;font-weight:600;}
+    .no-users{text-align:center;color:#aaa;font-size:1.5rem;margin-top:60px;}
+    #loader{
+      position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);
+      display:flex;justify-content:center;align-items:center;z-index:9999;color:white;font-size:1.6rem;
+      flex-direction:column;
+    }
+    .spinner{width:70px;height:70px;border:10px solid rgba(255,255,255,0.3);border-top:10px solid white;
+      border-radius:50%;animation:spin 1s linear infinite;margin-bottom:25px;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .back-btn{
+      position:fixed;bottom:30px;left:30px;background:#2c5364;padding:15px 30px;border-radius:50px;
+      color:white;text-decoration:none;font-weight:600;box-shadow:0 5px 15px rgba(0,0,0,0.4);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="loader">
+    <div class="spinner"></div>
+    <div>Loading All Users...</div>
+  </div>
+
+  <div class="header">
+    <h1>NoteZilla</h1>
+    <p>All Registered Users (Total Count Below)</p>
+  </div>
+
+  <div class="stats">
+    <h2 id="totalUsers">0</h2>
+    <p>Total Users Registered</p>
+  </div>
+
+  <div class="user-list" id="userList">
+    <!-- Users yahan load honge -->
+  </div>
+
+  <a href="admin-register.html" class="back-btn">Back to Register</a>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
+      authDomain: "chat-box-e01e5.firebaseapp.com",
+      databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
+      projectId: "chat-box-e01e5",
+      storageBucket: "chat-box-e01e5.firebasestorage.app",
+      messagingSenderId: "597491149800",
+      appId: "1:597491149800:web:7bd908925f70b62018125d",
+      measurementId: "G-FJ6PKK2FNQ"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const userListDiv = document.getElementById("userList");
+    const totalUsersSpan = document.getElementById("totalUsers");
+
+    // Direct load — koi login check nahi
+    db.ref("admins").once("value").then(snapshot => {
+      document.getElementById("loader").style.display = "none";
+
+      const total = snapshot.numChildren();
+      totalUsersSpan.textContent = total;
+
+      if (total === 0) {
+        userListDiv.innerHTML = "<p class='no-users'>No users registered yet!</p>";
+        return;
+      }
+
+      let html = "";
+      snapshot.forEach(child => {
+        const u = child.val();
+
+        const photo = (u.photoURL && u.photoURL.startsWith("data:")) 
+          ? u.photoURL 
+          : (u.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.username}`);
+
+        html += `
+          <div class="user-card">
+            <img src="${photo}" alt="${u.fullName}">
+            <div class="info">
+              <h3>${u.fullName}</h3>
+              <p><strong>@${u.username}</strong> • ${u.email}</p>
+              <p>Phone: ${u.phone || "N/A"} • Gender: ${u.gender}</p>
+              <p>Joined: ${new Date(u.createdAt).toLocaleString()}</p>
+              <span class="role">${u.role}</span>
+            </div>
+          </div>
+        `;
+      });
+
+      userListDiv.innerHTML = html;
+
+    }).catch(err => {
+      document.getElementById("loader").style.display = "none";
+      userListDiv.innerHTML = "<p style='color:red;text-align:center;'>Error: " + err.message + "</p>";
+    });
+  </script>
+</body>
+</html>

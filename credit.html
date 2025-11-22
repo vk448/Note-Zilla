@@ -1,237 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="/Images/Favicon.png">
-<title>Credits - Note Zilla</title>
-<style>
-footer img{
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credits - Note Zilla</title>
+  <link rel="icon" href="images/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+ 
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+    body{background:#f5f6fa;color:#333;line-height:1.6;display:flex;flex-direction:column;align-items:center;}
+    
+    header{width:100%;background:#fff;padding:15px 30px;display:flex;justify-content:center;align-items:center;
+      box-shadow:0 4px 6px rgba(0,0,0,0.1);position:sticky;top:0;z-index:100;}
+    .logo{font-weight:900;font-size:1.8rem;background:linear-gradient(90deg,#4e73df,#1cc88a);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;}
+
+    h1{text-align:center;margin:40px 0;color:#4e73df;font-size:2.2rem;}
+
+    .credits-container{
+      display:flex;flex-direction:column;gap:25px;width:100%;max-width:800px;padding:20px;
+    }
+    .credit-card{
+      display:flex;align-items:center;background:#fff;padding:22px;border-radius:14px;
+      box-shadow:0 6px 20px rgba(0,0,0,0.12);gap:25px;transition:all 0.3s;
+    }
+    .credit-card:hover{
+      transform:translateY(-8px);box-shadow:0 15px 35px rgba(0,0,0,0.2);
+    }
+    .credit-card img{
+      width:130px;height:130px;border-radius:50%;object-fit:cover;
+      border:5px solid #4e73df;box-shadow:0 8px 20px rgba(0,0,0,0.2);
+    }
+    .info h3{color:#4e73df;margin-bottom:8px;font-size:1.6rem;}
+    .info .role{font-weight:700;color:#1cc88a;font-size:1.1rem;margin-bottom:8px;}
+    .info .email{color:#555;font-size:1rem;}
+
+    .no-admin{text-align:center;color:#e74c3c;font-size:1.4rem;margin:50px 0;}
+
+    @media(max-width:600px){
+      .credit-card{flex-direction:column;text-align:center;}
+      .credit-card img{margin-bottom:15px;}
+    }
+
+    footer{
+      text-align:center;padding:25px;background:#fff;margin-top:60px;width:100%;
+      box-shadow:0 -4px 10px rgba(0,0,0,0.05);
+    }
+    .home a{
+      display:inline-block;padding:14px 30px;background:#1cc88a;color:#fff;
+      border-radius:30px;text-decoration:none;font-weight:600;margin:20px 0;
+      transition:0.3s;
+    }
+    .home a:hover{background:#4e73df;transform:scale(1.05);}
+       footer img{
   height: 30px;
   width: 30px;
   border-radius: 50px;
   margin: 10px 5px;
 }
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap');
-
-/* ================= General Reset ================= */
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins', sans-serif; }
-
-body {
-  background:#f5f6fa;
-  color:#333;
-  line-height:1.6;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-}
-
-/* ================= Header ================= */
-header {
-  width: 100%;
-  background:#fff;
-  padding:15px 30px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  box-shadow:0 4px 6px rgba(0,0,0,0.1);
-  position:sticky;
-  top:0;
-  z-index:100;
-}
-.logo {
-  font-weight:900;
-  font-size:1.8rem;
-  background: linear-gradient(90deg, #4e73df, #1cc88a);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  text-align: center;
-}
-
-/* ================= Page Title ================= */
-h1 {
-  text-align:center;
-  margin:30px 0;
-  color:#4e73df;
-}
-
-/* ================= Credits Container ================= */
-.credits-container {
-  display:flex;
-  flex-direction:column;
-  gap:20px;
-  width:100%;
-  max-width:800px;
-}
-
-.credit-card {
-  display:flex;
-  align-items:center;
-  background:#fff;
-  padding:20px;
-  border-radius:12px;
-  box-shadow:0 6px 15px rgba(0,0,0,0.1);
-  gap:20px;
-  transition:transform 0.3s, box-shadow 0.3s;
-}
-
-.credit-card:hover {
-  transform:translateY(-5px);
-  box-shadow:0 10px 25px rgba(0,0,0,0.2);
-  animation: color ease-in-out infinite 3s;
-}
-
-.credit-card img {
-  width:120px;
-  height:120px;
-  border-radius:50%;
-  object-fit:cover;
-  box-shadow:0 6px 15px rgba(0,0,0,0.2);
-}
-
-.credit-card .info {
-  display:flex;
-  flex-direction:column;
-}
-
-.credit-card .info h3 {
-  color:#4e73df;
-  margin-bottom:5px;
-  font-size:1.5rem;
-}
-
-.credit-card .info p {
-  font-weight:700;
-  color:#1cc88a; /* Highlighted role/title */
-  font-size:1rem;
-}
-
-@media(max-width:600px){
-  .credit-card {
-    flex-direction:column;
-    text-align:center;
-  }
-  .credit-card img { margin-bottom:10px; }
-}
-footer {
-  text-align: center;
-  padding: 20px;
-  background: #fff;
-  box-shadow: 0 -4px 6px rgba(0,0,0,0.05);
-  margin-top: 50px;
-  width: 100%;
-  height:100px ;
-}
-.home a{
-  display: inline-block;
-  font-size: 20px;
-  color: rgb(2, 0, 128);
-  padding: 10px 12px;
-  background: #1cc88a;
-  border-radius: 20px;
-  text-decoration: none;
-  margin-top: 30px;
- transition:transform 0.3s;
- animation: color ease-in-out infinite 2s;
-}
-.home a:hover{
-  transform: scale(1.04);
-  background-color: #4e73df;
-  color: rgb(47, 211, 121);
-}
-@keyframes color {
-  0%{box-shadow: 0 0 10px chartreuse, 0 0 20px lightgreen,0 0 30px lightyellow;}
-  50%{box-shadow: 0 0 20px chartreuse, 0 0 30px lightgreen, 0 0 40px yellow;}
-  100%{box-shadow: 0 0 5px chartreuse, 0, 0 10px lightgreen, 0 0 20px yellowgreen;}
-}
-</style>
+  </style>
 </head>
 <body>
 
-<!-- Header -->
 <header>
-  <div class="logo">Note Zilla - Team Member</div>
+  <div class="logo">Note Zilla - Team</div>
 </header>
 
-<h1>Credits</h1>
+<h1>Our Admins & Co-Admins</h1>
 
-<div class="credits-container">
-  <div class="credit-card">
-    <img src="Images/Screenshot 2025-09-28 195304.png" alt="Amarjeet">
-    <div class="info">
-      <h3>Amarjeet Kumar</h3>
-      <p>Developer / Admin</p>
-    </div>
-  </div>
-  <div class="credit-card">
-    <img src="Images/k.jpg" alt="Kamakshi">
-    <div class="info">
-      <h3>Kamakshi Verma</h3>
-      <p>Content Creator / Designer</p>
-    </div>
-  </div>
-  <div class="credit-card">
-    <img src="Images/h.jpg" alt="Harshverdhan">
-    <div class="info">
-      <h3>Harshverdhan Singh</h3>
-      <p>PDF Maker/ Co - Admin</p>
-    </div>
-  </div>
+<div class="credits-container" id="adminList">
+  <p style="text-align:center;color:#777;">Loading team members...</p>
 </div>
+
 <div class="home">
-<a href="/">Back To Home </a>
+  <a href="/">Back To Home</a>
 </div>
+
 <footer>
-  <p>&copy; 2025 Note Zilla Are Right Are Reserved</p>
-  <a href="https://whatsapp.com/channel/0029Vb7CpvgAzNbwokB7KV0y"><img src="Images/Whatsapp.png"></a>
-  <a href=""><img src="Images/instagram.jpeg"></a>
-  <a href="https://t.me/+gxvgPedurnMyNTA1"><img src="Images/telegram.png"></a>
+  <p>&copy; 2025 Note Zilla - All Rights Reserved</p>
+  <a href="https://whatsapp.com/channel/0029Vb7CpvgAzNbwokB7KV0y"><img src="Images/Whatsapp.png" alt="WhatsApp"></a>
+  <a href=""><img src="Images/instagram.jpeg" alt="Instagram"></a>
+  <a href="https://t.me/+gxvgPedurnMyNTA1"><img src="Images/telegram.png" alt="Telegram"></a>
 </footer>
-<!-- Read the Formbutton docs at formspree.io/formbutton/docs. See more examples at codepen.io/formspree -->
-<script src="https://formspree.io/js/formbutton-v1.min.js" defer></script>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
 <script>
-  /* paste this line in verbatim */
-  window.formbutton=window.formbutton||function(){(formbutton.q=formbutton.q||[]).push(arguments)};
-  /* customize formbutton below*/     
-  formbutton("create", {
-    action: "https://formspree.io/f/xeokweek",
-    title: "How can we help?",
-    fields: [
-      { 
-        type: "email", 
-        label: "Email:", 
-        name: "email",
-        required: true,
-        placeholder: "your@email.com"
-      },
-      {
-        type: "textarea",
-        label: "Message:",
-        name: "message",
-        placeholder: "What's on your mind?",
-      },
-      { type: "submit" }      
-    ],
-    styles: {
-      title: {
-        backgroundColor: "gray"
-      },
-      button: {
-        backgroundColor: "gray"
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
+    authDomain: "chat-box-e01e5.firebaseapp.com",
+    databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
+    projectId: "chat-box-e01e5",
+    storageBucket: "chat-box-e01e5.firebasestorage.app",
+    messagingSenderId: "597491149800",
+    appId: "1:597491149800:web:7bd908925f70b62018125d",
+    measurementId: "G-FJ6PKK2FNQ"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  const adminList = document.getElementById("adminList");
+
+  db.ref("admins").orderByChild("role").once("value").then(snapshot => {
+    const admins = [];
+    
+    snapshot.forEach(child => {
+      const user = child.val();
+      if (user.role === "Admin" || user.role === "Co-Admin" || user.role === "owner") {
+        admins.push(user);
       }
+    });
+
+    if (admins.length === 0) {
+      adminList.innerHTML = "<p class='no-admin'>No Admin or Co-Admin registered yet!</p>";
+      return;
     }
+
+    let html = "";
+    admins.forEach(user => {
+      const photo = user.photoURL && user.photoURL.startsWith("data:")
+        ? user.photoURL
+        : (user.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`);
+
+      html += `
+        <div class="credit-card">
+          <img src="${photo}" alt="${user.fullName}">
+          <div class="info">
+            <h3>${user.fullName}</h3>
+            <p class="role">${user.role}</p>
+            <p class="email">${user.email}</p>
+          </div>
+        </div>
+      `;
+    });
+
+    adminList.innerHTML = html;
+
+  }).catch(err => {
+    adminList.innerHTML = `<p style="color:red;text-align:center;">Error: ${err.message}</p>`;
   });
 </script>
-</body>
-<script>
-    // favicon.js
-const link = document.createElement('link');
-link.rel = 'icon';
-link.type = 'image/png';
-link.href = 'images/favicon.png'; // yahan apne icon ka naam likho
-document.head.appendChild(link);
 
-  </script>
-     <script src="Record.js"></script>
 </body>
 </html>
