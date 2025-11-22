@@ -8,11 +8,12 @@
   <style>
     *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
     body{background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);min-height:100vh;color:white;}
-    .header{background:rgba(255,255,255,0.1);padding:20px;text-align:center;border-bottom:2px solid #2c5364;}
-    .header h1{font-size:2.5rem;color:#fff;}
+    .header{background:rgba(255,255,255,0.1);padding:25px;text-align:center;border-bottom:2px solid #2c5364;}
+    .header h1{font-size:2.5rem;color:#fff;margin-bottom:8px;}
     .stats{padding:25px;text-align:center;}
-    .stats h2{font-size:3.5rem;margin:10px 0;color:#fff;}
+    .stats h2{font-size:3.5rem;color:#fff;}
     .stats p{font-size:1.3rem;color:#a0d8ef;}
+
     .user-list{max-width:900px;margin:20px auto;padding:20px;}
     .user-card{
       background:rgba(255,255,255,0.12);border-radius:15px;padding:18px;margin:15px 0;
@@ -20,34 +21,44 @@
     }
     .user-card:hover{transform:translateY(-5px);box-shadow:0 10px 30px rgba(0,0,0,0.5);}
     .user-card img{width:85px;height:85px;border-radius:50%;object-fit:cover;border:4px solid #2c5364;}
-    .info h3{font-size:1.4rem;margin-bottom:6px;color:#fff;}
-    .info p{margin:5px 0;color:#b0e0e6;font-size:1rem;}
+    .info h3{font-size:1.4rem;color:#fff;}
+    .info p{margin:5px 0;color:#b0e0e6;}
     .role{background:#2c5364;padding:6px 14px;border-radius:20px;font-size:0.85rem;font-weight:600;}
-    .no-users{text-align:center;color:#aaa;font-size:1.5rem;margin-top:60px;}
-    #loader{
-      position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);
-      display:flex;justify-content:center;align-items:center;z-index:9999;color:white;font-size:1.6rem;
-      flex-direction:column;
+    .password-field{
+      background:#333;color:#fff;padding:8px 12px;border-radius:8px;
+      font-family:monospace;letter-spacing:3px;cursor:pointer;
     }
+    .password-field:hover{background:#555;}
+
+    .login-box{
+      max-width:400px;margin:50px auto;background:rgba(255,255,255,0.15);
+      padding:30px;border-radius:15px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.4);
+    }
+    .login-box input{width:100%;padding:14px;margin:10px 0;border-radius:10px;border:none;font-size:16px;}
+    .login-box button{width:100%;padding:14px;background:#4fc3f7;color:#1b2838;border:none;
+      border-radius:10px;font-weight:700;cursor:pointer;margin-top:10px;}
+    .login-box button:hover{background:#29b6f6;}
+
+    #loader{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);
+      display:flex;justify-content:center;align-items:center;z-index:9999;flex-direction:column;color:white;font-size:1.6rem;}
     .spinner{width:70px;height:70px;border:10px solid rgba(255,255,255,0.3);border-top:10px solid white;
       border-radius:50%;animation:spin 1s linear infinite;margin-bottom:25px;}
     @keyframes spin{to{transform:rotate(360deg);}}
-    .back-btn{
-      position:fixed;bottom:30px;left:30px;background:#2c5364;padding:15px 30px;border-radius:50px;
-      color:white;text-decoration:none;font-weight:600;box-shadow:0 5px 15px rgba(0,0,0,0.4);
-    }
+
+    .back-btn{position:fixed;bottom:30px;left:30px;background:#2c5364;padding:15px 30px;
+      border-radius:50px;color:white;text-decoration:none;font-weight:600;box-shadow:0 5px 15px rgba(0,0,0,0.4);}
   </style>
 </head>
 <body>
 
   <div id="loader">
     <div class="spinner"></div>
-    <div>Loading All Users...</div>
+    <div>Loading...</div>
   </div>
 
   <div class="header">
     <h1>NoteZilla</h1>
-    <p>All Registered Users (Total Count Below)</p>
+    <p>All Registered Users</p>
   </div>
 
   <div class="stats">
@@ -55,9 +66,19 @@
     <p>Total Users Registered</p>
   </div>
 
-  <div class="user-list" id="userList">
-    <!-- Users yahan load honge -->
+  <!-- Agar login nahi hai → Login Box dikhega -->
+  <div id="loginBox" class="login-box" style="display:none;">
+    <h2 style="margin-bottom:20px;color:#fff;">Login to View Users</h2>
+    <input type="text" id="loginUsername" placeholder="Username or Email" required>
+    <input type="password" id="loginPassword" placeholder="Password" required>
+    <button onclick="performLogin()">Login Now</button>
+    <p style="margin-top:15px;color:#ccc;">
+      Not registered? <a href="admin-register.html" style="color:#4fc3f7;">Register Here</a>
+    </p>
   </div>
+
+  <!-- Users List -->
+  <div class="user-list" id="userList" style="display:none;"></div>
 
   <a href="admin-register.html" class="back-btn">Back to Register</a>
 
@@ -80,49 +101,112 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const userListDiv = document.getElementById("userList");
-    const totalUsersSpan = document.getElementById("totalUsers");
+    const loginBox = document.getElementById("loginBox");
+    const userList = document.getElementById("userList");
+    const totalUsers = document.getElementById("totalUsers");
 
-    // Direct load — koi login check nahi
-    db.ref("admins").once("value").then(snapshot => {
-      document.getElementById("loader").style.display = "none";
+    let currentUser = null;
 
-      const total = snapshot.numChildren();
-      totalUsersSpan.textContent = total;
+    // Check if already logged in
+    window.onload = () => {
+      const saved = sessionStorage.getItem("currentUser");
+      if (saved) {
+        currentUser = JSON.parse(saved);
+        loadUsers();
+      } else {
+        document.getElementById("loader").style.display = "none";
+        loginBox.style.display = "block";
+      }
+    };
 
-      if (total === 0) {
-        userListDiv.innerHTML = "<p class='no-users'>No users registered yet!</p>";
+    // Login Function
+    async function performLogin() {
+      const identifier = document.getElementById("loginUsername").value.trim().toLowerCase();
+      const password = document.getElementById("loginPassword").value;
+
+      if (!identifier || !password) {
+        alert("Please fill both fields!");
         return;
       }
 
-      let html = "";
-      snapshot.forEach(child => {
-        const u = child.val();
+      document.getElementById("loader").style.display = "flex";
 
-        const photo = (u.photoURL && u.photoURL.startsWith("data:")) 
-          ? u.photoURL 
-          : (u.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.username}`);
+      try {
+        const snap = await db.ref("admins").once("value");
+        let found = null;
 
-        html += `
-          <div class="user-card">
-            <img src="${photo}" alt="${u.fullName}">
-            <div class="info">
-              <h3>${u.fullName}</h3>
-              <p><strong>@${u.username}</strong> • ${u.email}</p>
-              <p>Phone: ${u.phone || "N/A"} • Gender: ${u.gender}</p>
-              <p>Joined: ${new Date(u.createdAt).toLocaleString()}</p>
-              <span class="role">${u.role}</span>
+        snap.forEach(child => {
+          const u = child.val();
+          if ((u.username?.toLowerCase() === identifier || u.email?.toLowerCase() === identifier) &&
+              atob(u.password) === password) {
+            found = { id: child.key, ...u };
+          }
+        });
+
+        if (found) {
+          currentUser = found;
+          sessionStorage.setItem("currentUser", JSON.stringify(found));
+          loginBox.style.display = "none";
+          loadUsers();
+        } else {
+          alert("Wrong username/email or password!");
+        }
+      } catch (err) {
+        alert("Login failed: " + err.message);
+      } finally {
+        document.getElementById("loader").style.display = "none";
+      }
+    }
+
+    // Load All Users
+    async function loadUsers() {
+      const isAdmin = currentUser && ["Admin", "owner"].includes(currentUser.role);
+
+      db.ref("admins").once("value").then(snapshot => {
+        document.getElementById("loader").style.display = "none";
+        userList.style.display = "block";
+
+        const total = snapshot.numChildren();
+        totalUsers.textContent = total;
+
+        if (total === 0) {
+          userList.innerHTML = "<p style='text-align:center;color:#aaa;font-size:1.5rem;'>No users yet!</p>";
+          return;
+        }
+
+        let html = "";
+        snapshot.forEach(child => {
+          const u = child.val();
+          const photo = u.photoURL?.startsWith("data:") ? u.photoURL : 
+                        (u.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.username}`);
+
+          const realPass = u.password ? atob(u.password) : "N/A";
+          const displayPass = isAdmin ? realPass : "••••••••";
+
+          html += `
+            <div class="user-card">
+              <img src="${photo}" alt="${u.fullName}">
+              <div class="info">
+                <h3>${u.fullName} ${u.id === currentUser?.id ? " (You)" : ""}</h3>
+                <p><strong>@${u.username}</strong> • ${u.email}</p>
+                <p>Phone: ${u.phone || "N/A"} • Gender: ${u.gender}</p>
+                <p>Joined: ${new Date(u.createdAt).toLocaleDateString()}</p>
+                <p>Password: <span class="password-field" ${isAdmin ? `onclick="navigator.clipboard.writeText('${realPass}'); alert('Copied!')"` : ''}>
+                  ${displayPass}
+                </span></p>
+                <span class="role">${u.role}</span>
+              </div>
             </div>
-          </div>
-        `;
+          `;
+        });
+
+        userList.innerHTML = html;
+
+      }).catch(err => {
+        document.getElementById("loader").style.display = "none";
+        userList.innerHTML = "<p style='color:red;text-align:center;'>Error: " + err.message + "</p>";
       });
-
-      userListDiv.innerHTML = html;
-
-    }).catch(err => {
-      document.getElementById("loader").style.display = "none";
-      userListDiv.innerHTML = "<p style='color:red;text-align:center;'>Error: " + err.message + "</p>";
-    });
+    }
   </script>
 </body>
 </html>
