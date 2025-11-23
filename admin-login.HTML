@@ -132,7 +132,7 @@ iframe{flex:1;width:100%;border:none;background:#fff;}
     <button onclick="loadPage('delete-database-work-admin-owner-notezilla-database-work-add-on.html', this)"><i class="fa-solid fa-pen-to-square"></i><span>Edit Notes</span></button>
     <button onclick="loadPage('dashboard.html', this)"><i class="fa-solid fa-id-card"></i><span>Credits</span></button>
     <button onclick="window.open('https://note-zilla.netlify.app/', '_blank')"><i class="fa-solid fa-globe"></i><span>Visit Site</span></button>
-    <button class="logout-btn" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></button>
+    <button class="logout-btn" id="logoutBtn" onclick="logout"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></button>
   </div>
 
   <div class="main">
@@ -160,7 +160,11 @@ iframe{flex:1;width:100%;border:none;background:#fff;}
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
 <script>
+// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
   authDomain: "chat-box-e01e5.firebaseapp.com",
@@ -174,7 +178,16 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 let currentUser = null;
 
-// Toast function
+// ==================== ALL RESTRICTED / DATABASE PAGES ====================
+const RESTRICTED_PAGES = [
+  "upload-work-data-base-admin-co-admin.html",
+  "delete-database-work-admin-owner-notezilla-database-work-add-on.html",
+  "dashboard.html",
+  "https://docs.google.com/spreadsheets/d/18ZuLufS0Vkulej9N_mtAKKw4WGulKTYyhdxjKIs-Y-A/edit"
+  // agar aur bhi hain to yahan add kar dena
+];
+
+// Toast Function
 function toast(text, type = "success") {
   const t = document.createElement("div");
   t.className = `toast ${type}`;
@@ -183,17 +196,44 @@ function toast(text, type = "success") {
   setTimeout(() => { t.style.animation = "slideUp 0.5s ease forwards"; setTimeout(() => t.remove(), 500); }, 4000);
 }
 
-// PROTECT DASHBOARD: show login only if not logged in
-const storedUser = sessionStorage.getItem("currentUser");
-if (!storedUser) {
-    document.getElementById("loginBox").style.display = "block";
-    document.getElementById("dashboard").style.display = "none";
-} else {
-    currentUser = JSON.parse(storedUser);
-    showDashboard(currentUser);
+// Check Authorization
+function isAuthorized() {
+  if (!currentUser) return false;
+  const role = (currentUser.role || "user").toLowerCase();
+  return ["owner", "admin", "co-admin", "coadmin"].includes(role);
 }
 
-// Login form
+// Update Menu + Block Unauthorized Access
+function updateMenuAndProtection() {
+  if (!currentUser) return;
+  const authorized = isAuthorized();
+
+  document.querySelectorAll(".sidebar button").forEach(btn => {
+    const onclick = btn.getAttribute("onclick") || "";
+    const isRestrictedBtn = RESTRICTED_PAGES.some(page => onclick.includes(page));
+    btn.style.display = (isRestrictedBtn && !authorized) ? "none" : "flex";
+  });
+
+  // Agar iframe mein restricted page khula hai aur user unauthorized → welcome pe bhejo
+  const currentSrc = document.getElementById("frameBox").src;
+  const currentPage = currentSrc.split("/").pop();
+  if (!authorized && RESTRICTED_PAGES.some(p => currentPage.includes(p) || currentSrc.includes(p))) {
+    document.getElementById("frameBox").src = "welcome.html";
+    toast("Access Denied! Only Owner/Admin/Co-Admin allowed.", "error");
+  }
+}
+
+// ==================== PAGE LOAD PROTECTION ====================
+const storedUser = sessionStorage.getItem("currentUser");
+if (!storedUser) {
+  document.getElementById("loginBox").style.display = "block";
+  document.getElementById("dashboard").style.display = "none";
+} else {
+  currentUser = JSON.parse(storedUser);
+  showDashboard(currentUser);
+}
+
+// ==================== LOGIN ====================
 document.getElementById("loginForm").onsubmit = async (e) => {
   e.preventDefault();
   const id = document.getElementById("username").value.trim().toLowerCase();
@@ -225,7 +265,7 @@ document.getElementById("loginForm").onsubmit = async (e) => {
   }
 };
 
-// Show dashboard
+// ==================== SHOW DASHBOARD ====================
 function showDashboard(user) {
   document.getElementById("loginBox").style.display = "none";
   document.getElementById("dashboard").style.display = "flex";
@@ -242,15 +282,38 @@ function showDashboard(user) {
 
   const defaultAvatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.fullName}`;
   document.getElementById("adminPhoto").src = user.photoURL?.startsWith("data:") ? user.photoURL : (user.photoURL || defaultAvatar);
+
+  updateMenuAndProtection();
 }
 
-// Edit profile
+// ==================== SECURE LOAD PAGE ====================
+function loadPage(url, btn) {
+  if (url.includes("http")) {
+    window.open(url, "_blank");
+    return;
+  }
+
+  const pageName = url.split("/").pop();
+  const isRestricted = RESTRICTED_PAGES.some(p => pageName.includes(p) || url.includes(p));
+
+  if (isRestricted && !isAuthorized()) {
+    toast("Access Denied! Only Owner, Admin & Co-Admin allowed.", "error");
+    document.getElementById("frameBox").src = "welcome.html";
+    return;
+  }
+
+  document.getElementById("frameBox").src = url;
+  document.querySelectorAll(".sidebar button").forEach(b => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+}
+
+// ==================== EDIT PROFILE MODAL ====================
+let newPhotoBase64 = null;
 function openEditModal() {
   document.getElementById("editModal").style.display = "flex";
   document.getElementById("newName").value = currentUser.fullName;
   document.getElementById("modalPhotoPreview").src = document.getElementById("adminPhoto").src;
 }
-let newPhotoBase64 = null;
 document.getElementById("newPhoto").onchange = (e) => {
   const file = e.target.files[0];
   if (!file) return;
@@ -284,33 +347,47 @@ async function saveProfile() {
     document.getElementById("loaderOverlay").style.display = "none";
   }
 }
-
-// Close modal
 document.getElementById("closeModal").onclick = () => {
   document.getElementById("editModal").style.display = "none";
+  newPhotoBase64 = null;
 };
 
-// Logout
+// ==================== LOGOUT — 100% WORKING ====================
 document.getElementById("logoutBtn").onclick = () => {
-  sessionStorage.clear();
+  document.getElementById("loaderOverlay").style.display = "flex";
+  document.getElementById("loaderText").innerText = "Logging you out...";
   toast("Logged out successfully!", "success");
-  setTimeout(() => location.reload(), 1500);
+
+  sessionStorage.removeItem("currentUser");
+  sessionStorage.clear();
+  currentUser = null;
+
+  setTimeout(() => {
+    location.reload(true);
+  }, 1800);
 };
 
-// Load page in iframe
-function loadPage(url, btn) {
-  if (url.includes("http")) { window.open(url, "_blank"); return; }
-  document.getElementById("frameBox").src = url;
-  document.querySelectorAll(".sidebar button").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-}
-
-// Toggle sidebar
+// ==================== TOGGLE SIDEBAR ====================
 function toggleSidebar() {
   const s = document.getElementById("sidebar");
   if (window.innerWidth <= 768) s.classList.toggle("active");
   else s.classList.toggle("collapsed");
 }
+
+// ==================== EXTRA SAFETY — ANTI-TAMPER ====================
+setInterval(() => {
+  if (document.getElementById("dashboard").style.display === "flex" && !sessionStorage.getItem("currentUser")) {
+    toast("Session expired! Redirecting to login...", "error");
+    setTimeout(() => location.reload(), 1500);
+  }
+  if (currentUser) updateMenuAndProtection();
+}, 2500);
+
+window.addEventListener("load", () => {
+  if (!sessionStorage.getItem("currentUser") && document.getElementById("dashboard").style.display === "flex") {
+    location.reload();
+  }
+});
 </script>
 </body>
 </html>
