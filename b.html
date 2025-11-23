@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Secure Login | NoteZilla</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #0a0e1f;
+            font-family: Arial;
+        }
+        #box {
+            background: #fff;
+            padding: 25px;
+            width: 330px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: 1px solid #aaa;
+            font-size: 15px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+            border: none;
+            background: #4a7cff;
+            color: #fff;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        #toast {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 20px;
+            background: #333;
+            color: white;
+            border-radius: 8px;
+            display: none;
+        }
+        #successPopup {
+            display: none;
+            position: fixed;
+            top: 40%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: green;
+            padding: 18px;
+            border-radius: 10px;
+            color: white;
+            font-size: 18px;
+        }
+        #loader {
+            display: none;
+            position: fixed;
+            top: 40%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 20px;
+            background: black;
+            color: white;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="box">
+    <h2>🔐 NoteZilla Admin Login</h2>
+
+    <form id="loginForm">
+        <input type="email" id="emailInput" placeholder="Enter Email">
+        <button type="submit">Send OTP</button>
+    </form>
+
+    <div id="otpSection" style="display:none;">
+        <input type="text" id="otpField" placeholder="Enter OTP">
+        <button onclick="verifyLoginOTP()">Verify OTP</button>
+    </div>
+</div>
+
+<div id="toast"></div>
+<div id="loader">⏳ Sending...</div>
+<div id="successPopup">🎉 Login Successful!</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+emailjs.init("XjSbu3DTfQtOBKW-l");
+
+/* 🔥 SEND OTP FUNCTION */
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("emailInput").value.trim();
+    if (!email) return toast("⚠ Enter email first!");
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expire = Date.now() + 15 * 60 * 1000;
+
+    localStorage.setItem("loginOTP", otp);
+    localStorage.setItem("loginEXP", expire);
+    localStorage.setItem("loginEmail", email);
+
+    document.getElementById("loader").style.display = "block";
+
+    try {
+        await emailjs.send("service_3p5ogj7", "template_cygybc4", {
+            passcode: otp,
+            time: new Date(expire).toLocaleTimeString(),
+            email: email
+        });
+
+        document.getElementById("loader").style.display = "none";
+        toast("📩 OTP sent to email!");
+        document.getElementById("otpSection").style.display = "block";
+
+    } catch (err) {
+        document.getElementById("loader").style.display = "none";
+        toast("❌ OTP sending failed!");
+    }
+});
+
+/* 🔥 VERIFY OTP */
+function verifyLoginOTP() {
+    const entered = document.getElementById("otpField").value.trim();
+    const saved = localStorage.getItem("loginOTP");
+    const exp = localStorage.getItem("loginEXP");
+
+    if (!entered) return toast("⚠ Enter OTP!");
+    if (Date.now() > exp) return toast("⌛ OTP expired!");
+    if (entered !== saved) return toast("❌ Wrong OTP!");
+
+    toast("✔ OTP Verified");
+    showSuccess();
+}
+
+function toast(msg) {
+    const t = document.getElementById("toast");
+    t.innerHTML = msg;
+    t.style.display = "block";
+    setTimeout(()=> t.style.display = "none", 2000);
+}
+
+function showSuccess() {
+    document.body.innerHTML = "";
+    const popup = document.createElement("div");
+    popup.innerHTML = "🎉 Login Successful! Redirecting...";
+    popup.style.cssText = "position:fixed;top:40%;left:50%;transform:translateX(-50%);background:green;color:white;padding:20px;border-radius:10px;font-size:20px";
+    document.body.appendChild(popup);
+
+    setTimeout(()=>{
+        window.location.href = "dashboard.html";
+    },1500);
+}
+</script>
+</body>
+</html>
