@@ -183,7 +183,7 @@
 
     // Load Users
     async function loadUsers() {
-      const isAdmin = currentUser && ["Admin", "Co-Admin", "owner"].includes(currentUser.role);
+      const isAdmin = currentUser && ["owner"].includes(currentUser.role);
 
       db.ref("admins").once("value").then(snapshot => {
         document.getElementById("loader").style.display = "none";
