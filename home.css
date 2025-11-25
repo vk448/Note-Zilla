@@ -452,3 +452,12 @@
 .popup-content h2{
   color: #08e795;
 }
+.faq-item img{
+  height: 50px;
+  width: 50px;
+  padding: 2px;
+}
+nav img{
+  height: 25px;
+  width: 25px;
+}
