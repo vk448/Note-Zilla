@@ -2,80 +2,153 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<title>Chat Room with Join Popup</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chat Room Popup</title>
 
 <style>
-  .body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #0d0f24;
-    color: white;
-    height: 100vh;
-    overflow: hidden;
-  }
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #0a0f2d, #1a2555);
+        height: 100vh;
+        overflow: hidden;
+    }
 
-  #popupOverlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.65);
-    backdrop-filter: blur(5px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 999;
-  }
+    /* Popup Background Blur */
+    #popup-bg {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        backdrop-filter: blur(8px);
+        background: rgba(0,0,0,0.55);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+    }
 
-  #popupBox {
-    width: 350px;
-    padding: 25px;
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 15px;
-    box-shadow: 0 0 30px rgba(255,255,255,0.2);
-    text-align: center;
-    animation: pop 0.4s ease;
-  }
+    /* Popup Box */
+    #popup-box {
+        background: white;
+        padding: 25px;
+        width: 90%;
+        max-width: 350px;
+        border-radius: 15px;
+        text-align: center;
+        animation: pop 0.4s ease;
+        box-shadow: 0 0 30px rgba(255,255,255,0.2);
+    }
 
-  @keyframes pop {
-    0% { transform: scale(0.6); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-  }
+    @keyframes pop {
+        0% { transform: scale(0.5); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+    }
 
-  #joinBtn {
-    width: 100%;
-    padding: 12px;
-    background: linear-gradient(45deg, #00ccff, #0066ff);
-    border: none;
-    color: white;
-    font-size: 17px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.2s;
-  }
+    #popup-box h2 {
+        margin-bottom: 15px;
+        color: #000;
+    }
 
-  #joinBtn:hover {
-    transform: scale(1.04);
-    box-shadow: 0 0 10px #008cff;
-  }
+    #popup-box button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        background: #1a6aff;
+        color: white;
+        font-size: 16px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    #popup-box button:hover {
+        background: #0044cc;
+    }
+
+    /* Chat Container */
+    #chat-container {
+        display: none;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        color: white;
+        font-size: 16px;
+    }
+
+    #input-area {
+        display: flex;
+        padding: 10px;
+        background: rgba(255,255,255,0.1);
+    }
+
+    #input-area input {
+        flex: 1;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 8px;
+        border: none;
+        outline: none;
+    }
+
+    #input-area button {
+        margin-left: 10px;
+        padding: 12px 20px;
+        font-size: 16px;
+        border: none;
+        background: #1a6aff;
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+    }
 </style>
+</head>
 
-<div class="body">
-<!-- POPUP -->
-<div id="popupOverlay">
-  <div id="popupBox">
-    <h2>Join Chat Room</h2>
-    <p>Click below to enter the global chat room.</p>
-    <button id="joinBtn">Enter Now</button>
-  </div>
+<body>
+
+<!-- JOIN POPUP -->
+<div id="popup-bg">
+    <div id="popup-box">
+        <h2>Join Chat Room</h2>
+        <p>Click below to enter the chat room.</p>
+        <button onclick="joinChat()">Join Now</button>
+    </div>
+</div>
+
+<!-- CHAT ROOM -->
+<div id="chat-container">
+    <div id="messages"></div>
+
+    <div id="input-area">
+        <input type="text" id="msg" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
 </div>
 
 <script>
-document.getElementById("joinBtn").addEventListener("click", function () {
-    document.getElementById("popupOverlay").style.display = "none";
-    // Redirect user to chatbox page
-    window.location.href = "chatbox.html";
-});
+function joinChat() {
+    document.getElementById("popup-bg").style.display = "none";
+    document.getElementById("chat-container").style.display = "flex";
+}
+
+function sendMessage() {
+    let text = document.getElementById("msg").value;
+    if (text.trim() === "") return;
+
+    let box = document.createElement("div");
+    box.innerText = "You: " + text;
+
+    document.getElementById("messages").appendChild(box);
+    document.getElementById("msg").value = "";
+
+    box.style.marginBottom = "10px";
+}
 </script>
-</div>
+
 </body>
 </html>
