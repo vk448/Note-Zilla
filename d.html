@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NoteZilla - Chapter Entry</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 500px;
+      margin: 40px auto;
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 25px;
+      text-align: center;
+    }
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+    }
+    .form-body {
+      padding: 30px;
+    }
+    label {
+      display: block;
+      margin: 18px 0 8px;
+      font-weight: 600;
+      color: #444;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 16px;
+      margin-top: 5px;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102,126,234,0.2);
+    }
+    .upload-box {
+      border: 3px dashed #667eea;
+      background: #f8f9ff;
+      padding: 40px;
+      text-align: center;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .upload-box:hover {
+      background: #eef1ff;
+    }
+    .or {
+      text-align: center;
+      margin: 25px 0;
+      font-weight: 600;
+      color: #888;
+    }
+    .btn-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+    }
+    button {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .btn-save {
+      background: #667eea;
+      color: white;
+    }
+    .btn-save:hover { background: #5a67d8; }
+    .btn-clear {
+      background: #e2e8f0;
+      color: #444;
+    }
+    .btn-clear:hover { background: #cbd5e0; }
+
+    .link-section {
+      margin-top: 30px;
+      padding: 20px;
+      background: #f8f9ff;
+      border-radius: 16px;
+      border: 2px solid #e0e7ff;
+    }
+    .link-box {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    #generatedLink {
+      flex: 1;
+      padding: 14px;
+      background: white;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+    }
+    .btn-copy, .btn-open {
+      padding: 14px 20px;
+      background: #667eea;
+      color: white;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+    .auto-date {
+      text-align: right;
+      color: #888;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>NoteZilla – Chapter</h1>
+      <p>Database Entry</p>
+    </div>
+
+    <div class="form-body">
+      <label>Chapter Name</label>
+      <input type="text" placeholder="e.g. Chapter-1: Introduction to Computer" id="chapterName">
+
+      <label>Subject</label>
+      <select>
+        <option>Not selected ▼</option>
+        <option>Computer Science</option>
+        <option>Mathematics</option>
+        <option>Physics</option>
+        <option>Biology</option>
+      </select>
+
+      <label>Folder (for URL)</label>
+      <select>
+        <option>Not selected ▼</option>
+        <option>Class-10</option>
+        <option>Class-11</option>
+        <option>Class-12</option>
+        <option>NEET</option>
+        <option>JEE</option>
+      </select>
+
+      <label>Drop, Paste or Select the file to upload</label>
+      <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+        <h3>Upload File</h3>
+        <p>Click here or drag file</p>
+        <input type="file" id="fileInput" style="display:none">
+      </div>
+
+      <div class="or">OR</div>
+
+      <label>Direct URL</label>
+      <input type="url" placeholder="e.g. https://drive.google.com/... or https://g..." id="directUrl">
+
+      <div class="btn-group">
+        <button class="btn-save" onclick="generateLink()">Generate & Save</button>
+        <button class="btn-clear" onclick="clearForm()">Clear</button>
+      </div>
+
+      <div class="auto-date">
+        Auto Date: <span id="currentDate"></span>
+      </div>
+
+      <!-- Generated Link Section -->
+      <div class="link-section">
+        <label>Link</label>
+        <div class="link-box">
+          <input type="text" id="generatedLink" readonly placeholder="Link will appear here...">
+          <button class="btn-open" onclick="openLink()">Open</button>
+          <button class="btn-copy" onclick="copyLink()">Copy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Auto current date
+    document.getElementById("currentDate").textContent = new Date().toLocaleDateString('en-GB');
+
+    function generateLink() {
+      const chapter = document.getElementById("chapterName").value || "Untitled Chapter";
+      const url = document.getElementById("directUrl").value || "No URL provided";
+      
+      const link = `https://notezilla.app/view?chapter=${encodeURIComponent(chapter)}&date=${new Date().toISOString().split('T')[0]}&src=${encodeURIComponent(url)}`;
+      
+      document.getElementById("generatedLink").value = link;
+      alert("Link Generated Successfully!");
+    }
+
+    function openLink() {
+      const link = document.getElementById("generatedLink").value;
+      if (link && link !== "Link will appear here...") {
+        window.open(link, "_blank");
+      }
+    }
+
+    function copyLink() {
+      const link = document.getElementById("generatedLink");
+      link.select();
+      document.execCommand("copy");
+      alert("Link Copied to Clipboard!");
+    }
+
+    function clearForm() {
+      if(confirm("Clear all fields?")) {
+        document.querySelectorAll("input, select").forEach(el => el.value = "");
+        document.getElementById("generatedLink").value = "";
+      }
+    }
+  </script>
+  <script src="d.js"></script>
+</body>
+</html>

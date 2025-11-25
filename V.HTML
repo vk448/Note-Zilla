@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat Room Popup</title>
+
+<style>
+  .body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0d0f24;
+    color: white;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  #popupOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+
+  #popupBox {
+    width: 350px;
+    padding: 25px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 15px;
+    box-shadow: 0 0 30px rgba(255,255,255,0.2);
+    text-align: center;
+    animation: pop 0.4s ease;
+  }
+
+  @keyframes pop {
+    0% { transform: scale(0.6); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  #joinBtn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(45deg, #00ccff, #0066ff);
+    border: none;
+    color: white;
+    font-size: 17px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  #joinBtn:hover {
+    transform: scale(1.04);
+    box-shadow: 0 0 10px #008cff;
+  }
+</style>
+
+<div class="body">
+<!-- POPUP -->
+<div id="popupOverlay">
+  <div id="popupBox">
+    <h2>Join Chat Room</h2>
+    <p>Click below to enter the global chat room.</p>
+    <button id="joinBtn">Enter Now</button>
+  </div>
+</div>
+
+<script>
+document.getElementById("joinBtn").addEventListener("click", function () {
+    document.getElementById("popupOverlay").style.display = "none";
+    // Redirect user to chatbox page
+    window.location.href = "chatbox.html";
+});
+</script>
+</div>
+</body>
+</html>
