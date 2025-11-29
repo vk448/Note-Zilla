@@ -110,7 +110,7 @@
 snapshot.forEach(child => {
   const user = child.val();
   const role = (user.role || "").toLowerCase(); // make it lowercase for consistency
-  if (role === "owner" || role === "work provider" || role === "admin" || role === "notice provider") {
+  if (role === "owner" || role === "work provider" || role === "admin" || role === "notice provider" || role === "co-admin") {
     admins.push(user);
   }
 });
@@ -122,7 +122,7 @@ if (admins.length === 0) {
 
 // Custom sorting: owner first, then Admin, then work provider, then notice provider
 admins.sort((a, b) => {
-  const order = { "owner": 1, "admin": 2, "work provider": 3, "notice provider": 4 };
+  const order = { "owner": 1, "admin": 2, "work provider": 3, "notice provider": 4, "co-admin": 5 };
   const roleA = (a.role || "").toLowerCase();
   const roleB = (b.role || "").toLowerCase();
   return (order[roleA] || 99) - (order[roleB] || 99);
