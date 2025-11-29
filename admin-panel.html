@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NoteZilla - Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  :root{
+    --primary:#203a43;--secondary:#2c5364;--accent:#4fc3f7;--danger:#e74c3c;--success:#27ae60;--dark:#1b2838;--light:#f8f9fa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+  body{
+    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:white;min-height:100vh;overflow:hidden;
+    opacity:0;transition:opacity 0.6s ease;
+  }
+  body.ready{opacity:1;}
+
+  /* Toast */
+  .toast{
+    position:fixed;top:20px;left:50%;transform:translateX(-50%);
+    padding:14px 30px;border-radius:12px;color:white;font-weight:600;
+    z-index:99999;box-shadow:0 10px 30px rgba(0,0,0,0.5);
+    opacity:0;animation:toastIn 0.6s forwards;
+  }
+  .toast.success{background:var(--success);}
+  .toast.error{background:var(--danger);}
+  .toast.info{background:var(--accent);color:#000;}
+  @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-100px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+  @keyframes toastOut{to{opacity:0;transform:translateX(-50%) translateY(-100px)}}
+
+  /* Dashboard */
+  .dashboard{height:100vh;width:100vw;display:flex;overflow:hidden;position:relative;}
+  .sidebar{
+    width:300px;background:var(--dark);padding:30px 20px;overflow-y:auto;
+    box-shadow:8px 0 30px rgba(0,0,0,0.6);transition:0.4s;z-index:100;
+  }
+  .sidebar::-webkit-scrollbar{width:6px;}
+  .sidebar::-webkit-scrollbar-thumb{background:var(--accent);border-radius:10px;}
+
+  .profile-section{text-align:center;margin-bottom:30px;}
+  .profile-section img{
+    width:120px;height:120px;border-radius:50%;border:6px solid var(--accent);
+    object-fit:cover;box-shadow:0 0 30px rgba(79,195,247,0.5);
+  }
+  .profile-section h3{margin:15px 0 8px;font-size:1.5rem;color:var(--accent);}
+  .role-badge{
+    display:inline-block;padding:8px 20px;border-radius:50px;font-weight:700;font-size:0.9rem;
+  }
+
+  .menu-btn{
+    width:100%;padding:16px 20px;margin:8px 0;background:transparent;color:#ccc;
+    border:none;border-radius:14px;text-align:left;font-size:1.05rem;cursor:pointer;
+    display:flex;align-items:center;gap:16px;transition:0.3s;position:relative;overflow:hidden;
+  }
+  .menu-btn:hover{background:rgba(79,195,247,0.2);color:white;transform:translateX(8px);}
+  .menu-btn.active{background:var(--accent);color:var(--dark);font-weight:700;}
+  .menu-btn i{width:30px;text-align:center;font-size:1.3rem;}
+  .logout-btn{background:var(--danger)!important;color:white!important;margin-top:40px;}
+
+  .main-content{flex:1;display:flex;flex-direction:column;background:#f8f9fa;}
+  .topbar{
+    background:white;padding:20px 35px;display:flex;align-items:center;justify-content:space-between;
+    box-shadow:0 5px 20px rgba(0,0,0,0.15);z-index:10;
+  }
+  .topbar h2{font-size:1.8rem;color:var(--primary);font-weight:700;}
+  .menu-toggle{display:none;font-size:2rem;color:var(--primary);cursor:pointer;}
+
+  #contentArea{flex:1;overflow:hidden;background:white;}
+  iframe{width:100%;height:100%;border:none;}
+
+  /* Modal */
+  .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+    background:rgba(0,0,0,0.95);z-index:99999;justify-content:center;align-items:center;}
+  .modal-content{
+    background:white;color:#333;padding:40px;border-radius:22px;width:90%;max-width:460px;
+    text-align:center;box-shadow:0 30px 80px rgba(0,0,0,0.7);position:relative;
+  }
+  #closeModal{position:absolute;top:15px;right:20px;font-size:34px;cursor:pointer;color:#999;}
+  #modalPhotoPreview{width:140px;height:140px;border-radius:50%;object-fit:cover;margin:20px 0;border:6px solid var(--accent);}
+
+  /* Responsive */
+  @media (max-width:768px){
+    .menu-toggle{display:block;}
+    .sidebar{position:fixed;left:-300px;top:0;height:100%;z-index:999;transition:0.4s;}
+    .sidebar.active{left:0;}
+    .topbar{padding:15px 20px;}
+    .topbar h2{font-size:1.5rem;}
+  }
+  .file-img{
+    border: 2px dashed #ccc;
+    border-radius: 16px;
+    padding: 15px;
+    background: #f9f9f9;
+    margin: 15px 0;
+  }
+  .file-img p{
+    text-align: center;
+    color: #555;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div id="toastContainer"></div>
+
+<div class="dashboard">
+  <div class="sidebar" id="sidebar">
+    <div class="profile-section">
+      <img id="adminPhoto" src="" alt="Admin">
+      <h3 id="adminName">Loading...</h3>
+      <div class="role-badge" id="roleBadge">USER</div>
+    </div>
+
+    <button class="menu-btn" onclick="openEditModal()">
+      <i class="fa-solid fa-user-pen"></i><span>Edit Profile</span>
+    </button>
+    <button class="menu-btn" onclick="loadPage('upload-work-data-base-admin-co-admin.html', this)">
+      <i class="fa-solid fa-cloud-upload-alt"></i><span>Upload Notes</span>
+    </button>
+    <button class="menu-btn" onclick="loadPage('delete-database-work-admin-owner-notezilla-database-work-add-on.html', this)">
+      <i class="fa-solid fa-trash-alt"></i><span>Delete/Edit Notes</span>
+    </button>
+    <button class="menu-btn" onclick="loadPage('https://docs.google.com/spreadsheets/d/18ZuLufS0Vkulej9N_mtAKKw4WGulKTYyhdxjKIs-Y-A/edit', this)">
+      <i class="fa-solid fa-calendar-alt"></i><span>Time Table</span>
+    </button>
+    <button class="menu-btn restricted" onclick="loadPage('d.html', this)">
+      <i class="fa-solid fa-bell"></i><span>Give Notice</span>
+    </button>
+    <button class="menu-btn" onclick="loadPage('V.html', this)">
+      <i class="fa-solid fa-eye"></i><span>View All Notices</span>
+    </button>
+    <button class="menu-btn" onclick="window.open('https://note-zilla.netlify.app/', '_blank')">
+      <i class="fa-solid fa-external-link-alt"></i><span>Visit Website</span>
+    </button>
+    <button class="menu-btn logout-btn" onclick="logout()">
+      <i class="fa-solid fa-power-off"></i><span>Logout</span>
+    </button>
+  </div>
+
+  <div class="main-content">
+    <div class="topbar">
+      <div class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('active')">
+        Menu
+      </div>
+      <h2>NoteZilla Admin Panel</h2>
+      <div></div>
+    </div>
+    <div id="contentArea">
+      <iframe id="frameBox" src="welcome.html"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal" id="editModal">
+  <div class="modal-content">
+    <span id="closeModal">x</span>
+    <h2>Edit Profile</h2>
+    <img id="modalPhotoPreview" src="" alt="Profile">
+    <div class="file-img">
+      <p>Upload Profile Image</p>
+      <input type="file" id="newPhoto" accept="image/*">
+    </div>
+    <input type="text" id="newName" placeholder="Enter Full Name" style="width:100%;padding:16px;border-radius:12px;border:2px solid #ddd;margin:10px 0;">
+    <button onclick="saveProfile()" style="background:var(--accent);color:var(--dark);padding:16px 40px;border:none;border-radius:12px;font-weight:700;cursor:pointer;">Save Changes</button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
+  databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com"
+});
+const db = firebase.database();
+let currentUser = null;
+
+// Toast
+function toast(msg, type = "info") {
+  const t = document.createElement("div");
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  document.getElementById("toastContainer").appendChild(t);
+  setTimeout(() => {
+    t.style.animation = "toastOut 0.6s forwards";
+    setTimeout(() => t.remove(), 700);
+  }, 3000);
+}
+
+// Security + Login Check
+if(!sessionStorage.getItem("adminUser")){
+  toast("Access Denied! Redirecting to login...", "error");
+  setTimeout(() => window.location.href = "admin-login.html", 1500); // ← YEH CHANGE KIYA
+} else {
+  currentUser = JSON.parse(sessionStorage.getItem("adminUser"));
+  document.body.classList.add("ready");
+
+  document.getElementById("adminName").textContent = currentUser.fullName || "Admin";
+  const photo = currentUser.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser.fullName || "admin"}`;
+  document.getElementById("adminPhoto").src = photo;
+  document.getElementById("modalPhotoPreview").src = photo;
+
+  const role = (currentUser.role || "user").toString().toLowerCase().trim();
+  let badgeText = "USER", badgeColor = "#666";
+
+  if(role === "owner") { badgeText = "OWNER"; badgeColor = "#f39c12"; }
+  else if(role === "admin") { badgeText = "ADMIN"; badgeColor = "#e74c3c"; }
+  else if(role.includes("co")) { badgeText = "CO-ADMIN"; badgeColor = "#9b59b6"; }
+  else if(role.includes("notice")) { badgeText = "NOTICE PROVIDER"; badgeColor = "#3498db"; }
+
+  document.getElementById("roleBadge").textContent = badgeText;
+  document.getElementById("roleBadge").style.backgroundColor = badgeColor;
+
+  if(!["owner","admin","co-admin","coadmin"].includes(role)){
+    document.querySelectorAll(".restricted").forEach(btn => btn.style.display = "none");
+  }
+}
+
+// Load Page
+function loadPage(url, btn){
+  if(url.includes("http")){ window.open(url,"_blank"); return; }
+  const role = (currentUser.role || "").toString().toLowerCase();
+  if(url === "d.html" && !["owner","admin","co-admin","coadmin"].includes(role)){
+    toast("You don't have permission!", "error");
+    return;
+  }
+  document.getElementById("frameBox").src = url;
+  document.querySelectorAll(".menu-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+}
+
+// Edit Profile
+let newPhotoData = null;
+function openEditModal(){
+  document.getElementById("newName").value = currentUser.fullName || "";
+  document.getElementById("modalPhotoPreview").src = document.getElementById("adminPhoto").src;
+  document.getElementById("editModal").style.display = "flex";
+}
+document.getElementById("newPhoto").onchange = function(e){
+  const file = e.target.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = ev => {
+      newPhotoData = ev.target.result;
+      document.getElementById("modalPhotoPreview").src = newPhotoData;
+    };
+    reader.readAsDataURL(file);
+  }
+};
+async function saveProfile(){
+  const name = document.getElementById("newName").value.trim();
+  if(!name) return toast("Name is required!", "error");
+
+  try {
+    const updates = { fullName: name };
+    if(newPhotoData) updates.photoURL = newPhotoData;
+    await db.ref("admins/" + currentUser.id).update(updates);
+
+    currentUser.fullName = name;
+    if(newPhotoData) currentUser.photoURL = newPhotoData;
+    sessionStorage.setItem("adminUser", JSON.stringify(currentUser));
+
+    toast("Profile Updated Successfully!", "success");
+    setTimeout(() => location.reload(), 1000);
+  } catch(err) {
+    toast("Update Failed!", "error");
+  }
+}
+document.getElementById("closeModal").onclick = () => {
+  document.getElementById("editModal").style.display = "none";
+  newPhotoData = null;
+};
+
+// LOGOUT → admin-login.html
+function logout(){
+  toast("Logging you out...", "info");
+  sessionStorage.removeItem("adminUser");
+  setTimeout(() => {
+    window.location.href = "admin-login.html";  // ← YEH BHI CHANGE KIYA
+  }, 1200);
+}
+
+// Auto redirect if session lost
+setInterval(() => {
+  if(!sessionStorage.getItem("adminUser")){
+    window.location.href = "admin-login.html";  // ← Sab jagah admin-login.html
+  }
+}, 3000);
+</script>
+</body>
+</html>

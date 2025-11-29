@@ -3,244 +3,58 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NoteZilla — Admin Panel</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>NoteZilla - Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-  :root {
-    --primary: #203a43;
-    --secondary: #2c5364;
-    --accent: #4fc3f7;
-    --danger: #e74c3c;
-    --success: #27ae60;
-    --dark: #1b2838;
-    --light: #f8f9fa;
-  }
+  :root { --primary: #203a43; --accent: #4fc3f7; --danger: #e74c3c; --success: #27ae60; }
   *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
   body{
     background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    min-height: 100vh;
-    color: white;
-    overflow: hidden; /* Ye fix kiya gaya hai ab scroll ke liye */
+    min-height:100vh;display:flex;justify-content:center;align-items:center;color:white;
   }
-
-  /* ====== LOADER ====== */
-  #loaderOverlay{
-    display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);
-    z-index:99999;justify-content:center;align-items:center;flex-direction:column;font-size:1.6rem;
-  }
-  .spinner{
-    width:70px;height:70px;border:8px solid #ffffff33;border-top:8px solid #4fc3f7;
-    border-radius:50%;animation:spin 1s linear infinite;margin-bottom:20px;
-  }
-  @keyframes spin{to{transform:rotate(360deg)}}
-
-  /* ====== TOAST NOTIFICATION ====== */
-  .toast{
-    position:fixed;top:25px;left:50%;transform:translateX(-50%);padding:16px 40px;
-    border-radius:15px;color:white;font-weight:600;z-index:100000;
-    box-shadow:0 15px 40px rgba(0,0,0,0.5);opacity:0;
-    animation:toastIn 0.6s forwards;font-size:1.1rem;
-  }
-  .toast.success{background:var(--success);}
-  .toast.error{background:var(--danger);}
-  @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-100px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-  @keyframes toastOut{to{opacity:0;transform:translateX(-50%) translateY(-100px)}}
-
-  /* ====== LOGIN BOX ====== */
   .container{
-    max-width:440px;margin:60px auto;background:white;padding:50px 40px;
-    border-radius:22px;box-shadow:0 25px 70px rgba(0,0,0,0.6);text-align:center;color:#333;
+    background:white;color:#333;padding:50px 40px;border-radius:22px;
+    box-shadow:0 25px 70px rgba(0,0,0,0.6);width:90%;max-width:420px;text-align:center;
   }
   h1{font-size:2.8rem;color:var(--primary);margin-bottom:8px;font-weight:700;}
-  h2{font-size:1.6rem;color:#555;margin-bottom:30px;}
-  input{
-    width:100%;padding:18px;margin:12px 0;border-radius:14px;border:2px solid #ddd;
-    font-size:16px;transition:all 0.3s;
-  }
-  input:focus{
-    border-color:var(--accent);outline:none;box-shadow:0 0 0 5px rgba(79,195,247,0.25);
-  }
-  button.login-btn{
-    width:100%;padding:18px;background:linear-gradient(135deg,var(--primary),var(--secondary));
-    color:white;border:none;border-radius:14px;font-size:1.3rem;font-weight:700;
-    cursor:pointer;margin-top:20px;transition:0.4s;
-  }
-  button.login-btn:hover{transform:translateY(-4px);box-shadow:0 10px 20px 30px rgba(0,0,0,0.4);}
-
-  /* ====== DASHBOARD LAYOUT ====== */
-  .dashboard{
-    display:none;height:100vh;width:100vw;display:flex;overflow:hidden;
-  }
-  .sidebar{
-    width:300px;background:var(--dark);padding:30px 20px;position:relative;
-    overflow-y:auto;overflow-x:hidden;box-shadow:8px 0 30px rgba(0,0,0,0.6);
-    transition:all 0.4s;z-index:100;
-  }
-  .sidebar::-webkit-scrollbar{width:6px;}
-  .sidebar::-webkit-scrollbar-track{background:#112d32;}
-  .sidebar::-webkit-scrollbar-thumb{background:#4fc3f7;border-radius:10px;}
-
-  .profile-section{text-align:center;margin-bottom:30px;}
-  .profile-section img{
-    width:120px;height:120px;border-radius:50%;border:6px solid var(--accent);
-    object-fit:cover;box-shadow:0 0 30px rgba(79,195,247,0.6);
-  }
-  .profile-section h3{
-    margin:15px 0 8px;font-size:1.5rem;color:var(--accent);
-  }
-  .role-badge{
-    display:inline-block;background:var(--accent);color:var(--dark);
-    padding:8px 20px;border-radius:50px;font-weight:700;font-size:0.9rem;
-  }
-
-  .menu-btn{
-    width:100%;padding:16px 20px;margin:8px 0;background:transparent;
-    color:#ccc;border:none;border-radius:14px;text-align:left;
-    font-size:1.05rem;cursor:pointer;display:flex;align-items:center;gap:16px;
-    transition:all 0.3s;position:relative;overflow:hidden;
-  }
-  .menu-btn:hover{background:rgba(79,195,247,0.2);color:white;transform:translateX(8px);}
-  .menu-btn.active{background:var(--accent);color:var(--dark);font-weight:700;}
-  .menu-btn i{width:30px;text-align:center;font-size:1.3rem;}
-  .logout-btn{background:var(--danger)!important;color:white!important;margin-top:30px;}
-
-  .main-content{
-    flex:1;display:flex;flex-direction:column;background:#f8f9fa;overflow:hidden;
-  }
-  .topbar{
-    background:white;padding:20px 35px;display:flex;align-items:center;
-    justify-content:space-between;box-shadow:0 5px 20px rgba(0,0,0,0.15);z-index:10;
-  }
-  .topbar h2{font-size:1.8rem;color:var(--primary);font-weight:700;}
-  .menu-toggle{
-    display:none;font-size:2rem;color:var(--primary);cursor:pointer;
-  }
-
-  /* ====== IFRAME SCROLL FIX ====== */
-  #contentArea{
-    flex:1;overflow:hidden;position:relative;
-  }
-  iframe{
-    width:100%;height:100%;border:none;background:white;
-    border:none;display:block;
-  }
-
-  /* ====== MODAL ====== */
-  .modal{
-    display:none;position:fixed;top:0;left:0;width:100%;height:100%;
-    background:rgba(0,0,0,0.92);z-index:99999;
-    justify-content:center;align-items:center;
-  }
-  .modal-content{
-    background:white;color:#333;padding:40px;border-radius:22px;
-    width:90%;max-width:460px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,0.7);
-    position:relative;
-  }
-  #closeModal{
-    position:absolute;top:15px;right:20px;font-size:34px;cursor:pointer;color:#999;
-  }
-  #modalPhotoPreview{
-    width:140px;height:140px;border-radius:50%;object-fit:cover;
-    margin:20px 0;border:6px solid var(--accent);
-  }
-
-  /* ====== RESPONSIVE ====== */
-  @media (max-width:768px){
-    .menu-toggle{display:block;}
-    .sidebar{position:fixed;left:-300px;top:0;height:100%;z-index:999;transition:0.4s;}
-    .sidebar.active{left:0;}
-    .topbar{padding:15px 20px;}
-    .topbar h2{font-size:1.5rem;}
-  }
+  h2{font-size:1.5rem;color:#555;margin-bottom:30px;}
+  input{width:100%;padding:18px;margin:12px 0;border-radius:14px;border:2px solid #ddd;font-size:16px;}
+  input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 5px rgba(79,195,247,0.25);}
+  button{width:100%;padding:18px;background:linear-gradient(135deg,var(--primary),#2c5364);
+    color:white;border:none;border-radius:14px;font-size:1.3rem;font-weight:700;cursor:pointer;margin-top:10px;}
+  button:hover{transform:translateY(-3px);box-shadow:0 10px 25px rgba(0,0,0,0.4);}
+  #loader{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);
+    z-index:9999;justify-content:center;align-items:center;flex-direction:column;color:white;font-size:1.8rem;}
+  .spinner{width:70px;height:70px;border:8px solid #fff3;border-top:8px solid var(--accent);border-radius:50%;animation:s 1s linear infinite;margin-bottom:20px;}
+  @keyframes s{to{transform:rotate(360deg)}}
+  .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:15px 35px;border-radius:12px;color:white;
+    font-weight:600;z-index:99999;box-shadow:0 10px 30px rgba(0,0,0,0.5);opacity:0;animation:t 0.6s forwards;}
+  .toast.success{background:var(--success);}
+  .toast.error{background:var(--danger);}
+  @keyframes t{from{opacity:0;transform:translateX(-50%) translateY(-100px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 </style>
 </head>
 <body>
 
-<!-- FULL SCREEN LOADER -->
-<div id="loaderOverlay">
+<div id="loader">
   <div class="spinner"></div>
-  <div id="loaderText">Please wait...</div>
+  <div>Logging in...</div>
 </div>
 
-<!-- LOGIN PAGE -->
-<div class="container" id="loginBox">
+<div class="container">
   <h1>NoteZilla</h1>
-  <h2>Secure Admin Panel</h2>
+  <h2>Admin Login</h2>
   <form id="loginForm">
-    <input type="text" id="username" placeholder="Enter Username or Email" required autocomplete="off">
-    <input type="password" id="password" placeholder="Enter Password" required>
-    <button type="submit" class="login-btn">Login Now</button>
+    <input type="text" id="username" placeholder="Username or Email" required autocomplete="off">
+    <input type="password" id="password" placeholder="Password" required>
+    <button type="submit">Login Now</button>
   </form>
 </div>
 
-<!-- MAIN DASHBOARD -->
-<div class="dashboard" id="dashboard">
-  <!-- SIDEBAR -->
-  <div class="sidebar" id="sidebar">
-    <div class="profile-section">
-      <img id="adminPhoto" src="" alt="Admin">
-      <h3 id="adminName">Loading...</h3>
-      <div class="role-badge" id="roleBadge">USER</div>
-    </div>
-
-    <button class="menu-btn" onclick="openEditModal()">
-      <i class="fa-solid fa-user-pen"></i><span>Edit Profile</span>
-    </button>
-    <button class="menu-btn" onclick="loadPage('upload-work-data-base-admin-co-admin.html', this)">
-      <i class="fa-solid fa-cloud-upload-alt"></i><span>Upload Notes</span>
-    </button>
-    <button class="menu-btn" onclick="loadPage('delete-database-work-admin-owner-notezilla-database-work-add-on.html', this)">
-      <i class="fa-solid fa-trash-alt"></i><span>Delete/Edit Notes</span>
-    </button>
-    <button class="menu-btn" onclick="loadPage('https://docs.google.com/spreadsheets/d/18ZuLufS0Vkulej9N_mtAKKw4WGulKTYyhdxjKIs-Y-A/edit', this)">
-      <i class="fa-solid fa-calendar-alt"></i><span>Time Table</span>
-    </button>
-    <button class="menu-btn" onclick="loadPage('d.html', this)">
-      <i class="fa-solid fa-bell"></i><span>Give Notice</span>
-    </button>
-    <button class="menu-btn" onclick="loadPage('V.html', this)">
-      <i class="fa-solid fa-eye"></i><span>View All Notices</span>
-    </button>
-    <button class="menu-btn" onclick="window.open('https://note-zilla.netlify.app/', '_blank')">
-      <i class="fa-solid fa-external-link-alt"></i><span>Visit Website</span>
-    </button>
-    <button class="menu-btn logout-btn" id="logoutBtn">
-      <i class="fa-solid fa-power-off"></i><span>Logout</span>
-    </button>
-  </div>
-
-  <!-- MAIN CONTENT AREA -->
-  <div class="main-content">
-    <div class="topbar">
-      <div class="menu-toggle" onclick="toggleSidebar()">Menu</div>
-      <h2>NoteZilla Admin Panel</h2>
-      <div></div>
-    </div>
-    <div id="contentArea">
-      <iframe id="frameBox" src="about:blank"></iframe>
-    </div>
-  </div>
-</div>
-
-<!-- EDIT PROFILE MODAL -->
-<div class="modal" id="editModal">
-  <div class="modal-content">
-    <span id="closeModal">x</span>
-    <h2>Edit Profile</h2>
-    <img id="modalPhotoPreview" src="" alt="Profile">
-    <input type="file" id="newPhoto" accept="image/*" style="margin:20px 0;padding:10px;">
-    <input type="text" id="newName" placeholder="Enter Full Name" style="width:100%;padding:16px;border-radius:12px;border:2px solid #ddd;margin:10px 0;">
-    <button onclick="saveProfile()" style="background:var(--accent);color:var(--dark);padding:16px 40px;border:none;border-radius:12px;font-weight:700;cursor:pointer;">Save Changes</button>
-  </div>
-</div>
-
-<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
 <script>
-// ==================== FULL CONFIG & SECURITY SYSTEM ====================
 const firebaseConfig = {
   apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
   authDomain: "chat-box-e01e5.firebaseapp.com",
@@ -250,239 +64,61 @@ const firebaseConfig = {
   messagingSenderId: "597491149800",
   appId: "1:597491149800:web:7bd908925f70b62018125d"
 };
-
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-let currentUser = null;
 
-// All pages jo restricted hain
-const RESTRICTED_PAGES = [
-  "upload-work-data-base-admin-co-admin.html",
-  "delete-database-work-admin-owner-notezilla-database-work-add-on.html",
-  "https://docs.google.com/spreadsheets/d/18ZuLufS0Vkulej9N_mtAKKw4WGulKTYyhdxjKIs-Y-A/edit",
-  "d.html",
-  "V.html"
-];
-
-// Toast Function (Beautiful)
-function toast(message, type = "error") {
+function toast(msg, type="error"){
   const t = document.createElement("div");
   t.className = `toast ${type}`;
-  t.textContent = message;
+  t.textContent = msg;
   document.body.appendChild(t);
-  setTimeout(() => {
-    t.style.animation = "toastOut 0.6s forwards";
-    setTimeout(() => t.remove(), 700);
-  }, 4000);
-}
-
-// Role Check System — Tumhara Rule Exactly
-function getRole() {
-  if (!currentUser) return "guest";
-  return (currentUser.role || "user").toString().toLowerCase().trim();
-}
-
-function canAccessPage(pageName) {
-  const role = getRole();
-
-  if (["owner", "admin"].includes(role)) return true;
-
-  if (["co-admin", "coadmin"].includes(role)) {
-    return pageName !== "d.html";
-  }
-
-  if (["notice provider", "notice-provider"].includes(role)) {
-    return ["d.html", "v.html", "V.html"].includes(pageName);
-  }
-
-  return false;
-}
-
-// Security: Menu + Iframe Protection
-function applySecurity() {
-  if (!currentUser) return;
-
-  // Hide/Show Menu Buttons
-  document.querySelectorAll(".menu-btn").forEach(btn => {
-    const action = btn.getAttribute("onclick") || "";
-    let url = action.match(/loadPage\(['"]([^'"]+)['"]/)?.[1] || 
-               action.match(/window\.open\(['"]([^'"]+)['"]/)?.[1] || "";
-
-    const pageName = url.split("/").pop().split("?")[0];
-    const isRestricted = RESTRICTED_PAGES.some(p => url.includes(p));
-
-    if (isRestricted && !canAccessPage(pageName)) {
-      btn.style.display = "none";
-    } else {
-      btn.style.display = "flex";
-    }
-  });
-
-  // Block iframe if not allowed
-  const iframe = document.getElementById("frameBox");
-  if (iframe.src && iframe.src !== "about:blank") {
-    const currentPage = iframe.src.split("/").pop();
-    if (RESTRICTED_PAGES.some(p => iframe.src.includes(p)) && !canAccessPage(currentPage)) {
-      iframe.src = "about:blank";
-      toast("Access Denied for Your Role!", "error");
-    }
-  }
-}
-
-// Login System
-if (sessionStorage.getItem("currentUser")) {
-  currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
-  showDashboard(currentUser);
+  setTimeout(() => t.remove(), 4000);
 }
 
 document.getElementById("loginForm").onsubmit = async function(e) {
   e.preventDefault();
   const username = document.getElementById("username").value.trim().toLowerCase();
-  const password = document.getElementById("password").value;
-  document.getElementById("loaderOverlay").style.display = "flex";
+  const password = document.getElementById("password").value.trim();
+  
+  if(!username || !password) return toast("Fill both fields!", "error");
+  
+  document.getElementById("loader").style.display = "flex";
 
   try {
     const snap = await db.ref("admins").once("value");
-    let foundUser = null;
-
+    let found = null;
+    
     snap.forEach(child => {
       const user = child.val();
-      if ((user.username?.toLowerCase() === username || user.email?.toLowerCase() === username) && 
-          atob(user.password) === password) {
-        foundUser = { id: child.key, ...user };
+      const dbUser = (user.username || user.email || "").toString().toLowerCase().trim();
+      const dbPass = (user.password || "").toString().trim();
+      
+      if(dbUser === username) {
+        try {
+          if(atob(dbPass) === password) found = {id: child.key, ...user};
+        } catch {
+          if(dbPass === password) found = {id: child.key, ...user};
+        }
       }
     });
 
-    if (foundUser) {
-      currentUser = foundUser;
-      sessionStorage.setItem("currentUser", JSON.stringify(foundUser));
+    if(found) {
+      // Save login session
+      sessionStorage.setItem("adminUser", JSON.stringify(found));
       toast("Login Successful!", "success");
-      setTimeout(() => showDashboard(foundUser), 1200);
+      setTimeout(() => {
+        window.location.href = "admin-panel.html";
+      }, 1200);
     } else {
-      toast("Invalid Username or Password!", "error");
+      toast("Wrong Username or Password!", "error");
     }
-  } catch (error) {
+  } catch(err) {
+    console.error(err);
     toast("Connection Failed!", "error");
   } finally {
-    document.getElementById("loaderOverlay").style.display = "none";
+    document.getElementById("loader").style.display = "none";
   }
 };
-
-// Show Dashboard After Login
-function showDashboard(user) {
-  document.getElementById("loginBox").style.display = "none";
-  document.getElementById("dashboard").style.display = "flex";
-
-  // Role Badge Color
-  const role = getRole();
-  let badgeText = "USER", badgeColor = "#4fc3f7";
-  if (role === "owner") badgeText = "OWNER", badgeColor = "#f39c12";
-  else if (role === "admin") badgeText = "ADMIN", badgeColor = "#e74c3c";
-  else if (role.includes("co")) badgeText = "CO-ADMIN", badgeColor = "#9b59b6";
-  else if (role.includes("notice")) badgeText = "NOTICE PROVIDER", badgeColor = "#3498db";
-
-  document.getElementById("adminName").textContent = user.fullName || "Admin";
-  document.getElementById("roleBadge").textContent = badgeText;
-  document.getElementById("roleBadge").style.backgroundColor = badgeColor;
-
-  // Profile Photo
-  const photo = user.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.fullName}`;
-  document.getElementById("adminPhoto").src = photo;
-  document.getElementById("modalPhotoPreview").src = photo;
-
-  // Load Welcome Page
-  document.getElementById("frameBox").src = "welcome.html";
-
-  applySecurity();
-}
-
-// Safe Page Loading
-function loadPage(url, button) {
-  if (url.includes("http")) {
-    window.open(url, "_blank");
-    return;
-  }
-
-  const pageName = url.split("/").pop();
-  if (RESTRICTED_PAGES.some(p => url.includes(p)) && !canAccessPage(pageName)) {
-    toast("You don't have permission!", "error");
-    return;
-  }
-
-  document.getElementById("frameBox").src = url;
-  document.querySelectorAll(".menu-btn").forEach(b => b.classList.remove("active"));
-  button.classList.add("active");
-}
-
-// Edit Profile
-let newPhotoData = null;
-function openEditModal() {
-  document.getElementById("newName").value = currentUser.fullName;
-  document.getElementById("modalPhotoPreview").src = document.getElementById("adminPhoto").src;
-  document.getElementById("editModal").style.display = "flex";
-}
-
-document.getElementById("newPhoto").onchange = function(e) {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-      newPhotoData = ev.target.result;
-      document.getElementById("modalPhotoPreview").src = newPhotoData;
-    };
-    reader.readAsDataURL(file);
-  }
-};
-
-async function saveProfile() {
-  const name = document.getElementById("newName").value.trim();
-  if (!name) return toast("Name is required!", "error");
-
-  document.getElementById("loaderOverlay").style.display = "flex";
-  try {
-    const updates = { fullName: name };
-    if (newPhotoData) updates.photoURL = newPhotoData;
-
-    await db.ref("admins/" + currentUser.id).update(updates);
-    currentUser.fullName = name;
-    if (newPhotoData) currentUser.photoURL = newPhotoData;
-    sessionStorage.setItem("currentUser", JSON.stringify(currentUser));
-
-    toast("Profile Updated Successfully!", "success");
-    showDashboard(currentUser);
-    document.getElementById("editModal").style.display = "none";
-  } catch {
-    toast("Update Failed!", "error");
-  } finally {
-    document.getElementById("loaderOverlay").style.display = "none";
-  }
-}
-
-document.getElementById("closeModal").onclick = () => {
-  document.getElementById("editModal").style.display = "none";
-  newPhotoData = null;
-};
-
-// Logout
-document.getElementById("logoutBtn").onclick = function() {
-  toast("Logging out...", "success");
-  sessionStorage.clear();
-  setTimeout(() => location.reload(), 1500);
-};
-
-// Sidebar Toggle
-function toggleSidebar() {
-  document.getElementById("sidebar").classList.toggle("active");
-}
-
-// Final Security Check Every 2 Seconds
-setInterval(() => {
-  applySecurity();
-  if (document.getElementById("dashboard").style.display === "flex" && !sessionStorage.getItem("currentUser")) {
-    location.reload();
-  }
-}, 2000);
-
 </script>
 </body>
 </html>
