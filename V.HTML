@@ -3,202 +3,157 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Notice Board</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Official Notice Board</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    :root {
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --gray-100: #f8fafc;
-      --gray-200: #e2e8f0;
-      --gray-300: #cbd5e1;
-      --gray-600: #475569;
-      --gray-800: #1e293b;
-      --gray-900: #0f172a;
-      --radius: 16px;
-      --shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
-    }
+  :root {
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --gray: #f3f4f6;
+    --border: #e5e7eb;
+    --text-dark: #1f2937;
+    --text-light: #6b7280;
+    --radius: 10px;
+  }
 
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      padding: 20px;
-      color: var(--gray-900);
-    }
+  * { margin:0; padding:0; box-sizing:border-box; }
 
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding-top: 2rem;
-    }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(120deg, rgb(15, 153, 112)), rgb(0, 162, 255);
+    color: var(--text-dark);
+    padding-bottom: 2rem;
+  }
 
-    header {
-      text-align: center;
-      color: white;
-      margin-bottom: 2rem;
-    }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
 
-    header h1 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-    }
+  header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
 
-    header p {
-      opacity: 0.9;
-      font-size: 1.1rem;
-    }
+  header h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color:white;
+  }
 
-    .controls {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
-    }
+  header p {
+    font-size: 1rem;
+    color:white;
+    margin-top: 0.4rem;
+  }
 
-    .search-box {
-      flex: 1;
-      min-width: 250px;
-      position: relative;
-    }
+  /* SEARCH */
+  .search-box {
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    position: relative;
+  }
 
-    .search-box input {
-      width: 100%;
-      padding: 0.9rem 1rem 0.9rem 3rem;
-      border: none;
-      border-radius: var(--radius);
-      font-size: 1rem;
-      box-shadow: var(--shadow);
-      outline: none;
-    }
+  .search-box input {
+    width: 100%;
+    padding: 0.9rem 1rem 0.9rem 3rem;
+    border: 1px solid var(--border);
+    background: white;
+    border-radius: var(--radius);
+    font-size: 1rem;
+  }
 
-    .search-box i {
-      position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--gray-600);
-    }
+  .search-box i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+  }
 
-    .notice-list {
-      display: grid;
-      gap: 1.5rem;
-    }
+  /* NOTICE LIST */
+  .notice-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
 
-    .notice-card {
-      background: white;
-      border-radius: var(--radius);
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
+  .notice-row {
+    background: white;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.2s;
+  }
 
-    .notice-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15);
-    }
+  .notice-row:hover {
+    background: #f9fafb;
+  }
 
-    .card-header {
-      background: var(--primary);
-      color: white;
-      padding: 1.2rem 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
+  .notice-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
 
-    .card-header h2 {
-      font-size: 1.3rem;
-      font-weight: 600;
-      max-width: 70%;
-    }
+  .download-pdf-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: 0.2s;
+  }
 
-    .card-meta {
-      font-size: 0.9rem;
-      opacity: 0.95;
-    }
+  .download-pdf-btn:hover {
+    background: var(--primary-hover);
+  }
 
-    .card-body {
-      padding: 1.5rem;
-    }
+  .empty-state,
+  .loading {
+    text-align: center;
+    padding: 3rem 1rem;
+    font-size: 1.1rem;
+    color: var(--text-light);
+  }
 
-    .card-body p {
-      color: var(--gray-800);
-      line-height: 1.7;
-      white-space: pre-wrap;
-      margin-bottom: 1rem;
-    }
+  .loading i {
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+  }
+</style>
 
-    .download-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: var(--primary);
-      color: white;
-      padding: 0.7rem 1.2rem;
-      border-radius: 50px;
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 0.95rem;
-      transition: all 0.3s ease;
-    }
-
-    .download-btn:hover {
-      background: var(--primary-dark);
-      transform: scale(1.05);
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 4rem 2rem;
-      color: white;
-      font-size: 1.2rem;
-      opacity: 0.9;
-    }
-
-    .loading {
-      text-align: center;
-      padding: 3rem;
-      color: white;
-      font-size: 1.1rem;
-    }
-
-    @media (max-width: 640px) {
-      header h1 { font-size: 2rem; }
-      .card-header { flex-direction: column; align-items: flex-start; }
-      .card-header h2 { max-width: 100%; }
-    }
-  </style>
 </head>
 <body>
 
 <div class="container">
   <header>
-    <h1>Notice Board</h1>
-    <p>Latest updates and announcements</p>
+    <h1>NoteZilla Notice Board</h1>
+    <p>Important Announcements & Circulars</p>
   </header>
 
-  <div class="controls">
-    <div class="search-box">
-      <i class="fas fa-search"></i>
-      <input type="text" id="searchInput" placeholder="Search notices by title or author..." />
-    </div>
+  <div class="search-box">
+    <i class="fas fa-search"></i>
+    <input type="text" id="searchInput" placeholder="Search notices by title or content..." />
   </div>
 
   <div id="loading" class="loading">
-    <i class="fas fa-spinner fa-spin fa-2x"></i><br><br>Loading notices...
+    <i class="fas fa-spinner fa-spin"></i><br><br>Loading Official Notices...
   </div>
 
-  <div id="noticeList" class="notice-list"></div>
+  <div id="noticeList" class="notice-list" style="display:none;"></div>
 
   <div id="emptyState" class="empty-state" style="display:none;">
-    <i class="fas fa-clipboard-list fa-3x" style="font-size:3rem; opacity:0.7;"></i>
-    <p>No notices found.</p>
+    <p>No notices found matching your search.</p>
   </div>
 </div>
 
@@ -206,6 +161,8 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
 <script>
+  const { jsPDF } = window.jspdf;
+
   const firebaseConfig = {
     apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
     authDomain: "chat-box-e01e5.firebaseapp.com",
@@ -224,114 +181,145 @@
   const emptyState = document.getElementById('emptyState');
   const searchInput = document.getElementById('searchInput');
 
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
+  let allNotices = [];
 
   function formatDate(dateString) {
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    } catch {
-      return dateString || "Just now";
-    }
+    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+    return new Date(dateString).toLocaleDateString('en-IN', options);
   }
 
-  function createNoticeCard(notice) {
-    const title = escapeHtml(notice.title || "Untitled Notice");
-    const name = escapeHtml(notice.name || "Anonymous");
-    const date = formatDate(notice.date || notice.timestamp);
-    const text = escapeHtml(notice.notice || "");
+  function downloadAsPDF(notice) {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
 
-    const content = `NOTICE\n\nTitle: ${title}\nBy: ${name}\nDate: ${date}\n\n${text.replace(/<br>/g, '\n')}`;
-    const blob = new Blob([content], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
+    // Watermark
+    doc.setFontSize(50);
+    doc.setTextColor(240, 240, 240);
+    doc.setFont("helvetica", "bold");
+    doc.text("OFFICIAL NOTICE", pageWidth / 2, pageHeight / 2, {
+      align: "center",
+      angle: 45
+    });
 
-    const card = document.createElement('div');
-    card.className = 'notice-card';
-    card.innerHTML = `
-      <div class="card-header">
-        <h2>${title}</h2>
-        <div class="card-meta">By ${name} • ${date}</div>
-      </div>
-      <div class="card-body">
-        <p>${text.replace(/\n/g, '<br>')}</p>
-        <a href="${url}" download="${title.replace(/[^a-z0-9]/gi, '_')}.txt" class="download-btn">
-          Download Notice
-        </a>
-      </div>
+    // Header
+    doc.setTextColor(30, 64, 175);
+    doc.setFontSize(28);
+    doc.setFont("helvetica", "bold");
+    doc.text("NOTICE", pageWidth / 2, 30, { align: "center" });
+
+    // Title
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    let y = 50;
+    const titleLines = doc.splitTextToSize(notice.title || "Untitled Notice", 170);
+    doc.text(titleLines, 20, y);
+    y += titleLines.length * 8 + 10;
+
+    // Meta
+    doc.setFontSize(11);
+    doc.setTextColor(100, 100, 100);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Issued by: ${notice.name || "Admin"}`, 20, y);
+    doc.text(`Date: ${formatDate(notice.date || notice.timestamp)}`, 20, y + 8);
+    y += 25;
+
+    // Content
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(13);
+    doc.setFont("helvetica", "normal");
+    const content = notice.notice || "No content available.";
+    const splitContent = doc.splitTextToSize(content, 170);
+    doc.text(splitContent, 20, y);
+    y += splitContent.length * 7 + 30;
+
+    // Signature
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "italic");
+    doc.text("___________________________", 20, y);
+    doc.setFontSize(13);
+    doc.setFont("helvetica", "normal");
+    doc.text("Authorized Signatory", 20, y + 10);
+    doc.text("Notice Provider / Admin", 20, y + 18);
+
+    // Footer
+    doc.setFontSize(10);
+    doc.setTextColor(150, 150, 150);
+    doc.text("This is an officially issued notice.", pageWidth / 2, pageHeight - 20, { align: "center" });
+
+    doc.save(`${(notice.title || "Notice").replace(/[^a-zA-Z0-9]/g, "_")}.pdf`);
+  }
+
+  function createNoticeRow(notice) {
+    const row = document.createElement("div");
+    row.className = "notice-row";
+
+    row.innerHTML = `
+      <div class="notice-title">${notice.title || "Untitled Notice"}</div>
+      <button class="download-pdf-btn">
+        <i class="fas fa-file-pdf"></i> Download PDF
+      </button>
     `;
-    return card;
+
+    row.querySelector(".download-pdf-btn").addEventListener("click", () => {
+      downloadAsPDF(notice);
+    });
+
+    return row;
   }
 
   function renderNotices(notices) {
-    noticeList.innerHTML = '';
-    
+    noticeList.innerHTML = "";
     if (notices.length === 0) {
-      emptyState.style.display = 'block';
-      noticeList.style.display = 'none';
+      emptyState.style.display = "block";
+      noticeList.style.display = "none";
       return;
     }
-
-    emptyState.style.display = 'none';
-    noticeList.style.display = 'grid';
+    emptyState.style.display = "none";
+    noticeList.style.display = "flex";
 
     notices.forEach(notice => {
-      noticeList.appendChild(createNoticeCard(notice));
+      noticeList.appendChild(createNoticeRow(notice));
     });
   }
 
-  let allNotices = [];
-
   function loadNotices() {
-    loading.style.display = 'block';
+    loading.style.display = "block";
 
-    db.ref('notices')
-      .orderByChild('timestamp')
-      .once('value')
+    db.ref("notices")
+      .orderByChild("timestamp")
+      .once("value")
       .then(snapshot => {
         const notices = [];
         snapshot.forEach(child => {
           notices.push({ key: child.key, ...child.val() });
         });
-
-        // Sort newest first
         allNotices = notices.reverse();
         renderNotices(allNotices);
       })
       .catch(err => {
         console.error(err);
-        noticeList.innerHTML = `<p style="color:white; text-align:center;">Error loading notices.</p>`;
+        emptyState.innerHTML = "<p>Failed to load notices. Please try again later.</p>";
+        emptyState.style.display = "block";
       })
       .finally(() => {
-        loading.style.display = 'none';
+        loading.style.display = "none";
       });
   }
 
-  // Live search
-  searchInput.addEventListener('input', (e) => {
-    const term = e.target.value.toLowerCase();
-    const filtered = allNotices.filter(n => 
+  // Search functionality
+  searchInput.addEventListener("input", () => {
+    const term = searchInput.value.toLowerCase();
+    const filtered = allNotices.filter(n =>
       (n.title || "").toLowerCase().includes(term) ||
-      (n.name || "").toLowerCase().includes(term) ||
-      (n.notice || "").toLowerCase().includes(term)
+      (n.notice || "").toLowerCase().includes(term) ||
+      (n.name || "").toLowerCase().includes(term)
     );
     renderNotices(filtered);
   });
 
-  // Auto-refresh every 30 seconds (optional)
-  // setInterval(loadNotices, 30000);
-
-  // Initial load
+  // Load on start
   loadNotices();
 </script>
 
