@@ -107,23 +107,27 @@
   db.ref("admins").once("value").then(snapshot => {
     const admins = [];
 
-    snapshot.forEach(child => {
-      const user = child.val();
-      if (user.role === "owner" || user.role === "Co-Admin" || user.role === "Admin") {
-        admins.push(user);
-      }
-    });
+snapshot.forEach(child => {
+  const user = child.val();
+  const role = (user.role || "").toLowerCase(); // make it lowercase for consistency
+  if (role === "owner" || role === "work provider" || role === "admin" || role === "notice provider") {
+    admins.push(user);
+  }
+});
 
-    if (admins.length === 0) {
-      adminList.innerHTML = "<p class='no-admin'>No Admin or Co-Admin registered yet!</p>";
-      return;
-    }
+if (admins.length === 0) {
+  adminList.innerHTML = "<p class='no-admin'>No Admin or Co-Admin registered yet!</p>";
+  return;
+}
 
-    // Custom sorting: owner first, then Admin, then Co-Admin
-    admins.sort((a, b) => {
-      const order = { "owner": 1, "Admin": 2, "Co-Admin": 3 };
-      return order[a.role] - order[b.role];
-    });
+// Custom sorting: owner first, then Admin, then work provider, then notice provider
+admins.sort((a, b) => {
+  const order = { "owner": 1, "admin": 2, "work provider": 3, "notice provider": 4 };
+  const roleA = (a.role || "").toLowerCase();
+  const roleB = (b.role || "").toLowerCase();
+  return (order[roleA] || 99) - (order[roleB] || 99);
+});
+
 
     let html = "";
     admins.forEach(user => {

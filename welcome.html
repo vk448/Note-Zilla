@@ -113,7 +113,9 @@ function updateWelcome() {
 
   if (role === "owner")       { roleText = "Owner";      bgColor = "#fbbf24"; }
   else if (role === "admin")  { roleText = "Admin";      bgColor = "#ef4444"; }
-  else if (role.includes("co")) { roleText = "Co-Admin"; bgColor = "#a855f7"; }
+  else if (role.includes("co")) { roleText = "work provider"; bgColor = "#a855f7"; }
+   else if (role.includes("co")) { roleText = "notice provider"; bgColor = "#a855f7"; }
+ 
 
   const badge = document.getElementById("roleBadge");
   badge.textContent = roleText;
