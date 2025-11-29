@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Unban Requests</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f7;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .container {
+      max-width: 700px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    .request-box {
+      padding: 15px;
+      border-radius: 10px;
+      background: #fafafa;
+      border: 1px solid #ddd;
+      margin-bottom: 15px;
+    }
+    .request-box strong {
+      font-size: 17px;
+      color: #444;
+    }
+    button {
+      margin-top: 10px;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .approve {
+      background: #28a745;
+      color: white;
+    }
+    .reject {
+      background: #dc3545;
+      color: white;
+    }
+  </style>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+  <script>
+    const firebaseConfig = { 
+      apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E", 
+      authDomain: "chat-box-e01e5.firebaseapp.com", 
+      databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com", 
+      projectId: "chat-box-e01e5"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+  </script>
+</head>
+
+<body>
+
+<h1>Admin Panel — Unban Requests</h1>
+
+<div class="container" id="requests"></div>
+
+<script>
+
+function loadRequests() {
+  const reqBox = document.getElementById("requests");
+  reqBox.innerHTML = "<h3>Loading requests...</h3>";
+
+  db.ref("unbanRequests").on("value", snapshot => {
+    reqBox.innerHTML = "";
+
+    if (!snapshot.exists()) {
+      reqBox.innerHTML = "<h3>No unban requests found.</h3>";
+      return;
+    }
+
+    snapshot.forEach(child => {
+      const req = child.val();
+      const id = child.key;
+
+      const box = document.createElement("div");
+      box.className = "request-box";
+
+      box.innerHTML = `
+        <strong>User: ${req.username}</strong><br>
+        IP: ${req.ip}<br>
+        Reason: ${req.reason}<br>
+        <button class="approve" onclick="approveUnban('${id}', '${req.username}', '${req.ip}')">Approve</button>
+        <button class="reject" onclick="rejectUnban('${id}')">Reject</button>
+      `;
+
+      reqBox.appendChild(box);
+    });
+  });
+}
+
+
+function approveUnban(requestId, username, ip) {
+  // reset ban count
+  db.ref("bannedUsers/" + username).remove();
+  db.ref("bannedIPs/" + ip).remove();
+
+  // remove request
+  db.ref("unbanRequests/" + requestId).remove();
+
+  alert("User Unbanned Successfully!");
+}
+
+
+function rejectUnban(requestId) {
+  db.ref("unbanRequests/" + requestId).remove();
+  alert("Request Rejected.");
+}
+
+loadRequests();
+
+</script>
+
+</body>
+</html>

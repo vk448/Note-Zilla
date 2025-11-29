@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body style="margin:0">
+
+<script>
+const urlParams = new URLSearchParams(location.search);
+const key = urlParams.get("file");
+
+const binaryPDF = localStorage.getItem(key);
+
+if (!binaryPDF) {
+  document.body.innerHTML = "<h2>PDF Not Found!</h2>";
+} else {
+  const iframe = document.createElement("iframe");
+  iframe.src = binaryPDF;
+  iframe.style.width = "100vw";
+  iframe.style.height = "100vh";
+  document.body.appendChild(iframe);
+}
+</script>
+
+</body>
+</html>
