@@ -33,6 +33,9 @@
   .toast.success{background:var(--success);}
   .toast.error{background:var(--danger);}
   @keyframes t{from{opacity:0;transform:translateX(-50%) translateY(-100px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+  .notice{margin-top:25px;font-size:1rem;color:#666;}
+.notice a{color:#2c5364;font-weight:700;text-decoration:none;}
+.notice a:hover{color:#1cc88a;text-decoration:underline;}
 </style>
 </head>
 <body>
@@ -50,6 +53,10 @@
     <input type="password" id="password" placeholder="Password" required>
     <button type="submit">Login Now</button>
   </form>
+  <div class="notice">
+    Not registered? <a href="admin-register.html">Register Here</a><br>
+    <a href="reset-password.html">Forgot Password?</a>
+  </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
