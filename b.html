@@ -1,169 +1,232 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Secure Login | NoteZilla</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: #0a0e1f;
-            font-family: Arial;
-        }
-        #box {
-            background: #fff;
-            padding: 25px;
-            width: 330px;
-            border-radius: 15px;
-            box-shadow: 0 0 20px rgba(255,255,255,0.2);
-        }
-        input {
-            width: 100%;
-            padding: 12px;
-            margin-top: 10px;
-            border-radius: 8px;
-            border: 1px solid #aaa;
-            font-size: 15px;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 12px;
-            border: none;
-            background: #4a7cff;
-            color: #fff;
-            font-size: 16px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        #toast {
-            position: fixed;
-            bottom: 25px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 20px;
-            background: #333;
-            color: white;
-            border-radius: 8px;
-            display: none;
-        }
-        #successPopup {
-            display: none;
-            position: fixed;
-            top: 40%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: green;
-            padding: 18px;
-            border-radius: 10px;
-            color: white;
-            font-size: 18px;
-        }
-        #loader {
-            display: none;
-            position: fixed;
-            top: 40%;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 20px;
-            background: black;
-            color: white;
-            border-radius: 8px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Registration | NoteZilla</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #203a43;
+      --accent: #4fc3f7;
+      --success: #27ae60;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+    body{background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px;color:white;}
+    .container{max-width:420px;width:100%;background:#fff;border-radius:16px;padding:35px 30px;box-shadow:0 10px 40px rgba(0,0,0,0.3);text-align:center;}
+    h1{font-size:2.2rem;color:var(--primary);margin-bottom:8px;}
+    h2{font-size:1.8rem;color:#1a1a1a;margin-bottom:10px;}
+    label{display:block;margin:10px 0 6px;font-weight:600;text-align:left;color:#333;}
+    input, select{width:100%;padding:14px;border:2px solid #ddd;border-radius:10px;font-size:15px;margin:5px 0;transition:0.3s;}
+    input:focus, select:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 5px rgba(79,195,247,0.2);}
+    button{width:100%;padding:15px;background:linear-gradient(135deg,var(--primary),#2c5364);color:white;font-size:1.1rem;border:none;border-radius:10px;cursor:pointer;margin-top:20px;font-weight:600;transition:0.3s;}
+    button:hover{transform:translateY(-3px);box-shadow:0 10px 25px rgba(0,0,0,0.4);}
+    .upload-box{border:3px dashed var(--primary);border-radius:12px;padding:25px;background:#f8fdff;cursor:pointer;margin:20px 0;transition:0.3s;}
+    .upload-box:hover{background:#e8f8ff;}
+    .upload-box img{width:130px;height:130px;object-fit:cover;border-radius:50%;margin-top:10px;border:4px solid var(--primary);display:none;}
+    .note{color:var(--warning);font-size:0.9rem;margin-top:8px;font-weight:600;}
+
+    #loader{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:9999;color:white;justify-content:center;align-items:center;flex-direction:column;font-size:1.4rem;}
+    .spinner{width:60px;height:60px;border:8px solid rgba(255,255,255,0.3);border-top:8px solid white;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:20px;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* FIXED TOAST - AB BILKUL SOLID & BEAUTIFUL */
+    .toast-container{position:fixed;top:30px;right:30px;z-index:10000;}
+    .toast{
+      background:var(--success);
+      color:white;
+      padding:18px 28px;
+      border-radius:14px;
+      margin-bottom:15px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.5);
+      font-weight:600;
+      font-size:1.1rem;
+      min-width:340px;
+      display:flex;
+      align-items:center;
+      gap:16px;
+      border-left:6px solid #1e8449;
+      transform:translateX(120%);
+      transition:transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.6s;
+      opacity:0;
+    }
+    .toast.show{
+      transform:translateX(0);
+      opacity:1;
+    }
+    .toast.error{
+      background:var(--danger);
+      border-left-color:#c0392b;
+    }
+    .toast.warning{
+      background:var(--warning);
+      border-left-color:#e67e22;
+      color:#000;
+    }
+    .toast i{
+      font-size:1.8rem;
+      font-weight:bold;
+    }
+  </style>
 </head>
 <body>
 
-<div id="box">
-    <h2>🔐 NoteZilla Admin Login</h2>
-
-    <form id="loginForm">
-        <input type="email" id="emailInput" placeholder="Enter Email">
-        <button type="submit">Send OTP</button>
-    </form>
-
-    <div id="otpSection" style="display:none;">
-        <input type="text" id="otpField" placeholder="Enter OTP">
-        <button onclick="verifyLoginOTP()">Verify OTP</button>
-    </div>
+<div id="loader">
+  <div class="spinner"></div>
+  <div>Creating Account...</div>
 </div>
 
-<div id="toast"></div>
-<div id="loader">⏳ Sending...</div>
-<div id="successPopup">🎉 Login Successful!</div>
+<div class="container">
+  <h1>NoteZilla</h1>
+  <h2>Admin Registration</h2>
+  <p style="color:#555;margin-bottom:20px;">Upload photo (saved as text)</p>
 
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <form id="registerForm">
+    <div class="upload-box" id="uploadBox">
+      <p style="margin:0;font-weight:600;color:var(--primary);">Tap to Upload Photo</p>
+      <input type="file" id="photoInput" accept="image/*" style="display:none;">
+      <img id="photoPreview" alt="Preview">
+      <small style="color:#777;">Max 1MB recommended</small>
+    </div>
+
+    <label>Full Name *</label><input type="text" id="fullName" required>
+    <label>Username *</label><input type="text" id="username" required>
+    <label>Email *</label><input type="email" id="email" required>
+    <label>Password *</label><input type="password" id="password" required minlength="6">
+    <label>Confirm Password *</label><input type="password" id="confirmPassword" required>
+    <label>Phone Number *</label><input type="tel" id="phone" pattern="[0-9]{10}" required>
+    <label>Gender *</label>
+    <select id="gender" required>
+      <option value="">Select</option>
+      <option>Male</option><option>Female</option><option>Other</option>
+    </select>
+    <label>Role *</label>
+    <select id="role" required>
+      <option value="">Select Role</option>
+      <option>User</option>
+      <option>Teacher</option>
+      <option>Co-Admin</option>
+    </select>
+    <small class="note">User = Auto Approved | Teacher/Co-Admin = Needs Approval</small>
+
+    <button type="submit">Register Now</button>
+  </form>
+
+  <p style="margin-top:25px;color:#666;">
+    Already registered? <a href="admin-login.html" style="color:var(--primary);font-weight:600;">Login Here</a>
+  </p>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastBox"></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script>
-emailjs.init("XjSbu3DTfQtOBKW-l");
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
+    authDomain: "chat-box-e01e5.firebaseapp.com",
+    databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
+    projectId: "chat-box-e01e5",
+    storageBucket: "chat-box-e01e5.firebasestorage.app",
+    messagingSenderId: "597491149800",
+    appId: "1:597491149800:web:7bd908925f70b62018125d"
+  };
 
-/* 🔥 SEND OTP FUNCTION */
-document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  let base64Image = null;
+  document.getElementById("uploadBox").onclick = () => document.getElementById("photoInput").click();
+
+  document.getElementById("photoInput").onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 1048576) {
+      showToast("Image too large! Max 1MB allowed", "error");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = ev => {
+      base64Image = ev.target.result;
+      const img = document.getElementById("photoPreview");
+      img.src = base64Image;
+      img.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Beautiful Toast Function
+  function showToast(message, type = "success") {
+    const box = document.getElementById("toastBox");
+    const toast = document.createElement("div");
+    toast.classList.add("toast", type);
+
+    let icon = type === "success" ? "Checkmark" : type === "error" ? "Cross" : "Warning";
+    toast.innerHTML = `<i>${icon}</i><span>${message}</span>`;
+    box.appendChild(toast);
+
+    // Trigger animation
+    setTimeout(() => toast.classList.add("show"), 100);
+
+    // Auto remove
+    setTimeout(() => {
+      toast.classList.remove("show");
+      setTimeout(() => toast.remove(), 600);
+    }, 4000);
+  }
+
+  // Registration Logic
+  document.getElementById("registerForm").onsubmit = async e => {
     e.preventDefault();
 
-    const email = document.getElementById("emailInput").value.trim();
-    if (!email) return toast("⚠ Enter email first!");
+    const fullName = document.getElementById("fullName").value.trim();
+    const username = document.getElementById("username").value.trim().toLowerCase();
+    const email = document.getElementById("email").value.trim().toLowerCase();
+    const password = document.getElementById("password").value;
+    const confirm = document.getElementById("confirmPassword").value;
+    const phone = document.getElementById("phone").value;
+    const gender = document.getElementById("gender").value;
+    const role = document.getElementById("role").value;
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expire = Date.now() + 15 * 60 * 1000;
+    if (!role) return showToast("Please select a role!", "error");
+    if (password !== confirm) return showToast("Passwords do not match!", "error");
+    if (password.length < 6) return showToast("Password must be 6+ characters!", "error");
 
-    localStorage.setItem("loginOTP", otp);
-    localStorage.setItem("loginEXP", expire);
-    localStorage.setItem("loginEmail", email);
-
-    document.getElementById("loader").style.display = "block";
+    document.getElementById("loader").style.display = "flex";
 
     try {
-        await emailjs.send("service_3p5ogj7", "template_cygybc4", {
-            passcode: otp,
-            time: new Date(expire).toLocaleTimeString(),
-            email: email
-        });
+      const userSnap = await db.ref("admins").orderByChild("username").equalTo(username).once("value");
+      if (userSnap.exists()) throw new Error("Username already taken!");
 
-        document.getElementById("loader").style.display = "none";
-        toast("📩 OTP sent to email!");
-        document.getElementById("otpSection").style.display = "block";
+      const emailSnap = await db.ref("admins").orderByChild("email").equalTo(email).once("value");
+      if (emailSnap.exists()) throw new Error("Email already registered!");
+
+      const photoURL = base64Image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`;
+      const status = (role === "Teacher" || role === "Co-Admin") ? "pending" : "approved";
+
+      await db.ref("admins").push({
+        fullName, username, email, phone, gender, role, photoURL,
+        password: btoa(password),
+        status,
+        createdAt: new Date().toISOString()
+      });
+
+      const msg = status === "approved" 
+        ? `Welcome ${fullName}! You can login now` 
+        : `Request sent! Your ${role} account is pending approval`;
+
+      showToast(msg, "success");
+      setTimeout(() => location.href = "admin-login.html", 2000);
 
     } catch (err) {
-        document.getElementById("loader").style.display = "none";
-        toast("❌ OTP sending failed!");
+      showToast(err.message || "Registration failed!", "error");
+    } finally {
+      document.getElementById("loader").style.display = "none";
     }
-});
-
-/* 🔥 VERIFY OTP */
-function verifyLoginOTP() {
-    const entered = document.getElementById("otpField").value.trim();
-    const saved = localStorage.getItem("loginOTP");
-    const exp = localStorage.getItem("loginEXP");
-
-    if (!entered) return toast("⚠ Enter OTP!");
-    if (Date.now() > exp) return toast("⌛ OTP expired!");
-    if (entered !== saved) return toast("❌ Wrong OTP!");
-
-    toast("✔ OTP Verified");
-    showSuccess();
-}
-
-function toast(msg) {
-    const t = document.getElementById("toast");
-    t.innerHTML = msg;
-    t.style.display = "block";
-    setTimeout(()=> t.style.display = "none", 2000);
-}
-
-function showSuccess() {
-    document.body.innerHTML = "";
-    const popup = document.createElement("div");
-    popup.innerHTML = "🎉 Login Successful! Redirecting...";
-    popup.style.cssText = "position:fixed;top:40%;left:50%;transform:translateX(-50%);background:green;color:white;padding:20px;border-radius:10px;font-size:20px";
-    document.body.appendChild(popup);
-
-    setTimeout(()=>{
-        window.location.href = "dashboard.html";
-    },1500);
-}
+  };
 </script>
 </body>
 </html>

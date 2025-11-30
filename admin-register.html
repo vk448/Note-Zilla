@@ -217,5 +217,20 @@
   };
 
 </script>
+<!-- admin-register.html --> 
+<!-- Yeh wahi hai jo maine diya tha, bas ek line extra daal raha hoon for safety -->
+
+<script>
+// ... sab same rahega, sirf yeh part confirm kar lo
+
+const status = (role === "Teacher" || role === "Co-Admin") ? "pending" : "approved";
+
+await db.ref("admins").push({
+  fullName, username, email, phone, gender, role, photoURL,
+  password: btoa(password),
+  status: status,           // Yeh line zaroor honi chahiye
+  createdAt: new Date().toISOString()
+});
+</script>
 </body>
 </html>
