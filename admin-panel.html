@@ -119,8 +119,11 @@
     <button class="menu-btn" onclick="openEditModal()">
       <i class="fa-solid fa-user-pen"></i><span>Edit Profile</span>
     </button>
+   <a class="menu-btn" onclick="window.open('https://notezilla.free.nf/', '_blank')">
+  <i class="fa-solid fa-cloud-upload-alt"></i><span><strong>Upload Data</strong></span>
+</a>
     <button class="menu-btn" onclick="loadPage('upload-work-data-base-admin-co-admin.html', this)">
-      <i class="fa-solid fa-cloud-upload-alt"></i><span>Upload Notes</span>
+      <i class="fa-solid fa-cloud-upload-alt"></i><span> DataBase Entry</span>
     </button>
     <button class="menu-btn" onclick="loadPage('delete-database-work-admin-owner-notezilla-database-work-add-on.html', this)">
       <i class="fa-solid fa-trash-alt"></i><span>Delete/Edit Notes</span>
@@ -249,7 +252,8 @@ else {
     upload: document.querySelector('button[onclick*="upload-work-data-base-admin-co-admin"]'),
     delete: document.querySelector('button[onclick*="delete-database-work-admin-owner"]'),
     noticeGive: document.querySelector('button[onclick*="d.html"]'),
-    noticeView: document.querySelector('button[onclick*="V.html"]')
+    noticeView: document.querySelector('button[onclick*="V.html"]'),
+    upload: document.querySelector('button[onclick*="https://notezilla.free.nf/"]')
   };
 
   // Default hide (security)
