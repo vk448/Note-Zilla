@@ -125,7 +125,7 @@
     <button class="menu-btn" onclick="loadPage('delete-database-work-admin-owner-notezilla-database-work-add-on.html', this)">
       <i class="fa-solid fa-trash-alt"></i><span>Delete/Edit Notes</span>
     </button>
-    <button class="menu-btn" onclick="loadPage('https://docs.google.com/spreadsheets/d/18ZuLufS0Vkulej9N_mtAKKw4WGulKTYyhdxjKIs-Y-A/edit', this)">
+    <button class="menu-btn" onclick="loadPage('Time-table.html', this)">
       <i class="fa-solid fa-calendar-alt"></i><span>Time Table</span>
     </button>
     <button class="menu-btn restricted" onclick="loadPage('d.html', this)">
@@ -181,7 +181,7 @@ firebase.initializeApp({
 const db = firebase.database();
 let currentUser = null;
 
-// Toast
+// Toast function (same as before)
 function toast(msg, type = "info") {
   const t = document.createElement("div");
   t.className = `toast ${type}`;
@@ -193,55 +193,108 @@ function toast(msg, type = "info") {
   }, 3000);
 }
 
-// Security + Login Check
+// ====== ROLE CHECK AFTER LOGIN ======
 if(!sessionStorage.getItem("adminUser")){
   toast("Access Denied! Redirecting to login...", "error");
-  setTimeout(() => window.location.href = "admin-login.html", 1500); // ← YEH CHANGE KIYA
+  setTimeout(() => window.location.href = "admin-login.html", 1500);
 } else {
   currentUser = JSON.parse(sessionStorage.getItem("adminUser"));
   document.body.classList.add("ready");
 
+  // Profile Update
   document.getElementById("adminName").textContent = currentUser.fullName || "Admin";
   const photo = currentUser.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser.fullName || "admin"}`;
   document.getElementById("adminPhoto").src = photo;
   document.getElementById("modalPhotoPreview").src = photo;
 
-  const role = (currentUser.role || "user").toString().toLowerCase().trim();
-  let badgeText = "USER", badgeColor = "#666";
+  const rawRole = (currentUser.role || "user").toString().toLowerCase().trim();
+  let role = "user";
 
-  if(role === "owner") { badgeText = "OWNER"; badgeColor = "#f39c12"; }
-  else if(role === "admin") { badgeText = "ADMIN"; badgeColor = "#e74c3c"; }
-  else if(role.includes("co")) { badgeText = "CO-ADMIN"; badgeColor = "#9b59b6"; }
-  else if(role.includes("notice")) { badgeText = "NOTICE PROVIDER"; badgeColor = "#3498db"; }
+  if(rawRole === "owner" || rawRole === "admin") role = "owner";
+  else if(rawRole.includes("co") || rawRole.includes("work")) role = "coadmin";
+  else if(rawRole.includes("notice")) role = "notice";
+  
+  // Badge
+  const badge = document.getElementById("roleBadge");
+  if(role === "owner"){ badge.textContent = "OWNER"; badge.style.backgroundColor = "#f39c12"; }
+  else if(role === "coadmin"){ badge.textContent = "CO-ADMIN"; badge.style.backgroundColor = "#9b59b6"; }
+  else if(role === "notice"){ badge.textContent = "NOTICE PROVIDER"; badge.style.backgroundColor = "#3498db"; }
+  else { badge.textContent = "USER"; badge.style.backgroundColor = "#666"; }
 
-  document.getElementById("roleBadge").textContent = badgeText;
-  document.getElementById("roleBadge").style.backgroundColor = badgeColor;
+  // ====== HIDE / SHOW BUTTONS ACCORDING TO ROLE ======
+  const buttons = {
+    upload: document.querySelector('button[onclick*="upload-work-data-base-admin-co-admin"]'),
+    delete: document.querySelector('button[onclick*="delete-database-work-admin-owner"]'),
+    noticeGive: document.querySelector('button[onclick*="d.html"]'),
+    noticeView: document.querySelector('button[onclick*="V.html"]')
+  };
 
-  if(!["owner","admin","co-admin","coadmin"].includes(role)){
-    document.querySelectorAll(".restricted").forEach(btn => btn.style.display = "none");
+  // By default hide sab restricted features
+  if(buttons.upload) buttons.upload.style.display = "none";
+  if(buttons.delete) buttons.delete.style.display = "none";
+  if(buttons.noticeGive) buttons.noticeGive.style.display = "none";
+  // V.html (View Notices) sabko allowed hai to chhod do
+
+  if(role === "owner"){
+    // Owner ko sab kuch
+    if(buttons.upload) buttons.upload.style.display = "flex";
+    if(buttons.delete) buttons.delete.style.display = "flex";
+    if(buttons.noticeGive) buttons.noticeGive.style.display = "flex";
   }
+  else if(role === "coadmin"){
+    // Co-Admin / Work Provider
+    if(buttons.upload) buttons.upload.style.display = "flex";
+    if(buttons.delete) buttons.delete.style.display = "flex";
+    // Notice dene ka right nahi
+  }
+  else if(role === "notice"){
+    // Notice Provider
+    if(buttons.noticeGive) buttons.noticeGive.style.display = "flex";
+    // Upload/Delete nahi
+  }
+  // Normal user ko kuch nahi milega
 }
 
-// Load Page
+// ====== SAFE LOAD PAGE WITH ROLE CHECK ======
 function loadPage(url, btn){
-  if(url.includes("http")){ window.open(url,"_blank"); return; }
-  const role = (currentUser.role || "").toString().toLowerCase();
-  if(url === "d.html" && !["owner","admin","co-admin","coadmin"].includes(role)){
-    toast("You don't have permission!", "error");
+  if(url.includes("http")){
+    window.open(url, "_blank");
     return;
   }
+
+  const rawRole = (currentUser.role || "user").toString().toLowerCase().trim();
+  let role = "user";
+  if(rawRole === "owner" || rawRole === "admin") role = "owner";
+  else if(rawRole.includes("co") || rawRole.includes("work")) role = "coadmin";
+  else if(rawRole.includes("notice")) role = "notice";
+
+  // Permission check
+  if(url.includes("upload-work-data-base-admin-co-admin") && !["owner","coadmin"].includes(role)){
+    toast("Permission Denied!", "error"); return;
+  }
+  if(url.includes("delete-database-work-admin-owner") && !["owner","coadmin"].includes(role)){
+    toast("Permission Denied!", "error"); return;
+  }
+  if(url === "d.html" && role !== "owner" && role !== "notice"){
+    toast("You can't give notice!", "error"); return;
+  }
+
+  // Agar allowed hai to load karo
   document.getElementById("frameBox").src = url;
   document.querySelectorAll(".menu-btn").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
+  if(btn) btn.classList.add("active");
 }
 
-// Edit Profile
+// Baki sab same rahega (Edit Profile, Logout, etc.)
+// ... [same code jo pehle tha - openEditModal, saveProfile, logout, etc.]
+
 let newPhotoData = null;
 function openEditModal(){
   document.getElementById("newName").value = currentUser.fullName || "";
   document.getElementById("modalPhotoPreview").src = document.getElementById("adminPhoto").src;
   document.getElementById("editModal").style.display = "flex";
 }
+
 document.getElementById("newPhoto").onchange = function(e){
   const file = e.target.files[0];
   if(file){
@@ -253,6 +306,7 @@ document.getElementById("newPhoto").onchange = function(e){
     reader.readAsDataURL(file);
   }
 };
+
 async function saveProfile(){
   const name = document.getElementById("newName").value.trim();
   if(!name) return toast("Name is required!", "error");
@@ -266,30 +320,27 @@ async function saveProfile(){
     if(newPhotoData) currentUser.photoURL = newPhotoData;
     sessionStorage.setItem("adminUser", JSON.stringify(currentUser));
 
-    toast("Profile Updated Successfully!", "success");
+    toast("Profile Updated!", "success");
     setTimeout(() => location.reload(), 1000);
-  } catch(err) {
+  } catch(err){
     toast("Update Failed!", "error");
   }
 }
+
 document.getElementById("closeModal").onclick = () => {
   document.getElementById("editModal").style.display = "none";
   newPhotoData = null;
 };
 
-// LOGOUT → admin-login.html
 function logout(){
-  toast("Logging you out...", "info");
+  toast("Logging out...", "info");
   sessionStorage.removeItem("adminUser");
-  setTimeout(() => {
-    window.location.href = "admin-login.html";  // ← YEH BHI CHANGE KIYA
-  }, 1200);
+  setTimeout(() => window.location.href = "admin-login.html", 1200);
 }
 
-// Auto redirect if session lost
 setInterval(() => {
   if(!sessionStorage.getItem("adminUser")){
-    window.location.href = "admin-login.html";  // ← Sab jagah admin-login.html
+    window.location.href = "admin-login.html";
   }
 }, 3000);
 </script>
