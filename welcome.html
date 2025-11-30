@@ -63,6 +63,7 @@
     text-transform: uppercase;
     backdrop-filter: blur(10px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    color: white;
   }
   .message {
     margin-top: 35px;
@@ -97,46 +98,65 @@
   </div>
 
 <script>
-// Super Fast & Instant Update - No Delay!
+// Fixed & Final Version - Works 100% in Admin Panel iframe
 function updateWelcome() {
-  const user = JSON.parse(sessionStorage.getItem("currentUser") || "{}");
+  // First try "adminUser" (used in your admin panel), then fallback to "currentUser"
+  const storedData = sessionStorage.getItem("adminUser") || sessionStorage.getItem("currentUser") || "{}";
+  const user = JSON.parse(storedData);
+
   const fullName = user.fullName || "Admin";
-  const role = (user.role || "user").toLowerCase();
+  const roleRaw = (user.role || "user").toString().toLowerCase().trim();
   const photoURL = user.photoURL;
 
-  // Name
+  // Update Name
   document.getElementById("name").textContent = `Hello, ${fullName.split(" ")[0]}!`;
 
-  // Role + Color
+  // Role Badge Logic (Fixed duplicate bug)
   let roleText = "USER";
   let bgColor = "rgba(59, 130, 246, 0.7)";
 
-  if (role === "owner")       { roleText = "Owner";      bgColor = "#fbbf24"; }
-  else if (role === "admin")  { roleText = "Admin";      bgColor = "#ef4444"; }
-  else if (role.includes("co")) { roleText = "work provider"; bgColor = "#a855f7"; }
-   else if (role.includes("co")) { roleText = "notice provider"; bgColor = "#a855f7"; }
- 
+  if (roleRaw === "owner") {
+    roleText = "Owner";
+    bgColor = "#fbbf24";        // Amber
+  } else if (roleRaw === "admin") {
+    roleText = "Admin";
+    bgColor = "#ef4444";        // Red
+  } else if (roleRaw.includes("co") || roleRaw.includes("coadmin") || roleRaw.includes("co-admin")) {
+    roleText = "Co-Admin";
+    bgColor = "#a855f7";        // Purple
+  } else if (roleRaw.includes("notice")) {
+    roleText = "Notice Provider";
+    bgColor = "#8b5cf6";        // Violet
+  }
 
   const badge = document.getElementById("roleBadge");
   badge.textContent = roleText;
   badge.style.background = bgColor;
 
-  // Photo (Real or DiceBear)
-  const defaultAvatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${fullName}&backgroundColor=3b82f6`;
-  document.getElementById("photo").src = 
-    (photoURL && photoURL.startsWith("data:")) ? photoURL : 
-    (photoURL || defaultAvatar);
+  // Profile Photo - Supports Firebase Data URL, External URL, or DiceBear fallback
+  const defaultAvatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(fullName)}&backgroundColor=3b82f6`;
+  
+  const img = document.getElementById("photo");
+  if (photoURL && photoURL.startsWith("data:")) {
+    img.src = photoURL;
+  } else if (photoURL) {
+    img.src = photoURL;
+  } else {
+    img.src = defaultAvatar;
+  }
 }
 
-// Run immediately + listen for storage changes
+// Run instantly + on any change
 updateWelcome();
 
-// Agar koi aur tab se login kare toh bhi update ho jaye
+// Update if login happens in another tab
 window.addEventListener("storage", (e) => {
-  if (e.key === "currentUser") updateWelcome();
+  if (e.key === "adminUser" || e.key === "currentUser") {
+    updateWelcome();
+  }
 });
 
-// Har 1 second check karega (backup - 100% sure update)
+// Backup poll every 1 second (100% guarantee inside iframe)
 setInterval(updateWelcome, 1000);
 </script>
 
