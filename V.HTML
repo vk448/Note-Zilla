@@ -197,7 +197,7 @@
     doc.setFontSize(50);
     doc.setTextColor(240, 240, 240);
     doc.setFont("helvetica", "bold");
-    doc.text("OFFICIAL NOTICE", pageWidth / 2, pageHeight / 2, {
+    doc.text("Note Zilla", pageWidth / 2, pageHeight / 2, {
       align: "center",
       angle: 45
     });
@@ -237,7 +237,7 @@
     // Signature
     doc.setFontSize(14);
     doc.setFont("helvetica", "italic");
-    doc.text("___________________________", 20, y);
+    doc.text(`${notice.name || "Admin"}`, 20, y);
     doc.setFontSize(13);
     doc.setFont("helvetica", "normal");
     doc.text("Authorized Signatory", 20, y + 10);
@@ -246,7 +246,7 @@
     // Footer
     doc.setFontSize(10);
     doc.setTextColor(150, 150, 150);
-    doc.text("This is an officially issued notice.", pageWidth / 2, pageHeight - 20, { align: "center" });
+    doc.text("This is an officially issued notice by Note Zilla.", pageWidth / 2, pageHeight - 20, { align: "center" });
 
     doc.save(`${(notice.title || "Notice").replace(/[^a-zA-Z0-9]/g, "_")}.pdf`);
   }
