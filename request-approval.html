@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Approval Panel | NoteZilla</title>
+  <link href="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0f2b36;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --card-bg: #ffffff;
+      --bg: #f8fafc;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .header {
+      background: var(--primary);
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(15, 43, 54, 0.3);
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--text-light);
+      font-size: 1.1rem;
+    }
+
+    .cards {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 1.75rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+    }
+
+    .name {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin: 0 0 0.5rem 0;
+    }
+
+    .role {
+      font-size: 0.95rem;
+      color: var(--success);
+      font-weight: 500;
+      background: rgba(22, 163, 74, 0.1);
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
+
+    .info {
+      margin: 0.8rem 0;
+      color: var(--text-light);
+    }
+
+    .info strong {
+      color: var(--text);
+    }
+
+    .actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 0.85rem 1rem;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn.approve {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn.reject {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-light);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .header { font-size: 1.5rem; padding: 1.2rem; }
+      .actions { flex-direction: column; }
+      .btn { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">Pending Admin Approvals</div>
+
+  <div class="container">
+    <div id="pendingList">
+      <div class="loading">Loading pending requests...</div>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
+      authDomain: "chat-box-e01e5.firebaseapp.com",
+      databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
+      projectId: "chat-box-e01e5",
+      storageBucket: "chat-box-e01e5.firebasestorage.app",
+      messagingSenderId: "597491149800",
+      appId: "1:597491149800:web:7bd908925f70b62018125d"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const pendingRef = db.ref("admins_pending");
+    const mainRef = db.ref("admins");
+    const listContainer = document.getElementById("pendingList");
+
+    pendingRef.on("value", snapshot => {
+      const data = snapshot.val();
+      listContainer.innerHTML = "";
+
+      if (!data || Object.keys(data).length === 0) {
+        listContainer.innerHTML = `
+          <div class="empty-state">
+            <h3>No pending approvals at the moment</h3>
+            <p>All clear! Check back later.</p>
+          </div>`;
+        return;
+      }
+
+      const entries = Object.entries(data);
+      entries.forEach(([id, user], index) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.style.animationDelay = `${index * 0.1}s`;
+
+        card.innerHTML = `
+          <div class="name">${escapeHtml(user.fullName || "N/A")}</div>
+          <div class="role">${escapeHtml(user.role || "Admin")}</div>
+          <div class="info"><strong>Email:</strong> ${escapeHtml(user.email || "—")}</div>
+          <div class="info"><strong>Phone:</strong> ${escapeHtml(user.phone || "—")}</div>
+
+          <div class="actions">
+            <button class="btn approve" onclick="handleApprove('${id}', this)">
+              Approve
+            </button>
+            <button class="btn reject" onclick="handleReject('${id}', this)">
+              Reject
+            </button>
+          </div>
+        `;
+
+        listContainer.appendChild(card);
+      });
+    });
+
+    // Basic XSS prevention
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    async function handleApprove(id, button) {
+      if (!confirm("Approve this admin?")) return;
+      button.disabled = true;
+      button.textContent = "Approving...";
+
+      try {
+        const snap = await pendingRef.child(id).once("value");
+        const user = snap.val();
+
+        if (!user) throw new Error("User not found");
+
+        await mainRef.push({
+          ...user,
+          status: "approved",
+          approvedAt: firebase.database.ServerValue.TIMESTAMP
+        });
+
+        await pendingRef.child(id).remove();
+        alert("User approved successfully!");
+      } catch (err) {
+        console.error(err);
+        alert("Error approving user: " + err.message);
+      } finally {
+        button.disabled = false;
+        button.textContent = "Approve";
+      }
+    }
+
+    async function handleReject(id, button) {
+      if (!confirm("Reject this request? This action cannot be undone.")) return;
+      button.disabled = true;
+      button.textContent = "Rejecting...";
+
+      try {
+        await pendingRef.child(id).remove();
+        alert("Request rejected and removed.");
+      } catch (err) {
+        console.error(err);
+        alert("Error rejecting user");
+      } finally {
+        button.disabled = false;
+        button.textContent = "Reject";
+      }
+    }
+  </script>
+</body>
+</html>

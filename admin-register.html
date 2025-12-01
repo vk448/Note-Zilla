@@ -1,236 +1,442 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Registration | NoteZilla</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  
   <style>
-    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-    body{background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px;}
-    .container{max-width:420px;width:100%;background:#fff;border-radius:16px;padding:35px 30px;box-shadow:0 10px 40px rgba(0,0,0,0.3);text-align:center;}
-    h1{font-size:2.2rem;color:#203a43;margin-bottom:8px;}
-    h2{font-size:1.8rem;color:#1a1a1a;margin-bottom:10px;}
-    label{display:block;margin:10px 0 6px;font-weight:600;text-align:left;color:#333;}
-    input, select{width:100%;padding:14px;border:2px solid #ddd;border-radius:10px;font-size:15px;transition:0.3s;}
-    input:focus, select:focus{border-color:#2c5364;outline:none;box-shadow:0 0 8px rgba(44,83,100,0.3);}
-    button{width:100%;padding:15px;background:linear-gradient(135deg,#203a43,#2c5364);color:white;font-size:1.1rem;border:none;border-radius:10px;cursor:pointer;margin-top:20px;font-weight:600;}
-    button:hover{transform:translateY(-2px);}
-    button:disabled{background:#888;cursor:not-allowed;}
-
-    .upload-box{
-      border:3px dashed #2c5364;border-radius:12px;padding:25px;cursor:pointer;background:#f8fdff;margin:20px 0;text-align:center;transition:0.3s;
+    :root {
+      --primary: #0f2027;
+      --secondary: #203a43;
+      --accent: #2c5364;
+      --success: #16a34a;
+      --danger: #dc2626;
     }
-    .upload-box:hover{background:#e8f4f8;}
-    .upload-box img{width:130px;height:130px;object-fit:cover;border-radius:50%;margin-top:10px;border:4px solid #2c5364;display:none;}
 
-    #loader{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;
-      justify-content:center;align-items:center;flex-direction:column;color:white;font-size:1.4rem;}
-    .spinner{width:60px;height:60px;border:8px solid rgba(255,255,255,0.3);border-top:8px solid white;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:20px;}
-    @keyframes spin{to{transform:rotate(360deg);}}
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 420px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 40px 35px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 2.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #203a43, #2c5364);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    h2 {
+      color: #1a1a1a;
+      margin-bottom: 30px;
+      font-weight: 600;
+    }
+
+    .photo-upload {
+      width: 140px;
+      height: 140px;
+      margin: 0 auto 25px;
+      border: 4px dashed var(--accent);
+      border-radius: 50%;
+      background: #f8fdff;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: 0.3s;
+    }
+
+    .photo-upload:hover {
+      border-color: #4c9aff;
+      background: #e8f4ff;
+    }
+
+    .photo-upload img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .photo-upload i {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.8rem;
+      color: var(--accent);
+    }
+
+    .remove-photo {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: var(--danger);
+      color: white;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1rem;
+      display: none;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      margin: 16px 0 8px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(44, 83, 100, 0.15);
+    }
+
+    input::placeholder {
+      color: #aaa;
+    }
+
+    .password-strength {
+      height: 5px;
+      background: #eee;
+      border-radius: 3px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .strength-bar {
+      height: 100%;
+      width: 0%;
+      transition: width 0.4s ease;
+      background: var(--success);
+    }
+
+    .strength-text {
+      font-size: 0.85rem;
+      margin-top: 6px;
+      text-align: right;
+      color: #666;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 16px;
+      margin-top: 30px;
+      background: linear-gradient(135deg, #203a43, #2c5364);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button[type="submit"]:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(32, 58, 67, 0.4);
+    }
+
+    button[type="submit"]:disabled {
+      background: #999;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .loader {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      color: white;
+      font-size: 1.5rem;
+    }
+
+    .spinner {
+      width: 70px;
+      height: 70px;
+      border: 6px solid rgba(255,255,255,0.3);
+      border-top: 6px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      padding: 14px 28px;
+      background: #111;
+      color: white;
+      border-radius: 12px;
+      font-weight: 500;
+      z-index: 10000;
+      transition: transform 0.4s ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { background: var(--success); }
+    .toast.error { background: var(--danger); }
+
+    @media (max-width: 480px) {
+      .container { padding: 30px 25px; }
+      .logo { font-size: 2.4rem; }
+    }
   </style>
 </head>
 <body>
 
-  <div id="loader">
+  <div class="loader" id="loader">
     <div class="spinner"></div>
-    <div>Creating Account...</div>
+    <div>Submitting Registration...</div>
   </div>
 
   <div class="container">
-    <h1>NoteZilla</h1>
+    <div class="logo">NoteZilla</div>
     <h2>Admin Registration</h2>
-    <p style="color:#555;margin-bottom:20px;">Upload photo (saved as text)</p>
 
-    <form id="registerForm">
-
-      <div class="upload-box" id="uploadBox">
-        <p style="margin:0;font-weight:600;color:#2c5364;">Tap to Upload Photo</p>
-        <input type="file" id="photoInput" accept="image/*" style="display:none;">
-        <img id="photoPreview" alt="Preview">
-        <small style="color:#777;">Max 1MB recommended</small>
+    <form id="registerForm" novalidate>
+      <div class="photo-upload" id="uploadBox">
+        <i class="fas fa-camera"></i>
+        <img id="photoPreview" alt="Profile Preview"/>
+        <button type="button" class="remove-photo" id="removePhoto">×</button>
+        <input type="file" id="photoInput" accept="image/*" hidden/>
       </div>
 
-      <div><label>Full Name *</label><input type="text" id="fullName" required></div>
-      <div><label>Username *</label><input type="text" id="username" required></div>
-      <div><label>Email *</label><input type="email" id="email" required></div>
-      <div><label>Password *</label><input type="password" id="password" required minlength="6"></div>
-      <div><label>Confirm Password *</label><input type="password" id="confirmPassword" required></div>
-      <div><label>Phone Number *</label><input type="tel" id="phone" pattern="[0-9]{10}" required></div>
-      <div><label>Gender *</label>
-        <select id="gender" required>
-          <option value="">Select</option>
-          <option>Male</option><option>Female</option><option>Other</option>
-        </select>
-      </div>
-      <div><label>Role *</label>
-        <select id="role" required>
-          <option value="">Select Role</option>
-          <option>Co-Admin</option><option>Teacher</option><option>User</option>
-        </select>
-      </div>
+      <label>Full Name *</label>
+      <input type="text" id="fullName" placeholder="John Doe" required/>
 
-      <button type="submit" id="submitBtn">Register Now</button>
+      <label>Username *</label>
+      <input type="text" id="username" placeholder="johndoe123" required minlength="4"/>
+
+      <label>Email Address *</label>
+      <input type="email" id="email" placeholder="you@example.com" required/>
+
+      <label>Password *</label>
+      <input type="password" id="password" placeholder="Create strong password" required minlength="6"/>
+      <div class="password-strength"><div class="strength-bar" id="strengthBar"></div></div>
+      <div class="strength-text" id="strengthText">Enter a strong password</div>
+
+      <label>Confirm Password *</label>
+      <input type="password" id="confirmPassword" required/>
+
+      <label>Phone Number *</label>
+      <input type="tel" id="phone" placeholder="9876543210" pattern="[0-9]{10}" required/>
+
+      <label>Gender *</label>
+      <select id="gender" required>
+        <option value="" disabled selected>Select gender</option>
+        <option>Male</option>
+        <option>Female</option>
+        <option>Other</option>
+      </select>
+
+      <label>Role *</label>
+      <select id="role" required>
+        <option value="" disabled selected>Select role</option>
+        <option>Co-Admin</option>
+        <option>Teacher</option>
+        <option>User</option>
+      </select>
+
+      <button type="submit">Submit for Approval</button>
     </form>
-
-    <p style="margin-top:25px;color:#666;">
-      Already registered? <a href="admin-login.html" style="color:#2c5364;font-weight:600;">Login Here</a>
-    </p>
   </div>
 
-  <!-- Only Database Needed (No Storage!) -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
- <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
-    authDomain: "chat-box-e01e5.firebaseapp.com",
-    databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
-    projectId: "chat-box-e01e5",
-    storageBucket: "chat-box-e01e5.firebasestorage.app",
-    messagingSenderId: "597491149800",
-    appId: "1:597491149800:web:7bd908925f70b62018125d",
-    measurementId: "G-FJ6PKK2FNQ"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-
-  const uploadBox = document.getElementById("uploadBox");
-  const photoInput = document.getElementById("photoInput");
-  const photoPreview = document.getElementById("photoPreview");
-  let base64Image = null;
-
-  uploadBox.onclick = () => photoInput.click();
-
-  photoInput.onchange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    if (file.size > 1 * 1024 * 1024) {
-      showMessage("Image too large! Max 1MB allowed.", "error");
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      base64Image = ev.target.result;
-      photoPreview.src = base64Image;
-      photoPreview.style.display = "block";
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
+      authDomain: "chat-box-e01e5.firebaseapp.com",
+      databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
+      projectId: "chat-box-e01e5",
+      storageBucket: "chat-box-e01e5.firebasestorage.app",
+      messagingSenderId: "597491149800",
+      appId: "1:597491149800:web:7bd908925f70b62018125d"
     };
-    reader.readAsDataURL(file);
-  };
 
-  // Success Message Function (Beautiful UI)
-  function showMessage(text, type = "success") {
-    const messageDiv = document.createElement("div");
-    messageDiv.style.cssText = `
-      position:fixed;top:20px;left:50%;transform:translateX(-50%);
-      background:${type === "success" ? "#d4edda" : "#f8d7da"};
-      color:${type === "success" ? "#155724" : "#721c24"};
-      border:1px solid ${type === "success" ? "#c3e6cb" : "#f5c6cb"};
-      padding:16px 30px;border-radius:12px;font-size:1.1rem;
-      font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,0.2);
-      z-index:10000;display:flex;align-items:center;gap:12px;
-      animation:slideDown 0.5s ease;
-    `;
-    messageDiv.innerHTML = `
-      ${type === "success" ? "Success" : "Error"}
-      <span style="margin-left:10px;">${text}</span>
-    `;
-    document.body.appendChild(messageDiv);
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const pendingRef = db.ref("admins_pending");
 
-    setTimeout(() => {
-      messageDiv.style.animation = "slideUp 0.5s ease forwards";
-      setTimeout(() => messageDiv.remove(), 500);
-    }, 4000);
-  }
+    // Elements
+    const uploadBox = document.getElementById("uploadBox");
+    const photoInput = document.getElementById("photoInput");
+    const photoPreview = document.getElementById("photoPreview");
+    const removePhoto = document.getElementById("removePhoto");
+    const loader = document.getElementById("loader");
+    const toast = document.getElementById("toast");
+    const form = document.getElementById("registerForm");
 
-  // Animations
-  const style = document.createElement("style");
-  style.textContent = `
-    @keyframes slideDown {
-      from {opacity:0;transform:translateX(-50%) translateY(-50px);}
-      to {opacity:1;transform:translateX(-50%) translateY(0);}
-    }
-    @keyframes slideUp {
-      to {opacity:0;transform:translateX(-50%) translateY(-50px);}
-    }
-  `;
-  document.head.appendChild(style);
+    let photoBase64 = null;
 
-  // Registration Form Submit
-  document.getElementById("registerForm").onsubmit = async (e) => {
-    e.preventDefault();
-
-    const fullName = document.getElementById("fullName").value.trim();
-    const username = document.getElementById("username").value.trim().toLowerCase();
-    const email = document.getElementById("email").value.trim().toLowerCase();
-    const password = document.getElementById("password").value;
-    const confirmPassword = document.getElementById("confirmPassword").value;
-    const phone = document.getElementById("phone").value;
-    const gender = document.getElementById("gender").value;
-    const role = document.getElementById("role").value;
-
-    if (password !== confirmPassword) {
-      showMessage("Passwords do not match!", "error");
-      return;
-    }
-    if (password.length < 6) {
-      showMessage("Password must be 6+ characters!", "error");
-      return;
+    // Toast Notification
+    function showToast(msg, type = "error") {
+      toast.textContent = msg;
+      toast.className = `toast ${type} show`;
+      setTimeout(() => toast.classList.remove("show"), 4000);
     }
 
-    document.getElementById("loader").style.display = "flex";
-    document.getElementById("submitBtn").disabled = true;
+    // Photo Upload
+    uploadBox.addEventListener("click", () => photoInput.click());
 
-    try {
-      // Check duplicates
-      const userSnap = await db.ref("admins").orderByChild("username").equalTo(username).once("value");
-      if (userSnap.exists()) throw new Error("Username already taken!");
+    photoInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
 
-      const emailSnap = await db.ref("admins").orderByChild("email").equalTo(email).once("value");
-      if (emailSnap.exists()) throw new Error("Email already registered!");
+      if (!file.type.startsWith("image/")) return showToast("Only image files allowed", "error");
+      if (file.size > 2 * 1024 * 1024) return showToast("Image too large (max 2MB)", "error");
 
-      const photoURL = base64Image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        photoBase64 = ev.target.result;
+        photoPreview.src = photoBase64;
+        photoPreview.style.display = "block";
+        uploadBox.querySelector("i").style.display = "none";
+        removePhoto.style.display = "block";
+      };
+      reader.readAsDataURL(file);
+    });
 
-      await db.ref("admins").push({
-        fullName, username, email, phone, gender, role, photoURL,
-        createdAt: new Date().toISOString(),
-        password: btoa(password)
-      });
+    removePhoto.addEventListener("click", (e) => {
+      e.stopPropagation();
+      photoBase64 = null;
+      photoPreview.src = "";
+      photoPreview.style.display = "none";
+      uploadBox.querySelector("i").style.display = "block";
+      removePhoto.style.display = "none";
+      photoInput.value = "";
+    });
 
-      // Success Message + Redirect
-      showMessage(`Registration Successful! Welcome ${fullName}`, "success");
+    // Password Strength
+    const passwordInput = document.getElementById("password");
+    const strengthBar = document.getElementById("strengthBar");
+    const strengthText = document.getElementById("strengthText");
 
-      setTimeout(() => {
-        window.location.href = "admin-login.html";
-      }, 2000);
+    passwordInput.addEventListener("input", () => {
+      const val = passwordInput.value;
+      let score = 0;
+      if (val.length >= 8) score++;
+      if (/[a-z]/.test(val) && /[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
 
-    } catch (err) {
-      showMessage("Registration Failed: " + err.message, "error");
-    } finally {
-      document.getElementById("loader").style.display = "none";
-      document.getElementById("submitBtn").disabled = false;
+      const labels = ["Very Weak", "Weak", "Good", "Strong"];
+      const colors = ["#dc2626", "#f97316", "#eab308", "#16a34a"];
+
+      strengthBar.style.width = `${score * 25}%`;
+      strengthBar.style.backgroundColor = colors[score - 1] || colors[3];
+      strengthText.textContent = labels[score - 1] || "Strong";
+    });
+
+    // Check if username/email exists
+    async function isTaken(field, value) {
+      const snap = await pendingRef.orderByChild(field).equalTo(value).once("value");
+      return snap.exists();
     }
-  };
 
-</script>
-<!-- admin-register.html --> 
-<!-- Yeh wahi hai jo maine diya tha, bas ek line extra daal raha hoon for safety -->
+    // Form Submit
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-<script>
-// ... sab same rahega, sirf yeh part confirm kar lo
+      const data = {
+        fullName: document.getElementById("fullName").value.trim(),
+        username: document.getElementById("username").value.trim().toLowerCase(),
+        email: document.getElementById("email").value.trim().toLowerCase(),
+        password: document.getElementById("password").value,
+        confirmPassword: document.getElementById("confirmPassword").value,
+        phone: document.getElementById("phone").value.trim(),
+        gender: document.getElementById("gender").value,
+        role: document.getElementById("role").value,
+      };
 
-const status = (role === "Teacher" || role === "Co-Admin") ? "pending" : "approved";
+      // Validation
+      if (!data.fullName) return showToast("Full name required");
+      if (data.username.length < 4) return showToast("Username too short");
+      if (!/^\S+@\S+\.\S+$/.test(data.email)) return showToast("Invalid email");
+      if (data.password.length < 6) return showToast("Password must be 6+ chars");
+      if (data.password !== data.confirmPassword) return showToast("Passwords don't match");
+      if (!/^\d{10}$/.test(data.phone)) return showToast("Phone must be 10 digits");
+      if (!data.gender || !data.role) return showToast("Select gender & role");
 
-await db.ref("admins").push({
-  fullName, username, email, phone, gender, role, photoURL,
-  password: btoa(password),
-  status: status,           // Yeh line zaroor honi chahiye
-  createdAt: new Date().toISOString()
-});
-</script>
+      const submitBtn = form.querySelector("button");
+      submitBtn.disabled = true;
+      loader.style.display = "flex";
+
+      try {
+        const [userTaken, emailTaken] = await Promise.all([
+          isTaken("username", data.username),
+          isTaken("email", data.email)
+        ]);
+
+        if (userTaken) throw new Error("Username already taken");
+        if (emailTaken) throw new Error("Email already registered");
+
+        await pendingRef.push({
+          ...data,
+          photoURL: photoBase64 || "",
+          status: "pending",
+          createdAt: firebase.database.ServerValue.TIMESTAMP
+        });
+
+        showToast("Registration submitted! Awaiting approval", "success");
+        setTimeout(() => location.href = "admin-login.html", 1500);
+
+      } catch (err) {
+        showToast(err.message || "Registration failed", "error");
+      } finally {
+        loader.style.display = "none";
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
 </body>
 </html>
