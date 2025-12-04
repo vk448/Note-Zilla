@@ -70,7 +70,6 @@
     }
     .toast.error{background:var(--danger);}
     .toast.warning{background:var(--warning);}
-    .toast i{font-size:1.5rem;}
   </style>
 </head>
 <body>
@@ -91,7 +90,7 @@
  
   <div class="notice">
     Not registered? <a href="admin-register.html">Register Here</a><br><br>
-    <A href="reset-password.html">Forgot Password?</A>
+    <a href="reset-password.html">Forgot Password?</a>
   </div>
 </div>
 
@@ -100,6 +99,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
@@ -114,20 +114,23 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  // Toast Function
+  // FIXED TOAST
   function showToast(message, type = "success") {
     const box = document.getElementById("toastBox");
     const toast = document.createElement("div");
     toast.classList.add("toast", type);
 
-    const icons = { success: "Checkmark", error: "Cross", warning: "Warning" };
+    // FIXED ICONS (NO ERROR)
+    const icons = { 
+      success: "✔️", 
+      error: "❌", 
+      warning: "⚠️" 
+    };
+
     toast.innerHTML = `${icons[type]} ${message}`;
     box.appendChild(toast);
 
-    // Trigger animation
     setTimeout(() => toast.classList.add("show"), 100);
-
-    // Remove after 4 seconds
     setTimeout(() => {
       toast.classList.remove("show");
       setTimeout(() => toast.remove(), 600);
@@ -151,7 +154,11 @@
 
       snapshot.forEach(child => {
         const u = child.val();
+        if (!u) return;  // FIXED CHECK
+        if (!u.username && !u.email) return;
+
         if ((u.username?.toLowerCase() === input || u.email?.toLowerCase() === input)) {
+          
           try {
             if (atob(u.password) === password) {
               userFound = { id: child.key, ...u };
@@ -170,7 +177,6 @@
         return;
       }
 
-      // Status Check
       if (userFound.status === "pending") {
         showToast("Your account is PENDING admin approval!", "warning");
       } else if (userFound.status === "rejected") {
@@ -182,7 +188,7 @@
         setTimeout(() => {
           window.location.href = "admin-panel.html";
         }, 1500);
-        return; // Important: Prevent loader hide below
+        return;
       }
 
     } catch (error) {
@@ -190,14 +196,13 @@
       showToast("Connection failed! Check internet.", "error");
     }
 
-    // Hide loader only if login failed
     document.getElementById("loader").style.display = "none";
   }
 
-  // Press Enter to login
   document.addEventListener("keypress", e => {
     if (e.key === "Enter") login();
   });
 </script>
+
 </body>
 </html>

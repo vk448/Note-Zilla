@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Approval Panel | NoteZilla</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+
   <style>
     :root{--primary:#203a43;--success:#27ae60;--danger:#e74c3c;--warning:#f39c12;}
     body{font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);color:white;padding:20px;min-height:100vh;}
@@ -15,7 +16,7 @@
     th{background:var(--primary);color:white;font-weight:600;}
     img{width:65px;height:65px;border-radius:50%;object-fit:cover;border:4px solid var(--primary);}
     button{padding:11px 22px;margin:0 6px;border:none;border-radius:10px;color:white;font-weight:600;cursor:pointer;transition:0.3s;}
-    .approve{background:var(--success); margin-bottom: 10px;}
+    .approve{background:var(--success);}
     .reject{background:var(--danger);}
     button:hover{transform:scale(1.08);box-shadow:0 8px 20px rgba(0,0,0,0.3);}
     .role-tag{background:#fff3cd;color:#856404;padding:6px 14px;border-radius:20px;font-size:0.9rem;}
@@ -25,9 +26,9 @@
     .toast{background:var(--success);color:white;padding:18px 28px;border-radius:14px;margin-bottom:15px;box-shadow:0 10px 30px rgba(0,0,0,0.5);font-weight:600;min-width:340px;display:flex;align-items:center;gap:16px;border-left:6px solid #1e8449;transform:translateX(120%);transition:0.6s;opacity:0;}
     .toast.show{transform:translateX(0);opacity:1;}
     .toast.error{background:var(--danger);border-left-color:#c0392b;}
-    .toast i{font-size:1.8rem;font-weight:bold;}
   </style>
 </head>
+
 <body>
 
 <div class="box">
@@ -40,6 +41,7 @@
     </thead>
     <tbody id="list"></tbody>
   </table>
+
   <p id="no" class="no-data" style="display:none;">No pending requests right now</p>
 </div>
 
@@ -47,6 +49,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
@@ -61,13 +64,15 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  function showToast(msg, type = "success") {
+  function showToast(msg, type="success") {
     const box = document.getElementById("toastBox");
     const toast = document.createElement("div");
     toast.classList.add("toast", type);
-    toast.innerHTML = `${msg}`;
+    toast.innerHTML = msg;
+
     box.appendChild(toast);
     setTimeout(() => toast.classList.add("show"), 100);
+
     setTimeout(() => {
       toast.classList.remove("show");
       setTimeout(() => toast.remove(), 600);
@@ -77,7 +82,7 @@
   const list = document.getElementById("list");
   const noMsg = document.getElementById("no");
 
-  // LISTENER: Read pending users from admins_pending
+  // Load pending admins
   db.ref("admins_pending")
     .orderByChild("status")
     .equalTo("pending")
@@ -93,49 +98,66 @@
 
       snap.forEach(child => {
         const u = child.val();
-        const key = child.key;
+        const id = child.key;
 
         const row = document.createElement("tr");
         row.innerHTML = `
           <td><img src="${u.photoURL || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + u.username}"></td>
-          <td><b>${u.fullName || "N/A"}</b></td>
+          <td><b>${u.fullName}</b></td>
           <td>${u.username}</td>
           <td>${u.email}</td>
           <td><span class="role-tag">${u.role}</span></td>
           <td>
-            <button class="approve" onclick="approveUser('${key}')">Approve</button>
-            <button class="reject" onclick="rejectUser('${key}')">Reject</button>
+            <button class="approve" onclick="approveUser('${id}')">Approve</button>
+            <button class="reject" onclick="rejectUser('${id}')">Reject</button>
           </td>
         `;
         list.appendChild(row);
       });
     });
 
-  // APPROVE USER → move data to /admins + update status
+  // Base64 encoding function
+  function toBase64(str){
+    return btoa(str);
+  }
+
+  // Approve user & store Base64 password
   function approveUser(id) {
-    if (!confirm("Approve this user? They will be able to login.")) return;
+    if (!confirm("Approve this user?")) return;
 
     db.ref("admins_pending/" + id).once("value", snap => {
-      if (!snap.exists()) return showToast("User not found!", "error");
+      if (!snap.exists()) return showToast("User not found", "error");
 
-      const data = snap.val();
-      data.status = "approved";
+      const u = snap.val();
 
-      // Move user to /admins
-      db.ref("admins/" + id).set(data)
+      const encoded = toBase64(u.password || "");
+
+      const data = {
+        email: u.email,
+        fullName: u.fullName,
+        username: u.username,
+        phone: u.phone,
+        gender: u.gender,
+        role: u.role,
+        photoURL: u.photoURL,
+        createdAt: u.createdAt || new Date().toISOString(),
+        password: encoded,      // Base64 Password
+        status: "approved"
+      };
+
+      db.ref("admins/" + id)
+        .set(data)
         .then(() => db.ref("admins_pending/" + id).remove())
-        .then(() => showToast("User approved successfully!", "success"))
-        .catch(() => showToast("Failed to approve user!", "error"));
+        .then(() => showToast("User approved successfully"))
+        .catch(() => showToast("Error approving user", "error"));
     });
   }
 
-  // REJECT USER → delete from admins_pending only
   function rejectUser(id) {
-    if (!confirm("Reject this user? This will permanently delete the account!")) return;
-
+    if (!confirm("Reject this user?")) return;
     db.ref("admins_pending/" + id).remove()
-      .then(() => showToast("User rejected & deleted!", "success"))
-      .catch(() => showToast("Failed to delete!", "error"));
+      .then(() => showToast("User rejected", "error"))
+      .catch(() => showToast("Error deleting user", "error"));
   }
 </script>
 </body>
