@@ -50,12 +50,9 @@
       animation:s 1s linear infinite;margin-bottom:20px;
     }
     @keyframes s{to{transform:rotate(360deg)}}
-
     .notice{margin-top:25px;color:#666;}
     .notice a{color:#2c5364;font-weight:600;text-decoration:none;}
     .notice a:hover{color:#1cc88a;text-decoration:underline;}
-
-    /* Toast Messages */
     .toast-container{
       position:fixed;top:30px;right:30px;z-index:10000;
     }
@@ -73,7 +70,6 @@
   </style>
 </head>
 <body>
-
 <div id="loader">
   <div class="spinner"></div>
   <div>Logging in...</div>
@@ -82,19 +78,15 @@
 <div class="container">
   <h1>NoteZilla</h1>
   <h2>Admin Login</h2>
- 
   <input type="text" id="loginInput" placeholder="Username or Email" autocomplete="off">
-  <input type="password" id="password" placeholder="Password">
- 
+  <input type="password" id="password" placeholder="Password" autocomplete="off">
   <button onclick="login()">Login Now</button>
- 
   <div class="notice">
     Not registered? <a href="admin-register.html">Register Here</a><br><br>
     <a href="reset-password.html">Forgot Password?</a>
   </div>
 </div>
 
-<!-- Toast Container -->
 <div class="toast-container" id="toastBox"></div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -114,22 +106,13 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  // FIXED TOAST
   function showToast(message, type = "success") {
     const box = document.getElementById("toastBox");
     const toast = document.createElement("div");
     toast.classList.add("toast", type);
-
-    // FIXED ICONS (NO ERROR)
-    const icons = { 
-      success: "✔️", 
-      error: "❌", 
-      warning: "⚠️" 
-    };
-
+    const icons = { success: "✔️", error: "❌", warning: "⚠️" };
     toast.innerHTML = `${icons[type]} ${message}`;
     box.appendChild(toast);
-
     setTimeout(() => toast.classList.add("show"), 100);
     setTimeout(() => {
       toast.classList.remove("show");
@@ -137,8 +120,12 @@
     }, 4000);
   }
 
+  function hideLoader() {
+    document.getElementById("loader").style.display = "none";
+  }
+
   async function login() {
-    const input = document.getElementById("loginInput").value.trim().toLowerCase();
+    const input = document.getElementById("loginInput").value.trim();
     const password = document.getElementById("password").value.trim();
 
     if (!input || !password) {
@@ -150,59 +137,86 @@
 
     try {
       const snapshot = await db.ref("admins").once("value");
+
+      if (!snapshot.exists()) {
+        showToast("No admin accounts found in the database.", "error");
+        hideLoader();
+        return;
+      }
+
       let userFound = null;
 
       snapshot.forEach(child => {
-        const u = child.val();
-        if (!u) return;  // FIXED CHECK
-        if (!u.username && !u.email) return;
+        if (userFound) return; // Stop if already found
 
-        if ((u.username?.toLowerCase() === input || u.email?.toLowerCase() === input)) {
-          
+        const u = child.val();
+        if (!u) return;
+
+        const storedUsername = (u.username || "").trim().toLowerCase();
+        const storedEmail = (u.email || "").trim().toLowerCase();
+        const inputLower = input.toLowerCase();
+
+        const isMatch = storedUsername === inputLower || storedEmail === inputLower;
+
+        if (isMatch) {
+          let storedPassword = u.password || "";
+
+          // Try to decode Base64 first
           try {
-            if (atob(u.password) === password) {
-              userFound = { id: child.key, ...u };
-            }
-          } catch {
-            if (u.password === password) {
-              userFound = { id: child.key, ...u };
-            }
+            storedPassword = atob(u.password);
+          } catch (e) {
+            // If not Base64-encoded, use as-is
+          }
+
+          if (storedPassword === password) {
+            userFound = { id: child.key, ...u };
           }
         }
       });
 
       if (!userFound) {
         showToast("Incorrect username/email or password!", "error");
-        document.getElementById("loader").style.display = "none";
+        hideLoader();
         return;
       }
 
+      // Handle account status
       if (userFound.status === "pending") {
-        showToast("Your account is PENDING admin approval!", "warning");
+        showToast("Your account is pending admin approval!", "warning");
+        hideLoader();
       } else if (userFound.status === "rejected") {
-        showToast("Your account was REJECTED by admin!", "error");
-      } else {
+        showToast("Your account was rejected by admin!", "error");
+        hideLoader();
+      } else if (userFound.status === "approved") {
         sessionStorage.setItem("adminUser", JSON.stringify(userFound));
         sessionStorage.setItem("userId", userFound.id);
-        showToast(`Welcome back, ${userFound.fullName || userFound.username}!`, "success");
+        showToast(`Welcome back, ${userFound.fullName || userFound.username || "Admin"}!`, "success");
         setTimeout(() => {
           window.location.href = "admin-panel.html";
         }, 1500);
-        return;
+      } else {
+        showToast("Invalid account status. Contact support.", "error");
+        hideLoader();
       }
 
     } catch (error) {
-      console.error(error);
-      showToast("Connection failed! Check internet.", "error");
-    }
+      console.error("Firebase Error:", error);
+      hideLoader();
 
-    document.getElementById("loader").style.display = "none";
+      if (error.code === "PERMISSION_DENIED") {
+        showToast("Access denied! Please check Firebase Database Rules.", "error");
+      } else {
+        showToast("Connection failed. Check internet or try again later.", "error");
+      }
+    }
   }
 
+  // Login on Enter key press
   document.addEventListener("keypress", e => {
-    if (e.key === "Enter") login();
+    if (e.key === "Enter") {
+      login();
+    }
   });
 </script>
-
 </body>
 </html>

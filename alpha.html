@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NoteZilla - Standardize Admin Accounts</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #203a43;
+      --accent: #4fc3f7;
+      --danger: #e74c3c;
+      --success: #27ae60;
+      --warning: #f39c12;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+    body{
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      min-height:100vh;color:white;padding:20px;
+    }
+    .container{
+      max-width:900px;margin:0 auto;background:rgba(255,255,255,0.1);padding:30px;border-radius:22px;
+      box-shadow:0 25px 70px rgba(0,0,0,0.6);
+    }
+    h1{font-size:2.8rem;color:white;text-align:center;margin-bottom:20px;}
+    .header{
+      display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;flex-wrap:wrap;gap:15px;
+    }
+    button{
+      padding:14px 28px;background:linear-gradient(135deg,var(--primary),#2c5364);
+      color:white;border:none;border-radius:14px;font-size:1.2rem;font-weight:700;
+      cursor:pointer;transition:0.3s;
+    }
+    button:hover{transform:translateY(-3px);box-shadow:0 15px 30px rgba(0,0,0,0.4);}
+    button.danger{background:var(--danger);}
+    #loader{
+      display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:9999;
+      color:white;justify-content:center;align-items:center;flex-direction:column;font-size:1.8rem;
+    }
+    .spinner{
+      width:70px;height:70px;border:8px solid #ffffff33;
+      border-top:8px solid var(--accent);border-radius:50%;
+      animation:s 1s linear infinite;margin-bottom:20px;
+    }
+    @keyframes s{to{transform:rotate(360deg)}}
+    table{
+      width:100%;border-collapse:collapse;margin-top:20px;background:white;color:#333;
+    }
+    th, td{padding:15px;text-align:left;border-bottom:1px solid #ddd;}
+    th{background:var(--primary);color:white;}
+    tr:hover{background:#f5f5f5;}
+    .toast-container{position:fixed;top:30px;right:30px;z-index:10000;}
+    .toast{
+      background:var(--success);color:white;padding:16px 28px;border-radius:12px;
+      margin-bottom:12px;box-shadow:0 10px 30px rgba(0,0,0,0.4);
+      font-weight:600;min-width:320px;display:flex;align-items:center;gap:14px;
+      transform:translateX(120%);transition:transform 0.6s ease, opacity 0.6s ease;opacity:0;
+    }
+    .toast.show{transform:translateX(0);opacity:1;}
+    .toast.error{background:var(--danger);}
+    .toast.warning{background:var(--warning);}
+    .status-approved{color:var(--success);font-weight:bold;}
+    .status-pending{color:var(--warning);font-weight:bold;}
+    .status-rejected{color:var(--danger);font-weight:bold;}
+  </style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="spinner"></div>
+  <div>Processing...</div>
+</div>
+
+<div class="container">
+  <h1>NoteZilla - Admin Accounts</h1>
+  
+  <div class="header">
+    <div>Total Accounts: <strong id="totalCount">0</strong></div>
+    <button id="standardizeBtn">Standardize All Formats</button>
+  </div>
+
+  <table id="adminsTable">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Full Name</th>
+        <th>Status</th>
+        <th>Role</th>
+        <th>Created At</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Rows will be injected here by JavaScript -->
+    </tbody>
+  </table>
+</div>
+
+<div class="toast-container" id="toastBox"></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
+    authDomain: "chat-box-e01e5.firebaseapp.com",
+    databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
+    projectId: "chat-box-e01e5",
+    storageBucket: "chat-box-e01e5.firebasestorage.app",
+    messagingSenderId: "597491149800",
+    appId: "1:597491149800:web:7bd908925f70b62018125d"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  function showToast(message, type = "success") {
+    const box = document.getElementById("toastBox");
+    const toast = document.createElement("div");
+    toast.classList.add("toast", type);
+    const icons = { success: "✔️", error: "❌", warning: "⚠️" };
+    toast.innerHTML = `${icons[type]} ${message}`;
+    box.appendChild(toast);
+    setTimeout(() => toast.classList.add("show"), 100);
+    setTimeout(() => {
+      toast.classList.remove("show");
+      setTimeout(() => toast.remove(), 600);
+    }, 4000);
+  }
+
+  function hideLoader() {
+    document.getElementById("loader").style.display = "none";
+  }
+
+  function showLoader() {
+    document.getElementById("loader").style.display = "flex";
+  }
+
+  async function loadAdmins() {
+    showLoader();
+    try {
+      const snapshot = await db.ref("admins").once("value");
+      const tbody = document.querySelector("#adminsTable tbody");
+      tbody.innerHTML = ""; // Clear
+
+      if (!snapshot.exists()) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No admin accounts found.</td></tr>`;
+        document.getElementById("totalCount").textContent = "0";
+        hideLoader();
+        return;
+      }
+
+      let count = 0;
+      snapshot.forEach(child => {
+        const data = child.val();
+        count++;
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${data.username || "-"}</td>
+          <td>${data.email || "-"}</td>
+          <td>${data.fullName || "-"}</td>
+          <td class="status-${data.status || 'unknown'}">${data.status || "-"}</td>
+          <td>${data.role || "-"}</td>
+          <td>${data.createdAt ? new Date(data.createdAt).toLocaleString() : "-"}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      document.getElementById("totalCount").textContent = count;
+    } catch (error) {
+      console.error(error);
+      showToast("Failed to load accounts. Check rules/internet.", "error");
+    }
+    hideLoader();
+  }
+
+  async function standardizeAll() {
+    if (!confirm("Are you sure? This will rewrite ALL admin accounts to the standard format (Base64 password, lowercase fields, fill missing data). Backup first!")) {
+      return;
+    }
+
+    showLoader();
+    try {
+      const snapshot = await db.ref("admins").once("value");
+      if (!snapshot.exists()) {
+        showToast("No accounts to standardize.", "warning");
+        hideLoader();
+        return;
+      }
+
+      const updates = {};
+      let changed = 0;
+
+      snapshot.forEach(child => {
+        const key = child.key;
+        let data = child.val();
+
+        const standardized = {
+          createdAt: data.createdAt || Date.now(),
+          email: (data.email || "").trim().toLowerCase(),
+          fullName: (data.fullName || data.username || "Unknown").trim(),
+          gender: data.gender || "Not Specified",
+          phone: data.phone || "",
+          photoURL: data.photoURL || "",
+          role: data.role || "Admin",
+          status: data.status || "approved",
+          username: (data.username || "").trim().toLowerCase(),
+        };
+
+        // Password handling
+        let pass = data.password || "";
+        if (pass) {
+          try {
+            atob(pass); // Already Base64?
+            standardized.password = pass;
+          } catch (e) {
+            standardized.password = btoa(pass);
+            changed++;
+          }
+        } else {
+          standardized.password = "";
+        }
+
+        updates[`admins/${key}`] = standardized;
+      });
+
+      await db.ref().update(updates);
+      showToast(`Successfully standardized all accounts! ${changed} passwords re-encoded.`, "success");
+      loadAdmins(); // Reload table
+    } catch (error) {
+      console.error(error);
+      if (error.code === "PERMISSION_DENIED") {
+        showToast("Permission denied! Allow write on /admins in Firebase rules.", "error");
+      } else {
+        showToast("Standardization failed.", "error");
+      }
+    }
+    hideLoader();
+  }
+
+  // Event listeners
+  document.getElementById("standardizeBtn").addEventListener("click", standardizeAll);
+
+  // Load on page open
+  window.onload = loadAdmins;
+</script>
+</body>
+</html>

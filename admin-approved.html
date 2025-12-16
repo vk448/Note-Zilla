@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NoteZilla — Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
+body{
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  min-height:100vh;
+  overflow-y:auto;
+  overflow-x:hidden;
+  color:white;
+}
+
+/* Loader */
+#loaderOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;
+  justify-content:center;align-items:center;flex-direction:column;color:#fff;font-size:1.5rem;}
+.spinner{border:8px solid rgba(255,255,255,0.3);border-top:8px solid #fff;border-radius:50%;width:60px;height:60px;
+  animation:spin 1s linear infinite;margin-bottom:15px;}
+@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg)}}
+
+/* Toast */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:16px 40px;border-radius:12px;
+  color:white;font-weight:600;z-index:10000;box-shadow:0 10px 30px rgba(0,0,0,0.4);opacity:0;
+  animation:slideDown 0.5s ease forwards;font-size:1.1rem;}
+.toast.success{background:#28a745;}
+.toast.error{background:#dc3545;}
+@keyframes slideDown{from{opacity:0;transform:translateX(-50%) translateY(-50px);}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes slideUp{to{opacity:0;transform:translateX(-50%) translateY(-50px)}}
+
+/* Login Box */
+.container{width:100%;max-width:420px;background:#fff;border-radius:20px;padding:45px 35px;text-align:center;
+  box-shadow:0 15px 50px rgba(0,0,0,0.5);color:#333;margin:30px auto;}
+h1{font-size:2.4rem;color:#203a43;margin-bottom:10px;}
+h2{font-size:1.6rem;margin-bottom:25px;color:#444;}
+input{width:100%;padding:16px;margin:12px 0;border-radius:12px;border:2px solid #ddd;font-size:16px;transition:0.3s;}
+input:focus{border-color:#2c5364;outline:none;box-shadow:0 0 12px rgba(44,83,100,0.4);}
+button{width:100%;padding:16px;background:linear-gradient(135deg,#203a43,#2c5364);color:white;border:none;
+  border-radius:12px;font-size:1.2rem;font-weight:700;cursor:pointer;transition:0.3s;margin-top:10px;}
+button:hover{transform:scale(1.04);}
+.notice{margin-top:25px;font-size:1rem;color:#666;}
+.notice a{color:#2c5364;font-weight:700;text-decoration:none;}
+.notice a:hover{color:#1cc88a;text-decoration:underline;}
+
+/* Dashboard */
+.dashboard{display:none;background:#f1f4f8;min-height:100vh;overflow-y:auto;display:flex;}
+.sidebar{
+  width:280px;background:#1b2838;color:#fff;padding:30px 20px;box-shadow:5px 0 25px rgba(0,0,0,0.4);
+  text-align:center;display:flex;flex-direction:column;align-items:center;
+}
+.sidebar img{width:110px;height:110px;border-radius:50%;border:5px solid #4fc3f7;margin-bottom:15px;object-fit:cover;
+  box-shadow:0 0 20px rgba(79,195,247,0.5);}
+.sidebar h3{font-size:1.35rem;margin:8px 0;color:#4fc3f7;font-weight:700;}
+.role-badge{display:inline-block;background:#4fc3f7;color:#1b2838;padding:6px 16px;border-radius:30px;
+  font-size:0.85rem;font-weight:700;letter-spacing:1px;margin-top:8px;}
+.sidebar button{width:100%;margin:12px 0;padding:15px;background:transparent;color:#ccc;
+  border:none;border-radius:12px;text-align:left;font-size:1.05rem;cursor:pointer;
+  display:flex;align-items:center;gap:16px;transition:0.3s;padding-left:22px;}
+.sidebar button:hover{background:#203a43;color:white;}
+.sidebar button.active{background:#4fc3f7;color:#1b2838;font-weight:700;}
+.sidebar i{font-size:1.3rem;width:28px;text-align:center;}
+.logout-btn{background:#e74c3c!important;color:white!important;margin-top:auto;}
+.logout-btn:hover{background:#c0392b!important;}
+.sidebar.collapsed{width:90px;align-items:center;}
+.sidebar.collapsed img,.sidebar.collapsed h3,.sidebar.collapsed .role-badge,.sidebar.collapsed button span{display:none;}
+.sidebar.collapsed button{justify-content:center;padding:15px;}
+.main{flex:1;display:flex;flex-direction:column;}
+.topbar{background:#fff;display:flex;align-items:center;justify-content:space-between;
+  padding:18px 30px;border-bottom:3px solid #eee;box-shadow:0 4px 15px rgba(0,0,0,0.1);}
+.topbar h2{color:#203a43;font-size:1.6rem;font-weight:700;}
+.menu-icon{font-size:32px;cursor:pointer;color:#203a43;font-weight:bold;}
+iframe{flex:1;width:100%;border:none;background:#fff;}
+
+/* Edit Profile Modal */
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);
+  justify-content:center;align-items:center;z-index:9999;}
+.modal-content{background:#fff;color:#333;border-radius:20px;padding:30px;width:90%;max-width:420px;text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,0.6);position:relative;}
+#closeModal{position:absolute;top:10px;right:15px;font-size:30px;cursor:pointer;color:#aaa;}
+#closeModal:hover{color:#000;}
+#modalPhotoPreview{width:120px;height:120px;border-radius:50%;object-fit:cover;margin:15px 0;border:4px solid #4fc3f7;}
+
+/* Mobile */
+@media(max-width:768px){
+  .sidebar{position:absolute;left:-280px;top:0;height:100%;z-index:100;transition:left 0.3s;}
+  .sidebar.active{left:0;}
+}
+</style>
+</head>
+<body>
+
+<!-- Loader -->
+<div id="loaderOverlay">
+  <div class="spinner"></div>
+  <div id="loaderText">Processing...</div>
+</div>
+
+<!-- Login Box -->
+<div class="container" id="loginBox">
+  <h1>NoteZilla</h1>
+  <h2>Admin Panel Login</h2>
+  <form id="loginForm">
+    <input type="text" id="username" placeholder="Username or Email" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button type="submit">Login Now</button>
+  </form>
+  <div class="notice">
+    Not registered? <a href="admin-register.html">Register Here</a><br>
+    <a href="reset-password.html">Forgot Password?</a>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div class="dashboard" id="dashboard" style="display:none;">
+  <div class="sidebar" id="sidebar">
+    <img id="adminPhoto" src="" alt="Profile">
+    <h3 id="adminName">Loading...</h3>
+    <div class="role-badge" id="roleBadge">USER</div>
+
+    <!-- Edit Profile Button -->
+    <button onclick="openEditModal()" style="background:#4fc3f7;color:#1b2838;font-weight:700;margin-top:15px;">
+      <i class="fa-solid fa-user-pen"></i><span>Edit Profile</span>
+    </button>
+
+    <button onclick="loadPage('upload-work-data-base-admin-co-admin.html', this)"><i class="fa-solid fa-database"></i><span>Notes Database</span></button>
+    <button onclick="loadPage('https://docs.google.com/spreadsheets/d/18ZuLufS0Vkulej9N_mtAKKw4WGulKTYyhdxjKIs-Y-A/edit', this)"><i class="fa-solid fa-calendar-days"></i><span>Time Table</span></button>
+    <button onclick="loadPage('delete-database-work-admin-owner-notezilla-database-work-add-on.html', this)"><i class="fa-solid fa-pen-to-square"></i><span>Edit Notes</span></button>
+    <button onclick="loadPage('dashboard.html', this)"><i class="fa-solid fa-id-card"></i><span>Credits</span></button>
+    <button onclick="loadPage('d.html', this)"><i class="fa-solid fa-id-card"></i></button>
+    <button onclick="window.open('https://note-zilla.netlify.app/', '_blank')"><i class="fa-solid fa-globe"></i><span>Visit Site</span></button>
+    <button class="logout-btn" id="logoutBtn" onclick="logout"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></button>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="menu-icon" onclick="toggleSidebar()">Menu</div>
+      <h2>NoteZilla Admin Panel</h2>
+    </div>
+    <iframe id="frameBox" src="welcome.html"></iframe>
+  </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal" id="editModal">
+  <div class="modal-content">
+    <span id="closeModal">×</span>
+    <h2>Edit Profile</h2>
+    <img id="modalPhotoPreview" src="" alt="Preview">
+    <input type="file" id="newPhoto" accept="image/*" style="margin:15px 0;">
+    <input type="text" id="newName" placeholder="Enter New Name" style="width:100%;padding:14px;border-radius:12px;border:2px solid #ddd;">
+    <button onclick="saveProfile()" style="background:#4fc3f7;color:#1b2838;margin-top:15px;font-weight:700;">Save Changes</button>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+<script>
+// Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
+  authDomain: "chat-box-e01e5.firebaseapp.com",
+  databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
+  projectId: "chat-box-e01e5",
+  storageBucket: "chat-box-e01e5.firebasestorage.app",
+  messagingSenderId: "597491149800",
+  appId: "1:597491149800:web:7bd908925f70b62018125d"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+let currentUser = null;
+
+// ==================== ALL RESTRICTED / DATABASE PAGES ====================
+const RESTRICTED_PAGES = [
+  "upload-work-data-base-admin-co-admin.html",
+  "delete-database-work-admin-owner-notezilla-database-work-add-on.html",
+  "dashboard.html",
+  "https://docs.google.com/spreadsheets/d/18ZuLufS0Vkulej9N_mtAKKw4WGulKTYyhdxjKIs-Y-A/edit"
+  // agar aur bhi hain to yahan add kar dena
+];
+
+// Toast Function
+function toast(text, type = "success") {
+  const t = document.createElement("div");
+  t.className = `toast ${type}`;
+  t.innerHTML = text;
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.animation = "slideUp 0.5s ease forwards"; setTimeout(() => t.remove(), 500); }, 4000);
+}
+
+// Check Authorization
+function isAuthorized() {
+  if (!currentUser) return false;
+  const role = (currentUser.role || "user").toLowerCase();
+  return ["owner", "admin", "co-admin", "coadmin"].includes(role);
+}
+
+// Update Menu + Block Unauthorized Access
+function updateMenuAndProtection() {
+  if (!currentUser) return;
+  const authorized = isAuthorized();
+
+  document.querySelectorAll(".sidebar button").forEach(btn => {
+    const onclick = btn.getAttribute("onclick") || "";
+    const isRestrictedBtn = RESTRICTED_PAGES.some(page => onclick.includes(page));
+    btn.style.display = (isRestrictedBtn && !authorized) ? "none" : "flex";
+  });
+
+  // Agar iframe mein restricted page khula hai aur user unauthorized → welcome pe bhejo
+  const currentSrc = document.getElementById("frameBox").src;
+  const currentPage = currentSrc.split("/").pop();
+  if (!authorized && RESTRICTED_PAGES.some(p => currentPage.includes(p) || currentSrc.includes(p))) {
+    document.getElementById("frameBox").src = "welcome.html";
+    toast("Access Denied! Only Owner/Admin/Co-Admin allowed.", "error");
+  }
+}
+
+// ==================== PAGE LOAD PROTECTION ====================
+const storedUser = sessionStorage.getItem("currentUser");
+if (!storedUser) {
+  document.getElementById("loginBox").style.display = "block";
+  document.getElementById("dashboard").style.display = "none";
+} else {
+  currentUser = JSON.parse(storedUser);
+  showDashboard(currentUser);
+}
+
+// ==================== LOGIN ====================
+document.getElementById("loginForm").onsubmit = async (e) => {
+  e.preventDefault();
+  const id = document.getElementById("username").value.trim().toLowerCase();
+  const pass = document.getElementById("password").value;
+  document.getElementById("loaderOverlay").style.display = "flex";
+
+  try {
+    const snap = await db.ref("admins").once("value");
+    let found = null;
+    snap.forEach(c => {
+      const u = c.val();
+      if ((u.username?.toLowerCase() === id || u.email?.toLowerCase() === id) && atob(u.password) === pass) {
+        found = { id: c.key, ...u };
+      }
+    });
+
+    if (found) {
+      currentUser = found;
+      sessionStorage.setItem("currentUser", JSON.stringify(found));
+      toast(`Welcome back, ${found.fullName.split(" ")[0]}!`, "success");
+      setTimeout(() => showDashboard(found), 1500);
+    } else {
+      toast("Wrong username/email or password!", "error");
+    }
+  } catch (err) {
+    toast("Login failed!", "error");
+  } finally {
+    document.getElementById("loaderOverlay").style.display = "none";
+  }
+};
+
+// ==================== SHOW DASHBOARD ====================
+function showDashboard(user) {
+  document.getElementById("loginBox").style.display = "none";
+  document.getElementById("dashboard").style.display = "flex";
+
+  const role = (user.role || "user").toLowerCase();
+  let roleText = "USER", roleColor = "#4fc3f7";
+  if (role === "owner")       { roleText = "OWNER";      roleColor = "#fbbf24"; }
+  else if (role === "admin")  { roleText = "ADMIN";      roleColor = "#ef4444"; }
+  else if (role.includes("co")) { roleText = "CO-ADMIN"; roleColor = "#a855f7"; }
+
+  document.getElementById("adminName").textContent = user.fullName;
+  document.getElementById("roleBadge").textContent = roleText;
+  document.getElementById("roleBadge").style.background = roleColor;
+
+  const defaultAvatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.fullName}`;
+  document.getElementById("adminPhoto").src = user.photoURL?.startsWith("data:") ? user.photoURL : (user.photoURL || defaultAvatar);
+
+  updateMenuAndProtection();
+}
+
+// ==================== SECURE LOAD PAGE ====================
+function loadPage(url, btn) {
+  if (url.includes("http")) {
+    window.open(url, "_blank");
+    return;
+  }
+
+  const pageName = url.split("/").pop();
+  const isRestricted = RESTRICTED_PAGES.some(p => pageName.includes(p) || url.includes(p));
+
+  if (isRestricted && !isAuthorized()) {
+    toast("Access Denied! Only Owner, Admin & Co-Admin allowed.", "error");
+    document.getElementById("frameBox").src = "welcome.html";
+    return;
+  }
+
+  document.getElementById("frameBox").src = url;
+  document.querySelectorAll(".sidebar button").forEach(b => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+}
+
+// ==================== EDIT PROFILE MODAL ====================
+let newPhotoBase64 = null;
+function openEditModal() {
+  document.getElementById("editModal").style.display = "flex";
+  document.getElementById("newName").value = currentUser.fullName;
+  document.getElementById("modalPhotoPreview").src = document.getElementById("adminPhoto").src;
+}
+document.getElementById("newPhoto").onchange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    newPhotoBase64 = ev.target.result;
+    document.getElementById("modalPhotoPreview").src = newPhotoBase64;
+  };
+  reader.readAsDataURL(file);
+};
+async function saveProfile() {
+  const newName = document.getElementById("newName").value.trim();
+  if (!newName) return toast("Name cannot be empty!", "error");
+
+  document.getElementById("loaderOverlay").style.display = "flex";
+  try {
+    const updates = { fullName: newName };
+    if (newPhotoBase64) updates.photoURL = newPhotoBase64;
+
+    await db.ref("admins").child(currentUser.id).update(updates);
+    currentUser.fullName = newName;
+    if (newPhotoBase64) currentUser.photoURL = newPhotoBase64;
+    sessionStorage.setItem("currentUser", JSON.stringify(currentUser));
+
+    toast("Profile Updated Successfully!", "success");
+    document.getElementById("editModal").style.display = "none";
+    showDashboard(currentUser);
+  } catch (err) {
+    toast("Update Failed!", "error");
+  } finally {
+    document.getElementById("loaderOverlay").style.display = "none";
+  }
+}
+document.getElementById("closeModal").onclick = () => {
+  document.getElementById("editModal").style.display = "none";
+  newPhotoBase64 = null;
+};
+
+// ==================== LOGOUT — 100% WORKING ====================
+document.getElementById("logoutBtn").onclick = () => {
+  document.getElementById("loaderOverlay").style.display = "flex";
+  document.getElementById("loaderText").innerText = "Logging you out...";
+  toast("Logged out successfully!", "success");
+
+  sessionStorage.removeItem("currentUser");
+  sessionStorage.clear();
+  currentUser = null;
+
+  setTimeout(() => {
+    location.reload(true);
+  }, 1800);
+};
+
+// ==================== TOGGLE SIDEBAR ====================
+function toggleSidebar() {
+  const s = document.getElementById("sidebar");
+  if (window.innerWidth <= 768) s.classList.toggle("active");
+  else s.classList.toggle("collapsed");
+}
+
+// ==================== EXTRA SAFETY — ANTI-TAMPER ====================
+setInterval(() => {
+  if (document.getElementById("dashboard").style.display === "flex" && !sessionStorage.getItem("currentUser")) {
+    toast("Session expired! Redirecting to login...", "error");
+    setTimeout(() => location.reload(), 1500);
+  }
+  if (currentUser) updateMenuAndProtection();
+}, 2500);
+
+window.addEventListener("load", () => {
+  if (!sessionStorage.getItem("currentUser") && document.getElementById("dashboard").style.display === "flex") {
+    location.reload();
+  }
+});
+</script>
+</body>
+</html>
