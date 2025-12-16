@@ -1,90 +1,397 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NoteZilla — Edit & Delete Panel (All cols + Date)</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NoteZilla — Edit & Delete Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#071228;--card:rgba(255,255,255,0.04);--accent:#42a5f5;--ok:#22c55e;--err:#ff6b6b}
-body{margin:0;font-family:Poppins,system-ui;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#001126,#021428);color:#e6eef8;padding:18px;}
-.card{width:100%;max-width:1100px;border-radius:12px;padding:18px;background:var(--card);box-shadow:0 8px 30px rgba(0,0,0,0.45);}
-h2{margin:0 0 10px 0;font-size:20px;text-align:center}
-#loading{color:var(--accent);font-weight:700;padding:8px;text-align:center}
-table{width:100%;border-collapse:collapse;margin-top:8px}
-th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);text-align:left;font-size:14px}
-th{font-weight:700;color:#cfe9ff;background:rgba(255,255,255,0.02)}
-.btn{padding:8px 10px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
-.del{background:var(--err);color:white}
-.del:hover{opacity:0.94}
-.edit{background:var(--accent);color:#00131f}
-.edit:hover{opacity:0.94}
-.small{font-size:13px;color:rgba(255,255,255,0.8)}
-.status{margin-top:12px;padding:10px;border-radius:8px;font-weight:700;display:none}
-.status.ok{background:rgba(34,197,94,0.12);color:var(--ok);display:block}
-.status.err{background:rgba(255,107,107,0.12);color:var(--err);display:block}
-.searchRow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
-input.search{flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
-
-/* modal */
-.modal{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:1000;display:none}
-.modal-content{background:#0b1b35;padding:20px;border-radius:12px;width:95%;max-width:480px;box-shadow:0 0 25px rgba(0,0,0,0.4)}
-.modal-content h3{text-align:center;margin-bottom:10px}
-.modal-content label{font-size:13px;display:block;margin-top:8px}
-.modal-content input{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:white;margin-top:4px}
-.modal-actions{display:flex;justify-content:space-between;margin-top:12px}
+    :root {
+        --bg: #0f172a;
+        --card-bg: rgba(30, 41, 59, 0.6);
+        --text: #e2e8f0;
+        --text-muted: #94a3b8;
+        --accent: #60a5fa;
+        --accent-hover: #3b82f6;
+        --success: #34d399;
+        --error: #f87171;
+        --border: rgba(148, 163, 184, 0.2);
+        --shadow: 0 10px 30px rgba(0,0,0,0.4);
+        --radius: 16px;
+        --transition: all 0.3s ease;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #020617 0%, #1e293b 100%);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    .card {
+        width: 100%;
+        max-width: 1200px;
+        background: var(--card-bg);
+        backdrop-filter: blur(12px);
+        border-radius: var(--radius);
+        padding: 32px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        position: relative;
+    }
+    h2 {
+        text-align: center;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 24px;
+        color: #ffffff;
+    }
+    .controls {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+    }
+    .search-input {
+        flex: 1;
+        min-width: 250px;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(30, 41, 59, 0.8);
+        color: var(--text);
+        font-size: 1rem;
+        transition: var(--transition);
+    }
+    .search-input:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(96,165,250,0.2);
+    }
+    .btn {
+        padding: 12px 24px;
+        border-radius: 12px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-refresh {
+        background: var(--accent);
+        color: white;
+    }
+    .btn-refresh:hover {
+        background: var(--accent-hover);
+        transform: translateY(-2px);
+    }
+    .table-container {
+        overflow-x: auto;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background: rgba(15, 23, 42, 0.6);
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 16px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+    }
+    th {
+        background: rgba(30, 41, 59, 0.8);
+        font-weight: 600;
+        color: #cbd5e1;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    tr:hover {
+        background: rgba(59, 130, 246, 0.1);
+    }
+    .link-cell a {
+        color: var(--accent);
+        text-decoration: underline;
+    }
+    .action-btns {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .btn-edit {
+        background: var(--accent);
+        color: white;
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+    .btn-edit:hover {
+        background: var(--accent-hover);
+    }
+    .btn-delete {
+        background: var(--error);
+        color: white;
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+    .btn-delete:hover {
+        background: #dc2626;
+    }
+    .status {
+        margin-top: 20px;
+        padding: 16px;
+        border-radius: 12px;
+        font-weight: 600;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.4s;
+    }
+    .status.show {
+        opacity: 1;
+    }
+    .status-success {
+        background: rgba(52, 211, 153, 0.15);
+        color: var(--success);
+        border: 1px solid rgba(52, 211, 153, 0.3);
+    }
+    .status-error {
+        background: rgba(248, 113, 113, 0.15);
+        color: var(--error);
+        border: 1px solid rgba(248, 113, 113, 0.3);
+    }
+    /* Loading Overlay */
+    .loading-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.9);
+        backdrop-filter: blur(8px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        border-radius: var(--radius);
+        z-index: 50;
+    }
+    .loading-overlay.active {
+        display: flex;
+    }
+    .spinner {
+        width: 60px;
+        height: 60px;
+        border: 6px solid rgba(96,165,250,0.2);
+        border-top: 6px solid var(--accent);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    .loading-text {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--accent);
+    }
+    /* Modal & Confirm Dialog */
+    .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.7);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        backdrop-filter: blur(8px);
+    }
+    .overlay.open {
+        display: flex;
+    }
+    .dialog {
+        background: var(--card-bg);
+        padding: 32px;
+        border-radius: var(--radius);
+        width: 90%;
+        max-width: 420px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        text-align: center;
+    }
+    .dialog h3 {
+        margin-bottom: 16px;
+        font-size: 1.5rem;
+        color: var(--text);
+    }
+    .dialog p {
+        margin-bottom: 28px;
+        color: var(--text-muted);
+        line-height: 1.5;
+    }
+    .dialog-actions {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+    }
+    .btn-cancel {
+        background: #64748b;
+        color: white;
+        padding: 12px 28px;
+    }
+    .btn-cancel:hover {
+        background: #475569;
+    }
+    .btn-confirm {
+        background: var(--error);
+        color: white;
+        padding: 12px 28px;
+    }
+    .btn-confirm:hover {
+        background: #dc2626;
+    }
+    /* Edit Modal (same style as dialog) */
+    .modal-content {
+        background: var(--card-bg);
+        padding: 32px;
+        border-radius: var(--radius);
+        width: 90%;
+        max-width: 500px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+    }
+    .modal-content h3 {
+        text-align: center;
+        margin-bottom: 24px;
+        font-size: 1.5rem;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--text-muted);
+    }
+    .form-group input {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(30, 41, 59, 0.8);
+        color: var(--text);
+    }
+    .form-group input:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(96,165,250,0.2);
+    }
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 24px;
+    }
+    .btn-save {
+        background: var(--success);
+        color: white;
+    }
+    .btn-save:hover {
+        background: #059669;
+    }
+    @media (max-width: 768px) {
+        .controls { flex-direction: column; }
+        .search-input { min-width: auto; }
+        .action-btns { flex-direction: column; }
+        th, td { padding: 12px; font-size: 0.9rem; }
+    }
 </style>
 </head>
 <body>
 <div class="card">
-  <h2>🗂️ NoteZilla — Edit & Delete Panel</h2>
+    <h2>🗂️ NoteZilla — Edit & Delete Panel</h2>
 
-  <div class="searchRow">
-    <input id="filterInput" class="search" placeholder="Filter any column..." />
-    <button id="refreshBtn" class="btn" style="background:var(--accent);color:#00131f">Refresh</button>
-  </div>
+    <div class="controls">
+        <input id="filterInput" class="search-input" placeholder="Search in any column..." />
+        <button id="refreshBtn" class="btn btn-refresh">🔄 Refresh</button>
+    </div>
 
-  <div id="loading">Loading data…</div>
-  <div id="statusBox" class="status"></div>
+    <div id="statusBox" class="status"></div>
 
-  <table id="dataTable" aria-live="polite">
-    <thead id="tableHead"></thead>
-    <tbody id="tableBody"></tbody>
-  </table>
+    <div class="table-container">
+        <table id="dataTable">
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Loading data...</div>
+    </div>
 </div>
 
-<!-- Edit modal (fields for Chapter, Link, Date, Subject) -->
-<div id="editModal" class="modal">
-  <div class="modal-content">
-    <h3>Edit Row</h3>
-    <label>Chapter Name</label>
-    <input id="editChapter" type="text">
-    <label>Link</label>
-    <input id="editLink" type="text">
-    <label>Date</label>
-    <input id="editDate" type="date">
-    <label>Subject</label>
-    <input id="editSubject" type="text">
-    <div class="modal-actions">
-      <button id="saveEdit" class="btn edit">Save</button>
-      <button id="cancelEdit" class="btn del">Cancel</button>
+<!-- Delete Confirmation Dialog -->
+<div id="deleteConfirm" class="overlay">
+    <div class="dialog">
+        <h3>Confirm Delete</h3>
+        <p>Are you sure you want to delete this entry?<br><strong id="deleteName"></strong><br>This action cannot be undone.</p>
+        <div class="dialog-actions">
+            <button id="cancelDelete" class="btn btn-cancel">Cancel</button>
+            <button id="confirmDelete" class="btn btn-confirm">Delete</button>
+        </div>
     </div>
-  </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="editModal" class="overlay">
+    <div class="modal-content">
+        <h3>Edit Entry</h3>
+        <div class="form-group">
+            <label>Chapter Name</label>
+            <input id="editChapter" type="text">
+        </div>
+        <div class="form-group">
+            <label>Direct Link</label>
+            <input id="editLink" type="text">
+        </div>
+        <div class="form-group">
+            <label>Date (YYYY-MM-DD)</label>
+            <input id="editDate" type="date">
+        </div>
+        <div class="form-group">
+            <label>Subject</label>
+            <input id="editSubject" type="text">
+        </div>
+        <div class="modal-actions">
+            <button id="cancelEdit" class="btn btn-cancel">Cancel</button>
+            <button id="saveEdit" class="btn btn-save">Save Changes</button>
+        </div>
+    </div>
 </div>
 
 <script>
-
-// <-- put your deployed Apps Script URL here -->
+// Your deployed Apps Script URL
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxGSJZokyUxwjEc74CnA8L5KZ31hdPWQOA5syNFuB5woIpZFpXgtaAPVG1OymZgsJX9/exec";
 
-const loadingEl = document.getElementById("loading");
+const loadingOverlay = document.getElementById("loadingOverlay");
 const tableHead = document.getElementById("tableHead");
 const tableBody = document.getElementById("tableBody");
 const statusBox = document.getElementById("statusBox");
 const filterInput = document.getElementById("filterInput");
 const refreshBtn = document.getElementById("refreshBtn");
 
-const modal = document.getElementById("editModal");
+const deleteConfirm = document.getElementById("deleteConfirm");
+const deleteName = document.getElementById("deleteName");
+const cancelDelete = document.getElementById("cancelDelete");
+const confirmDelete = document.getElementById("confirmDelete");
+
+const editModal = document.getElementById("editModal");
 const editChapter = document.getElementById("editChapter");
 const editLink = document.getElementById("editLink");
 const editDate = document.getElementById("editDate");
@@ -92,205 +399,231 @@ const editSubject = document.getElementById("editSubject");
 const saveEdit = document.getElementById("saveEdit");
 const cancelEdit = document.getElementById("cancelEdit");
 
-let header = [];
-let currentRows = []; // each row = array of values
-let editingIndex = -1;
+let headers = [];
+let dataRows = [];
+let editingRowIndex = -1;
+let deletingRowIndex = -1;
 
 refreshBtn.addEventListener("click", loadData);
-filterInput.addEventListener("input", () => renderRows(currentRows));
+filterInput.addEventListener("input", filterTable);
 
-async function loadData(){
-  try {
-    loadingEl.textContent = "Loading data…";
+// Close modals
+cancelDelete.onclick = cancelEdit.onclick = () => {
+    deleteConfirm.classList.remove("open");
+    editModal.classList.remove("open");
+};
+
+async function loadData() {
+    loadingOverlay.classList.add("active");
     tableHead.innerHTML = "";
     tableBody.innerHTML = "";
-    const res = await fetch(SCRIPT_URL);
-    const json = await res.json();
+    statusBox.className = "status";
 
-    if (!json.rows || !json.rows.length) {
-      loadingEl.textContent = "";
-      showStatus("No data found.", true);
-      return;
-    }
+    try {
+        const res = await fetch(SCRIPT_URL);
+        const json = await res.json();
 
-    // first row is header
-    header = json.rows[0].map(h => String(h || ""));
-    currentRows = json.rows.slice(1).map(r => r.map(c => c == null ? "" : c));
-
-    buildTableHeader();
-    renderRows(currentRows);
-
-    loadingEl.textContent = "";
-  } catch (err) {
-    loadingEl.textContent = "";
-    showStatus("Error: " + err.message, true);
-  }
-}
-
-function buildTableHeader(){
-  // create header row dynamically and add Action column
-  const tr = document.createElement("tr");
-  header.forEach(h => {
-    const th = document.createElement("th");
-    th.textContent = h;
-    tr.appendChild(th);
-  });
-  const thAction = document.createElement("th");
-  thAction.style.width = "180px";
-  thAction.textContent = "Action";
-  tr.appendChild(thAction);
-  tableHead.innerHTML = "";
-  tableHead.appendChild(tr);
-}
-
-// Render rows using header length. Date column display normalized.
-function renderRows(rows){
-  const q = filterInput.value.trim().toLowerCase();
-  tableBody.innerHTML = "";
-  let shown = 0;
-
-  for (let i = 0; i < rows.length; i++){
-    const row = rows[i];
-    const joined = row.join(" ").toLowerCase();
-    if (q && !joined.includes(q)) continue;
-
-    const tr = document.createElement("tr");
-
-    for (let c = 0; c < header.length; c++){
-      const td = document.createElement("td");
-      let val = row[c] == null ? "" : String(row[c]);
-
-      // If the header contains 'date' show as yyyy-mm-dd (if parseable)
-      if (/date/i.test(header[c]) && val){
-        const d = new Date(val);
-        if (!isNaN(d)) {
-          // format yyyy-mm-dd for clarity
-          const yyyy = d.getFullYear();
-          const mm = String(d.getMonth()+1).padStart(2,'0');
-          const dd = String(d.getDate()).padStart(2,'0');
-          val = `${yyyy}-${mm}-${dd}`;
+        if (!json.rows || json.rows.length < 2) {
+            tableBody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:40px;">No data found.</td></tr>`;
+            loadingOverlay.classList.remove("active");
+            return;
         }
-      }
 
-      // link column: try to show "Open" link if it looks like URL
-      if (/link/i.test(header[c]) && val) {
-        td.innerHTML = `<a href="${val}" target="_blank" rel="noopener">Open</a>`;
-      } else {
-        td.textContent = val;
-      }
-      tr.appendChild(td);
+        headers = json.rows[0];
+        dataRows = json.rows.slice(1).map(row => row.map(cell => cell ?? ""));
+
+        renderTable(dataRows);
+    } catch (err) {
+        showStatus("Failed to load data: " + err.message, true);
+    } finally {
+        loadingOverlay.classList.remove("active");
     }
-
-    // action buttons
-    const tdAction = document.createElement("td");
-    tdAction.innerHTML = `
-      <button class="btn edit" onclick="openEdit(${i})">Edit</button>
-      <button class="btn del" onclick="handleDelete(${i})">Delete</button>
-    `;
-    tr.appendChild(tdAction);
-
-    tableBody.appendChild(tr);
-    shown++;
-  }
-
-  if (!shown) {
-    tableBody.innerHTML = `<tr><td colspan="${header.length + 1}" style="text-align:center">No rows found.</td></tr>`;
-  }
 }
 
-// Delete by row index in currentRows
-async function handleDelete(index){
-  const row = currentRows[index];
-  const id = String(row[0] || "");
-  if (!id) return showStatus("Cannot delete: missing identifier (first column).", true);
-  if (!confirm(`Delete "${id}"? This can't be undone.`)) return;
+function renderTable(rows) {
+    // Header
+    const headerTr = document.createElement("tr");
+    headers.forEach(h => {
+        const th = document.createElement("th");
+        th.textContent = h;
+        headerTr.appendChild(th);
+    });
+    const actionTh = document.createElement("th");
+    actionTh.textContent = "Actions";
+    actionTh.style.textAlign = "center";
+    headerTr.appendChild(actionTh);
+    tableHead.innerHTML = "";
+    tableHead.appendChild(headerTr);
 
-  try {
-    showStatus(`Deleting "${id}"…`);
-    const res = await fetch(SCRIPT_URL + "?id=" + encodeURIComponent(id));
-    const json = await res.json();
-    if (json.status === "deleted"){
-      showStatus(`Deleted "${id}"`, false, true);
-      currentRows.splice(index,1);
-      renderRows(currentRows);
-    } else {
-      showStatus(json.message || "Delete failed.", true);
+    // Body
+    tableBody.innerHTML = "";
+    if (rows.length === 0) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = headers.length + 1;
+        td.textContent = "No matching records found.";
+        td.style.textAlign = "center";
+        td.style.padding = "40px";
+        tr.appendChild(td);
+        tableBody.appendChild(tr);
+        return;
     }
-  } catch (err){
-    showStatus("Error: " + err.message, true);
-  }
+
+    rows.forEach((row, idx) => {
+        const tr = document.createElement("tr");
+
+        headers.forEach((header, colIdx) => {
+            const td = document.createElement("td");
+            let value = row[colIdx];
+
+            if (/date/i.test(header) && value) {
+                const d = new Date(value);
+                if (!isNaN(d)) value = d.toISOString().split('T')[0];
+            }
+
+            if (/link/i.test(header) && value && value.startsWith("http")) {
+                const a = document.createElement("a");
+                a.href = value;
+                a.target = "_blank";
+                a.rel = "noopener";
+                a.textContent = "Open Link ↗";
+                a.className = "link-cell";
+                td.appendChild(a);
+            } else {
+                td.textContent = value;
+            }
+            tr.appendChild(td);
+        });
+
+        const actionTd = document.createElement("td");
+        actionTd.style.textAlign = "center";
+        const btnsDiv = document.createElement("div");
+        btnsDiv.className = "action-btns";
+
+        const editBtn = document.createElement("button");
+        editBtn.className = "btn btn-edit";
+        editBtn.textContent = "Edit";
+        editBtn.onclick = () => openEditModal(idx);
+
+        const delBtn = document.createElement("button");
+        delBtn.className = "btn btn-delete";
+        delBtn.textContent = "Delete";
+        delBtn.onclick = () => openDeleteConfirm(idx);
+
+        btnsDiv.appendChild(editBtn);
+        btnsDiv.appendChild(delBtn);
+        actionTd.appendChild(btnsDiv);
+        tr.appendChild(actionTd);
+
+        tableBody.appendChild(tr);
+    });
 }
 
-// Open modal for editing a row (by index)
-window.openEdit = function(index){
-  editingIndex = index;
-  const row = currentRows[index] || [];
-  // Map to expected fields: 0=Chapter,1=Link,2=Date,3=Subject (if present)
-  editChapter.value = row[0] || "";
-  editLink.value = row[1] || "";
-  // parse date into yyyy-mm-dd for date input
-  const rawDate = row[2] || "";
-  let dateStr = "";
-  if (rawDate) {
-    const d = new Date(rawDate);
-    if (!isNaN(d)) {
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth()+1).padStart(2,'0');
-      const dd = String(d.getDate()).padStart(2,'0');
-      dateStr = `${yyyy}-${mm}-${dd}`;
-    } else {
-      // if not parseable, try to keep as-is (won't show in date input)
-      dateStr = "";
+function filterTable() {
+    const query = filterInput.value.trim().toLowerCase();
+    if (!query) {
+        renderTable(dataRows);
+        return;
     }
-  }
-  editDate.value = dateStr;
-  editSubject.value = row[3] || "";
-  modal.style.display = "flex";
+    const filtered = dataRows.filter(row =>
+        row.some(cell => String(cell).toLowerCase().includes(query))
+    );
+    renderTable(filtered);
+}
+
+function openDeleteConfirm(index) {
+    deletingRowIndex = index;
+    const row = dataRows[index];
+    const chapterName = row[headers.findIndex(h => /chapter/i.test(h))] || "this entry";
+    deleteName.textContent = chapterName;
+    deleteConfirm.classList.add("open");
+}
+
+confirmDelete.onclick = async () => {
+    if (deletingRowIndex === -1) return;
+
+    const row = dataRows[deletingRowIndex];
+    const id = row[0] || "";
+
+    showStatus("Deleting entry...", false);
+    deleteConfirm.classList.remove("open");
+
+    try {
+        const res = await fetch(`${SCRIPT_URL}?action=delete&id=${encodeURIComponent(id)}`);
+        const json = await res.json();
+
+        if (json.status === "success" || json.status === "deleted") {
+            dataRows.splice(deletingRowIndex, 1);
+            renderTable(dataRows);
+            showStatus("Entry deleted successfully!", false, true);
+        } else {
+            showStatus(json.message || "Delete failed", true);
+        }
+    } catch (err) {
+        showStatus("Delete error: " + err.message, true);
+    }
+    deletingRowIndex = -1;
 };
 
-cancelEdit.onclick = () => (modal.style.display = "none");
+function openEditModal(index) {
+    editingRowIndex = index;
+    const row = dataRows[index];
 
-// Save edit: send newValues array as JSON string
+    editChapter.value = row[headers.findIndex(h => /chapter/i.test(h))] || "";
+    editLink.value = row[headers.findIndex(h => /link/i.test(h))] || "";
+    editSubject.value = row[headers.findIndex(h => /subject/i.test(h))] || "";
+
+    const dateVal = row[headers.findIndex(h => /date/i.test(h))] || "";
+    if (dateVal) {
+        const d = new Date(dateVal);
+        editDate.value = !isNaN(d) ? d.toISOString().split('T')[0] : "";
+    } else {
+        editDate.value = "";
+    }
+
+    editModal.classList.add("open");
+}
+
 saveEdit.onclick = async () => {
-  if (editingIndex === -1) return;
-  const oldId = String(currentRows[editingIndex][0] || "");
-  const newChapter = editChapter.value.trim();
-  const newLink = editLink.value.trim();
-  const newDate = editDate.value ? editDate.value : "";
-  const newSubject = editSubject.value.trim();
+    if (editingRowIndex === -1) return;
 
-  if (!newChapter) return alert("Chapter name required.");
+    const updatedRow = [...dataRows[editingRowIndex]];
 
-  const newValues = [newChapter, newLink, newDate, newSubject];
+    updatedRow[headers.findIndex(h => /chapter/i.test(h))] = editChapter.value.trim();
+    updatedRow[headers.findIndex(h => /link/i.test(h))] = editLink.value.trim();
+    updatedRow[headers.findIndex(h => /subject/i.test(h))] = editSubject.value.trim();
 
-  try {
-    showStatus(`Updating "${oldId}"…`);
-    const url = SCRIPT_URL + "?edit=1&old=" + encodeURIComponent(oldId) +
-                "&newValues=" + encodeURIComponent(JSON.stringify(newValues));
-    const res = await fetch(url);
-    const json = await res.json();
-    if (json.status === "updated"){
-      showStatus(`Updated "${newChapter}"`, false, true);
-      currentRows[editingIndex] = newValues;
-      renderRows(currentRows);
-    } else {
-      showStatus(json.message || "Update failed.", true);
+    if (editDate.value) {
+        updatedRow[headers.findIndex(h => /date/i.test(h))] = editDate.value;
     }
-  } catch (err) {
-    showStatus("Error: " + err.message, true);
-  } finally {
-    modal.style.display = "none";
-  }
+
+    const oldId = dataRows[editingRowIndex][0];
+
+    showStatus("Saving changes...", false);
+    try {
+        const res = await fetch(`${SCRIPT_URL}?action=update&oldId=${encodeURIComponent(oldId)}&newRow=${encodeURIComponent(JSON.stringify(updatedRow))}`);
+        const json = await res.json();
+
+        if (json.status === "success" || json.status === "updated") {
+            dataRows[editingRowIndex] = updatedRow;
+            renderTable(dataRows);
+            showStatus("Updated successfully!", false, true);
+            editModal.classList.remove("open");
+        } else {
+            showStatus(json.message || "Update failed", true);
+        }
+    } catch (err) {
+        showStatus("Update error: " + err.message, true);
+    }
 };
 
-function showStatus(msg, err = false, ok = false){
-  statusBox.style.display = "block";
-  statusBox.className = "status" + (err ? " err" : ok ? " ok" : "");
-  statusBox.textContent = msg;
-  setTimeout(() => (statusBox.style.display = "none"), 4000);
+function showStatus(msg, isError = false, isSuccess = false) {
+    statusBox.textContent = msg;
+    statusBox.className = "status show " + (isError ? "status-error" : isSuccess ? "status-success" : "");
+    setTimeout(() => statusBox.classList.remove("show"), 5000);
 }
 
-// initial load
+// Initial load
 loadData();
 </script>
 </body>
