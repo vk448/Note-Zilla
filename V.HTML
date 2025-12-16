@@ -4,134 +4,200 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Official Notice Board</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-  :root {
-    --primary: #2563eb;
-    --primary-hover: #1d4ed8;
-    --gray: #f3f4f6;
-    --border: #e5e7eb;
-    --text-dark: #1f2937;
-    --text-light: #6b7280;
-    --radius: 10px;
-  }
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg-gradient: linear-gradient(135deg, #0f9960 0%, #00a2ff 50%, #7c3aed 100%);
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --card-border: rgba(226, 232, 240, 0.8);
+      --text-dark: #1e293b;
+      --text-medium: #475569;
+      --text-light: #64748b;
+      --shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --transition: all 0.4s ease;
+    }
 
-  * { margin:0; padding:0; box-sizing:border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-  body {
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(120deg, rgb(15, 153, 112)), rgb(0, 162, 255);
-    color: var(--text-dark);
-    padding-bottom: 2rem;
-  }
+    body {
+      font-family: 'Manrope', sans-serif;
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text-dark);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
 
-  .container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 2rem 1rem;
-  }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
 
-  header {
-    text-align: center;
-    margin-bottom: 2.5rem;
-  }
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
 
-  header h1 {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color:white;
-  }
+    header h1 {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 4rem;
+      font-weight: 800;
+      color: white;
+      text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      letter-spacing: 1px;
+    }
 
-  header p {
-    font-size: 1rem;
-    color:white;
-    margin-top: 0.4rem;
-  }
+    header p {
+      font-size: 1.25rem;
+      color: rgba(255, 255, 255, 0.95);
+      margin-top: 0.75rem;
+      font-weight: 500;
+    }
 
-  /* SEARCH */
-  .search-box {
-    max-width: 600px;
-    margin: 0 auto 2rem;
-    position: relative;
-  }
+    .search-box {
+      max-width: 680px;
+      margin: 0 auto 3rem;
+      position: relative;
+    }
 
-  .search-box input {
-    width: 100%;
-    padding: 0.9rem 1rem 0.9rem 3rem;
-    border: 1px solid var(--border);
-    background: white;
-    border-radius: var(--radius);
-    font-size: 1rem;
-  }
+    .search-box input {
+      width: 100%;
+      padding: 1.1rem 1.5rem 1.1rem 4rem;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: var(--radius-lg);
+      background: white;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
 
-  .search-box i {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-light);
-  }
+    .search-box input:focus {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.25);
+      transform: scale(1.02);
+    }
 
-  /* NOTICE LIST */
-  .notice-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
+    .search-box i {
+      position: absolute;
+      left: 1.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.4rem;
+      color: var(--text-light);
+    }
 
-  .notice-row {
-    background: white;
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    padding: 1rem 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: 0.2s;
-  }
+    .notice-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 2rem;
+    }
 
-  .notice-row:hover {
-    background: #f9fafb;
-  }
+    .notice-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--card-border);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
 
-  .notice-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-  }
+    .notice-card:hover {
+      transform: translateY(-12px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
 
-  .download-pdf-btn {
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-    font-size: 0.9rem;
-    transition: 0.2s;
-  }
+    .card-content {
+      padding: 1.8rem;
+    }
 
-  .download-pdf-btn:hover {
-    background: var(--primary-hover);
-  }
+    .notice-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 1rem;
+      line-height: 1.3;
+    }
 
-  .empty-state,
-  .loading {
-    text-align: center;
-    padding: 3rem 1rem;
-    font-size: 1.1rem;
-    color: var(--text-light);
-  }
+    .notice-meta {
+      font-size: 0.95rem;
+      color: var(--text-medium);
+      margin-bottom: 1.5rem;
+    }
 
-  .loading i {
-    font-size: 2rem;
-    color: var(--primary);
-    margin-bottom: 1rem;
-  }
-</style>
+    .notice-meta span {
+      display: block;
+      margin-bottom: 0.4rem;
+    }
 
+    .download-pdf-btn {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+      transition: var(--transition);
+    }
+
+    .download-pdf-btn:hover {
+      background: var(--primary-hover);
+      transform: translateY(-3px);
+    }
+
+    .download-pdf-btn i {
+      font-size: 1.3rem;
+    }
+
+    .loading,
+    .empty-state {
+      text-align: center;
+      padding: 5rem 1rem;
+      color: white;
+      font-size: 1.4rem;
+      font-weight: 500;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .loading i {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      animation: spin 1.2s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 2.8rem;
+      }
+      .notice-list {
+        grid-template-columns: 1fr;
+      }
+      .card-content {
+        padding: 1.5rem;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -252,21 +318,27 @@
   }
 
   function createNoticeRow(notice) {
-    const row = document.createElement("div");
-    row.className = "notice-row";
+    const card = document.createElement("div");
+    card.className = "notice-card";
 
-    row.innerHTML = `
-      <div class="notice-title">${notice.title || "Untitled Notice"}</div>
-      <button class="download-pdf-btn">
-        <i class="fas fa-file-pdf"></i> Download PDF
-      </button>
+    card.innerHTML = `
+      <div class="card-content">
+        <div class="notice-title">${notice.title || "Untitled Notice"}</div>
+        <div class="notice-meta">
+          <span>Issued by: ${notice.name || "Admin"}</span>
+          <span>Date: ${formatDate(notice.date || notice.timestamp)}</span>
+        </div>
+        <button class="download-pdf-btn">
+          <i class="fas fa-file-pdf"></i> Download PDF
+        </button>
+      </div>
     `;
 
-    row.querySelector(".download-pdf-btn").addEventListener("click", () => {
+    card.querySelector(".download-pdf-btn").addEventListener("click", () => {
       downloadAsPDF(notice);
     });
 
-    return row;
+    return card;
   }
 
   function renderNotices(notices) {
@@ -277,7 +349,7 @@
       return;
     }
     emptyState.style.display = "none";
-    noticeList.style.display = "flex";
+    noticeList.style.display = "grid";
 
     notices.forEach(notice => {
       noticeList.appendChild(createNoticeRow(notice));
