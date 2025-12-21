@@ -165,7 +165,6 @@
         color: var(--error);
         border: 1px solid rgba(248, 113, 113, 0.3);
     }
-    /* Loading Overlay */
     .loading-overlay {
         position: absolute;
         inset: 0;
@@ -198,7 +197,6 @@
         font-weight: 600;
         color: var(--accent);
     }
-    /* Modal & Confirm Dialog */
     .overlay {
         position: fixed;
         inset: 0;
@@ -212,17 +210,17 @@
     .overlay.open {
         display: flex;
     }
-    .dialog {
+    .dialog, .modal-content {
         background: var(--card-bg);
         padding: 32px;
         border-radius: var(--radius);
         width: 90%;
-        max-width: 420px;
+        max-width: 500px;
         box-shadow: var(--shadow);
         border: 1px solid var(--border);
         text-align: center;
     }
-    .dialog h3 {
+    .dialog h3, .modal-content h3 {
         margin-bottom: 16px;
         font-size: 1.5rem;
         color: var(--text);
@@ -232,11 +230,13 @@
         color: var(--text-muted);
         line-height: 1.5;
     }
-    .dialog-actions {
+    .dialog-actions, .modal-actions {
         display: flex;
         justify-content: center;
         gap: 16px;
+        margin-top: 24px;
     }
+    .modal-actions { justify-content: flex-end; }
     .btn-cancel {
         background: #64748b;
         color: white;
@@ -245,7 +245,7 @@
     .btn-cancel:hover {
         background: #475569;
     }
-    .btn-confirm {
+    .btn-confirm, .btn-save {
         background: var(--error);
         color: white;
         padding: 12px 28px;
@@ -253,20 +253,11 @@
     .btn-confirm:hover {
         background: #dc2626;
     }
-    /* Edit Modal (same style as dialog) */
-    .modal-content {
-        background: var(--card-bg);
-        padding: 32px;
-        border-radius: var(--radius);
-        width: 90%;
-        max-width: 500px;
-        box-shadow: var(--shadow);
-        border: 1px solid var(--border);
+    .btn-save {
+        background: var(--success);
     }
-    .modal-content h3 {
-        text-align: center;
-        margin-bottom: 24px;
-        font-size: 1.5rem;
+    .btn-save:hover {
+        background: #059669;
     }
     .form-group {
         margin-bottom: 20px;
@@ -289,19 +280,6 @@
         outline: none;
         border-color: var(--accent);
         box-shadow: 0 0 0 3px rgba(96,165,250,0.2);
-    }
-    .modal-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 12px;
-        margin-top: 24px;
-    }
-    .btn-save {
-        background: var(--success);
-        color: white;
-    }
-    .btn-save:hover {
-        background: #059669;
     }
     @media (max-width: 768px) {
         .controls { flex-direction: column; }
@@ -329,14 +307,13 @@
         </table>
     </div>
 
-    <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="spinner"></div>
         <div class="loading-text">Loading data...</div>
     </div>
 </div>
 
-<!-- Delete Confirmation Dialog -->
+<!-- Delete Confirmation -->
 <div id="deleteConfirm" class="overlay">
     <div class="dialog">
         <h3>Confirm Delete</h3>
@@ -376,8 +353,8 @@
 </div>
 
 <script>
-// Your deployed Apps Script URL
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxGSJZokyUxwjEc74CnA8L5KZ31hdPWQOA5syNFuB5woIpZFpXgtaAPVG1OymZgsJX9/exec";
+// === UPDATE THIS URL WITH YOUR DEPLOYED WEB APP URL ===
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwB0mWBqMAYIdiXP6WBxaIKUl9USE6UlYRkE5oYrZP_3Z8p9UZvfj0JwxSglfxj6FW9/exec";
 
 const loadingOverlay = document.getElementById("loadingOverlay");
 const tableHead = document.getElementById("tableHead");
@@ -407,25 +384,25 @@ let deletingRowIndex = -1;
 refreshBtn.addEventListener("click", loadData);
 filterInput.addEventListener("input", filterTable);
 
-// Close modals
 cancelDelete.onclick = cancelEdit.onclick = () => {
     deleteConfirm.classList.remove("open");
     editModal.classList.remove("open");
+    editingRowIndex = deletingRowIndex = -1;
 };
 
 async function loadData() {
     loadingOverlay.classList.add("active");
     tableHead.innerHTML = "";
     tableBody.innerHTML = "";
-    statusBox.className = "status";
+    showStatus("", false);
 
     try {
         const res = await fetch(SCRIPT_URL);
+        if (!res.ok) throw new Error("Network error");
         const json = await res.json();
 
         if (!json.rows || json.rows.length < 2) {
             tableBody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:40px;">No data found.</td></tr>`;
-            loadingOverlay.classList.remove("active");
             return;
         }
 
@@ -435,6 +412,7 @@ async function loadData() {
         renderTable(dataRows);
     } catch (err) {
         showStatus("Failed to load data: " + err.message, true);
+        console.error(err);
     } finally {
         loadingOverlay.classList.remove("active");
     }
@@ -474,7 +452,7 @@ function renderTable(rows) {
 
         headers.forEach((header, colIdx) => {
             const td = document.createElement("td");
-            let value = row[colIdx];
+            let value = row[colIdx] || "";
 
             if (/date/i.test(header) && value) {
                 const d = new Date(value);
@@ -495,6 +473,7 @@ function renderTable(rows) {
             tr.appendChild(td);
         });
 
+        // Actions
         const actionTd = document.createElement("td");
         actionTd.style.textAlign = "center";
         const btnsDiv = document.createElement("div");
@@ -521,10 +500,7 @@ function renderTable(rows) {
 
 function filterTable() {
     const query = filterInput.value.trim().toLowerCase();
-    if (!query) {
-        renderTable(dataRows);
-        return;
-    }
+    if (!query) return renderTable(dataRows);
     const filtered = dataRows.filter(row =>
         row.some(cell => String(cell).toLowerCase().includes(query))
     );
@@ -534,7 +510,8 @@ function filterTable() {
 function openDeleteConfirm(index) {
     deletingRowIndex = index;
     const row = dataRows[index];
-    const chapterName = row[headers.findIndex(h => /chapter/i.test(h))] || "this entry";
+    const chapterCol = headers.findIndex(h => /chapter/i.test(h));
+    const chapterName = chapterCol !== -1 ? row[chapterCol] : "this entry";
     deleteName.textContent = chapterName;
     deleteConfirm.classList.add("open");
 }
@@ -542,17 +519,24 @@ function openDeleteConfirm(index) {
 confirmDelete.onclick = async () => {
     if (deletingRowIndex === -1) return;
 
-    const row = dataRows[deletingRowIndex];
-    const id = row[0] || "";
+    const id = dataRows[deletingRowIndex][0]; // Assumes first column is unique ID (e.g., Timestamp or ID)
 
-    showStatus("Deleting entry...", false);
     deleteConfirm.classList.remove("open");
+    showStatus("Deleting...", false);
 
     try {
-        const res = await fetch(`${SCRIPT_URL}?action=delete&id=${encodeURIComponent(id)}`);
+        const formData = new FormData();
+        formData.append("action", "delete");
+        formData.append("id", id);
+
+        const res = await fetch(SCRIPT_URL, {
+            method: "POST",
+            body: formData
+        });
+
         const json = await res.json();
 
-        if (json.status === "success" || json.status === "deleted") {
+        if (json.status === "success" || json.message?.includes("deleted")) {
             dataRows.splice(deletingRowIndex, 1);
             renderTable(dataRows);
             showStatus("Entry deleted successfully!", false, true);
@@ -560,8 +544,10 @@ confirmDelete.onclick = async () => {
             showStatus(json.message || "Delete failed", true);
         }
     } catch (err) {
+        console.error(err);
         showStatus("Delete error: " + err.message, true);
     }
+
     deletingRowIndex = -1;
 };
 
@@ -569,13 +555,17 @@ function openEditModal(index) {
     editingRowIndex = index;
     const row = dataRows[index];
 
-    editChapter.value = row[headers.findIndex(h => /chapter/i.test(h))] || "";
-    editLink.value = row[headers.findIndex(h => /link/i.test(h))] || "";
-    editSubject.value = row[headers.findIndex(h => /subject/i.test(h))] || "";
+    const chapterIdx = headers.findIndex(h => /chapter/i.test(h));
+    const linkIdx = headers.findIndex(h => /link/i.test(h));
+    const dateIdx = headers.findIndex(h => /date/i.test(h));
+    const subjectIdx = headers.findIndex(h => /subject/i.test(h));
 
-    const dateVal = row[headers.findIndex(h => /date/i.test(h))] || "";
-    if (dateVal) {
-        const d = new Date(dateVal);
+    editChapter.value = chapterIdx !== -1 ? row[chapterIdx] : "";
+    editLink.value = linkIdx !== -1 ? row[linkIdx] : "";
+    editSubject.value = subjectIdx !== -1 ? row[subjectIdx] : "";
+
+    if (dateIdx !== -1 && row[dateIdx]) {
+        const d = new Date(row[dateIdx]);
         editDate.value = !isNaN(d) ? d.toISOString().split('T')[0] : "";
     } else {
         editDate.value = "";
@@ -587,24 +577,37 @@ function openEditModal(index) {
 saveEdit.onclick = async () => {
     if (editingRowIndex === -1) return;
 
-    const updatedRow = [...dataRows[editingRowIndex]];
+    const row = dataRows[editingRowIndex];
+    const oldId = row[0]; // First column must be unique ID
 
-    updatedRow[headers.findIndex(h => /chapter/i.test(h))] = editChapter.value.trim();
-    updatedRow[headers.findIndex(h => /link/i.test(h))] = editLink.value.trim();
-    updatedRow[headers.findIndex(h => /subject/i.test(h))] = editSubject.value.trim();
+    const updatedRow = [...row];
 
-    if (editDate.value) {
-        updatedRow[headers.findIndex(h => /date/i.test(h))] = editDate.value;
-    }
+    const chapterIdx = headers.findIndex(h => /chapter/i.test(h));
+    const linkIdx = headers.findIndex(h => /link/i.test(h));
+    const dateIdx = headers.findIndex(h => /date/i.test(h));
+    const subjectIdx = headers.findIndex(h => /subject/i.test(h));
 
-    const oldId = dataRows[editingRowIndex][0];
+    if (chapterIdx !== -1) updatedRow[chapterIdx] = editChapter.value.trim();
+    if (linkIdx !== -1) updatedRow[linkIdx] = editLink.value.trim();
+    if (subjectIdx !== -1) updatedRow[subjectIdx] = editSubject.value.trim();
+    if (dateIdx !== -1) updatedRow[dateIdx] = editDate.value || "";
 
     showStatus("Saving changes...", false);
+
     try {
-        const res = await fetch(`${SCRIPT_URL}?action=update&oldId=${encodeURIComponent(oldId)}&newRow=${encodeURIComponent(JSON.stringify(updatedRow))}`);
+        const formData = new FormData();
+        formData.append("action", "update");
+        formData.append("oldId", oldId);
+        formData.append("newRow", JSON.stringify(updatedRow));
+
+        const res = await fetch(SCRIPT_URL, {
+            method: "POST",
+            body: formData
+        });
+
         const json = await res.json();
 
-        if (json.status === "success" || json.status === "updated") {
+        if (json.status === "success" || json.message?.includes("updated")) {
             dataRows[editingRowIndex] = updatedRow;
             renderTable(dataRows);
             showStatus("Updated successfully!", false, true);
@@ -613,17 +616,22 @@ saveEdit.onclick = async () => {
             showStatus(json.message || "Update failed", true);
         }
     } catch (err) {
+        console.error(err);
         showStatus("Update error: " + err.message, true);
     }
+
+    editingRowIndex = -1;
 };
 
 function showStatus(msg, isError = false, isSuccess = false) {
     statusBox.textContent = msg;
     statusBox.className = "status show " + (isError ? "status-error" : isSuccess ? "status-success" : "");
-    setTimeout(() => statusBox.classList.remove("show"), 5000);
+    if (msg) {
+        setTimeout(() => statusBox.classList.remove("show"), 5000);
+    }
 }
 
-// Initial load
+// Load data on start
 loadData();
 </script>
 </body>
