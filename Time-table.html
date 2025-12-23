@@ -10,10 +10,9 @@
 
   <style>
     /* ===================================
-       FULL STANDALONE CSS - EXACTLY LIKE HOME PAGE (COSMIC PREMIUM DESIGN)
+       FULL STANDALONE CSS - COSMIC PREMIUM DESIGN (LIKE HOME PAGE)
        =================================== */
 
-    /* Global Reset & Base */
     *, *::before, *::after {
       margin: 0;
       padding: 0;
@@ -42,60 +41,6 @@
       color: inherit;
     }
 
-    button {
-      cursor: pointer;
-      border: none;
-      outline: none;
-      font-family: inherit;
-    }
-
-    /* Hero Background Animation */
-    .page-hero {
-      position: relative;
-      min-height: 70vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: clamp(100px, 15vw, 180px) 5% 80px;
-      margin-top: 80px;
-      overflow: hidden;
-    }
-
-    .page-hero::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      z-index: -2;
-      background: 
-        radial-gradient(circle at 20% 80%, #7c3aed 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, #ec4899 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, #3b82f6 0%, transparent 40%);
-      opacity: 0.6;
-      animation: smoothFloat 28s ease-in-out infinite;
-      will-change: transform;
-    }
-
-    .page-hero::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      z-index: -1;
-      background: linear-gradient(135deg, #1e1b4b 0%, #2d1b69 60%, #4c1d95 100%);
-      opacity: 0.95;
-    }
-
-    @keyframes smoothFloat {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      33% { transform: translate(4%, -4%) scale(1.03); }
-      66% { transform: translate(-3%, 3%) scale(1.02); }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .page-hero::before { animation: none; }
-    }
-
     /* Header */
     header {
       position: fixed;
@@ -110,7 +55,6 @@
       border-bottom: 1px solid rgba(124, 58, 237, 0.2);
       z-index: 1000;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-      transition: all 0.4s ease;
     }
 
     .logo {
@@ -119,8 +63,8 @@
       background: linear-gradient(135deg, #a78bfa, #ec4899, #60a5fa);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      transition: transform 0.4s ease;
       cursor: pointer;
+      transition: transform 0.4s ease;
     }
 
     .logo:hover {
@@ -138,7 +82,6 @@
       font-size: clamp(1.1rem, 2.5vw, 1.3rem);
       position: relative;
       transition: all 0.4s ease;
-      padding: 0.5rem 0;
     }
 
     nav a::after {
@@ -173,7 +116,47 @@
       transition: all 0.4s ease;
     }
 
-    /* Page Hero Text */
+    /* Page Hero */
+    .page-hero {
+      position: relative;
+      min-height: 70vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: clamp(100px, 15vw, 180px) 5% 80px;
+      margin-top: 80px;
+      overflow: hidden;
+    }
+
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background: radial-gradient(circle at 20% 80%, #7c3aed 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, #ec4899 0%, transparent 50%),
+                  radial-gradient(circle at 50% 50%, #3b82f6 0%, transparent 40%);
+      opacity: 0.6;
+      animation: smoothFloat 28s ease-in-out infinite;
+    }
+
+    .page-hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(135deg, #1e1b4b 0%, #2d1b69 60%, #4c1d95 100%);
+      opacity: 0.95;
+    }
+
+    @keyframes smoothFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(4%, -4%) scale(1.03); }
+      66% { transform: translate(-3%, 3%) scale(1.02); }
+    }
+
     .page-hero h1 {
       font-size: clamp(3.5rem, 9vw, 6rem);
       font-weight: 900;
@@ -189,13 +172,11 @@
       opacity: 0.9;
     }
 
-    /* Table Container */
+    /* Table */
     .table-container {
-      margin-top: 100px;
+      margin: 100px auto;
       padding: 0 5%;
       max-width: 1400px;
-      margin-left: auto;
-      margin-right: auto;
     }
 
     .table-wrapper {
@@ -236,7 +217,6 @@
       background: rgba(236, 72, 153, 0.2);
     }
 
-    /* Recess Highlight */
     tr.recess td {
       color: #ff6b6b !important;
       font-weight: bold;
@@ -249,7 +229,6 @@
       padding: clamp(4rem, 8vw, 6rem) 5%;
       text-align: center;
       border-top: 1px solid rgba(124, 58, 237, 0.3);
-      margin-top: auto;
     }
 
     footer p {
@@ -264,7 +243,6 @@
       font-weight: 700;
     }
 
-    /* Responsive */
     @media (max-width: 768px) {
       .hamburger { display: flex; }
       nav {
@@ -281,11 +259,6 @@
         backdrop-filter: blur(30px);
       }
       nav.active { left: 0; }
-      th, td { padding: 12px 8px; font-size: 14px; }
-    }
-
-    @media (max-width: 480px) {
-      th, td { padding: 10px 6px; font-size: 13px; }
     }
   </style>
 </head>
@@ -322,7 +295,7 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Rows will be populated by JS -->
+          <!-- Filled by JS -->
         </tbody>
       </table>
     </div>
@@ -332,70 +305,86 @@
     <p>© 2025 <span>NoteZilla</span> · All Rights Reserved</p>
   </footer>
 
- <script>
-function toggleMenu(element) {
-  const nav = document.querySelector('header nav');
-  nav.classList.toggle('active');
-  element.classList.toggle('open');
-}
-
-const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyWteSKyyQH_5c1FPCO8018ih5rl1J8uAMN0QQ2YWg8n5JBKwgZEh2XGn4SKRXmpx1-/exec"; // replace with your URL
-const STORAGE_KEY = "timetableData";
-
-function renderTable(rows) {
-  const tbody = document.querySelector("#timetableTable tbody");
-  tbody.innerHTML = "";
-  rows.forEach(row => {
-    const tr = document.createElement("tr");
-
-    // Check if the period is "Recess" (case-insensitive)
-    const isRecess = (row.Period || "").toLowerCase().includes("recess") || 
-                     (row.SubjectTeacher || "").toLowerCase().includes("recess");
-
-    tr.innerHTML = `
-      <td>${row.Time}</td>
-      <td style="${isRecess ? 'color:red; font-weight:bold;' : ''}">${row.Period}</td>
-      <td style="${isRecess ? 'color:red; font-weight:bold;' : ''}">${row.SubjectTeacher}</td>
-      <td>${row.Days}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-// Load from localStorage first
-const cachedData = localStorage.getItem(STORAGE_KEY);
-if (cachedData) {
-  try {
-    const parsedData = JSON.parse(cachedData);
-    renderTable(parsedData);
-  } catch(e) {
-    console.warn("Failed to parse cached timetable:", e);
-    localStorage.removeItem(STORAGE_KEY);
-  }
-}
-
-// Fetch fresh data in background
-fetch(SHEET_API_URL)
-  .then(response => response.json())
-  .then(rows => {
-    renderTable(rows);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(rows));
-    } catch(e) {
-      console.warn("Failed to store timetable in localStorage:", e);
+  <script>
+    // Hamburger Menu
+    function toggleMenu(el) {
+      document.querySelector('nav').classList.toggle('active');
+      el.classList.toggle('open');
     }
-  })
-  .catch(error => {
-    console.error("Error loading timetable data:", error);
-    const tbody = document.querySelector("#timetableTable tbody");
-    if (!tbody.innerHTML) {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td colspan="4">Unable to load timetable.</td>`;
-      tbody.appendChild(tr);
-    }
-  });
-</script>
 
+    // Dark Mode Toggle
+    document.getElementById('darkToggle')?.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+    });
+
+    // Header Scroll Effect
+    window.addEventListener('scroll', () => {
+      const header = document.querySelector('header');
+      if (window.scrollY > 50) {
+        header.style.background = 'rgba(15, 12, 41, 0.8)';
+        header.style.backdropFilter = 'blur(40px)';
+      } else {
+        header.style.background = 'rgba(15, 12, 41, 0.4)';
+        header.style.backdropFilter = 'blur(30px)';
+      }
+    });
+
+    // Time Table Script - FULLY WORKING
+    const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyWteSKyyQH_5c1FPCO8018ih5rl1J8uAMN0QQ2YWg8n5JBKwgZEh2XGn4SKRXmpx1-/exec";
+    const STORAGE_KEY = "timetableData";
+
+    function renderTable(rows) {
+      const tbody = document.querySelector("#timetableTable tbody");
+      tbody.innerHTML = "";
+
+      if (!rows || rows.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4">No timetable data available.</td></tr>`;
+        return;
+      }
+
+      rows.forEach(row => {
+        const tr = document.createElement("tr");
+
+        const isRecess = (row.Period || "").toLowerCase().includes("recess") || 
+                         (row.SubjectTeacher || "").toLowerCase().includes("recess");
+
+        if (isRecess) tr.classList.add("recess");
+
+        tr.innerHTML = `
+          <td>${row.Time || ''}</td>
+          <td>${row.Period || ''}</td>
+          <td>${row.SubjectTeacher || ''}</td>
+          <td>${row.Days || ''}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Load cached data instantly
+    const cached = localStorage.getItem(STORAGE_KEY);
+    if (cached) {
+      try {
+        renderTable(JSON.parse(cached));
+      } catch (e) {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
+
+    // Fetch fresh data
+    fetch(SHEET_API_URL)
+      .then(res => res.json())
+      .then(data => {
+        renderTable(data);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      })
+      .catch(err => {
+        console.error("Failed to load timetable:", err);
+        if (!document.querySelector("#timetableTable tbody").innerHTML) {
+          document.querySelector("#timetableTable tbody").innerHTML = 
+            `<tr><td colspan="4">Unable to load timetable. Please try again later.</td></tr>`;
+        }
+      });
+  </script>
 
   <script src="Record.js"></script>
 </body>

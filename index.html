@@ -282,14 +282,20 @@
       50% { transform: translateY(-10px); }
     }
 
+    /* Typing Cursor */
+    #typing {
+      position: relative;
+    }
+
     #typing::after {
       content: '|';
-      animation: blink 0.7s infinite;
+      animation: blink 0.8s step-end infinite;
       color: #fbbf24;
-      font-size: 1.2em;
+      font-weight: normal;
     }
 
     @keyframes blink {
+      0%, 100% { opacity: 1; }
       50% { opacity: 0; }
     }
 
@@ -561,19 +567,22 @@
       .hero::before { animation-duration: 40s; }
       #backToTop { width: 60px; height: 60px; font-size: 2.5rem; bottom: 2rem; right: 2rem; }
     }
-    section a{
+
+    section a {
       color: #3b82f6;
     }
-    .logo{
+
+    .logo {
       margin-right: 20px;
     }
-    #typing{
+
+    #typing {
       margin-top: 50px;
     }
-    #getStarted{
+
+    #getStarted {
       margin-bottom: 20px;
     }
-
   </style>
 </head>
 <body>
@@ -592,6 +601,7 @@
       <a href="credit.html">Team</a>
       <a href="#contact">Contact</a>
       <a href="Chatbox.html"><strong>Chat Room</strong></a>
+      <button class="toggle-dark" id="darkToggle">☾</button>
     </nav>
   </header>
 
@@ -675,6 +685,27 @@
   <button id="backToTop">↑</button>
 
   <script>
+    // Wait for DOM to be fully loaded before starting typing effect
+    document.addEventListener('DOMContentLoaded', () => {
+      const text = "Welcome to NoteZilla";
+      let i = 0;
+      const typing = document.getElementById('typing');
+
+      if (!typing) return;
+
+      typing.textContent = ""; // Clear any content
+
+      function type() {
+        if (i < text.length) {
+          typing.textContent += text.charAt(i);
+          i++;
+          setTimeout(type, 140);
+        }
+      }
+
+      type(); // Start typing
+    });
+
     // Popup Controls
     document.getElementById('getStarted').addEventListener('click', () => {
       document.getElementById('subjectPopup').style.display = 'flex';
@@ -700,18 +731,6 @@
     document.getElementById('darkToggle').addEventListener('click', () => {
       document.body.classList.toggle('dark');
     });
-
-    // Typing Effect
-    const text = "Welcome to NoteZilla";
-    let i = 0;
-    const typing = document.getElementById('typing');
-    (function type() {
-      if (i < text.length) {
-        typing.textContent += text.charAt(i);
-        i++;
-        setTimeout(type, 140);
-      }
-    })();
 
     // FAQ Accordion
     document.querySelectorAll('.faq-item h3').forEach(h => {
