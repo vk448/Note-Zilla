@@ -3,37 +3,583 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NoteZilla — Your Smart Notes Hub</title>
+  <title>NoteZilla — Ultimate Smart Notes Experience</title>
 
-  <!-- ✅ Favicon setup -->
+  <!-- Favicon & Meta -->
   <link rel="icon" type="image/png" href="/Images/Favicon.png">
   <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#7c3aed">
 
-  <!-- Google Site Verification -->
+  <!-- Google Verification & Analytics -->
   <meta name="google-site-verification" content="C2-yDbzzyS4qMdBWgM3WARN6saZ1KX7ndHrd_Uc38mg" />
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VLLNPGM016"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-VLLNPGM016');
+  </script>
 
   <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="home.css">
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-VLLNPGM016"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  gtag('config', 'G-VLLNPGM016');
-</script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <style>
+    /* ===================================
+       1. GLOBAL RESET & BASE
+       =================================== */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="JSSS.JS"></script>
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #0f0c29;
+      color: #e0e7ff;
+      line-height: 1.6;
+      overflow-x: hidden;
+      transition: background 0.8s ease;
+    }
+
+    body.dark {
+      background: #0a0719;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      outline: none;
+      font-family: inherit;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    /* ===================================
+       2. HERO BACKGROUND - SMOOTH FLOATING
+       =================================== */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 0 5%;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background: 
+        radial-gradient(circle at 20% 80%, #7c3aed 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, #ec4899 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, #3b82f6 0%, transparent 40%);
+      opacity: 0.65;
+      animation: smoothFloat 28s ease-in-out infinite;
+      will-change: transform;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(135deg, #1e1b4b 0%, #2d1b69 60%, #4c1d95 100%);
+      opacity: 0.95;
+    }
+
+    @keyframes smoothFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(4%, -4%) scale(1.03); }
+      66% { transform: translate(-3%, 3%) scale(1.02); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero::before { animation: none; }
+    }
+
+    /* ===================================
+       3. HEADER
+       =================================== */
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: clamp(1.2rem, 3vw, 2rem) 5% clamp(1.5rem, 4vw, 2.5rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 12, 41, 0.4);
+      backdrop-filter: blur(30px);
+      border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+      z-index: 1000;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      transition: all 0.4s ease;
+    }
+
+    .logo {
+      font-size: clamp(2.2rem, 6vw, 3rem);
+      font-weight: 900;
+      background: linear-gradient(135deg, #a78bfa, #ec4899, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      transition: transform 0.4s ease;
+      cursor: pointer;
+    }
+
+    .logo:hover {
+      transform: scale(1.05) rotate(2deg);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: clamp(2rem, 5vw, 4rem);
+    }
+
+    nav a {
+      font-weight: 600;
+      font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+      position: relative;
+      transition: all 0.4s ease;
+      padding: 0.5rem 0;
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 3px;
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      border-radius: 4px;
+      transition: all 0.5s ease;
+      transform: translateX(-50%);
+    }
+
+    nav a:hover::after, nav a.active::after { width: 100%; }
+    nav a:hover, nav a.active { color: #fbbf24; transform: translateY(-4px); }
+
+    .login-btn {
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      color: white;
+      padding: 0.9rem 2.2rem;
+      border-radius: 60px;
+      font-weight: 700;
+      box-shadow: 0 10px 30px rgba(124,58,237,0.5);
+      transition: all 0.5s ease;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-8px) scale(1.1);
+      box-shadow: 0 25px 50px rgba(124,58,237,0.7);
+    }
+
+    .toggle-dark {
+      font-size: 2.2rem;
+      background: none;
+      margin-left: 1.5rem;
+      transition: transform 0.3s;
+    }
+
+    .toggle-dark:hover {
+      transform: rotate(20deg);
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      cursor: pointer;
+      z-index: 1001;
+    }
+
+    .hamburger div {
+      width: 40px;
+      height: 5px;
+      background: #c4b5fd;
+      border-radius: 3px;
+      transition: all 0.4s ease;
+    }
+
+    /* ===================================
+       4. HERO CONTENT
+       =================================== */
+    .hero-content {
+      max-width: 1100px;
+      padding-top: 140px;
+      z-index: 1;
+    }
+
+    .hero-content h1 {
+      font-size: clamp(3.5rem, 9vw, 6.5rem);
+      font-weight: 900;
+      margin-bottom: 2.5rem;
+      background: linear-gradient(135deg, #c4b5fd, #fbbf24, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      opacity: 0;
+      animation: fadeInUp 1.4s ease 0.4s forwards, glowPulse 4s infinite alternate 1.8s;
+    }
+
+    @keyframes glowPulse {
+      from { text-shadow: 0 0 20px rgba(251,191,36,0.4); }
+      to { text-shadow: 0 0 50px rgba(236,72,153,0.7); }
+    }
+
+    .hero-content p {
+      font-size: clamp(1.4rem, 4.5vw, 2.2rem);
+      max-width: 900px;
+      margin-bottom: 5rem;
+      opacity: 0.9;
+      opacity: 0;
+      animation: fadeInUp 1.4s ease 0.8s forwards;
+    }
+
+    .cta-btn {
+      background: linear-gradient(135deg, #fbbf24, #f43f5e);
+      color: white;
+      padding: clamp(1.2rem, 5vw, 2rem) clamp(3rem, 10vw, 6rem);
+      border-radius: 80px;
+      font-size: clamp(1.4rem, 5vw, 2rem);
+      font-weight: 800;
+      box-shadow: 0 30px 70px rgba(244,63,94,0.6);
+      opacity: 0;
+      animation: fadeInUp 1.4s ease 1.2s forwards, bouncePulse 2s infinite 2.5s;
+      transition: all 0.6s ease;
+    }
+
+    .cta-btn:hover {
+      transform: translateY(-15px) scale(1.12);
+      box-shadow: 0 50px 90px rgba(244,63,94,0.9);
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes bouncePulse {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    #typing::after {
+      content: '|';
+      animation: blink 0.7s infinite;
+      color: #fbbf24;
+      font-size: 1.2em;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    /* ===================================
+       5. POPUP
+       =================================== */
+    .popup {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 7, 25, 0.8);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      backdrop-filter: blur(40px);
+      padding: 20px;
+    }
+
+    .popup-content {
+      background: rgba(30, 27, 75, 0.3);
+      backdrop-filter: blur(40px);
+      border-radius: 40px;
+      padding: clamp(2rem, 5vw, 4rem);
+      max-width: 1100px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 40px 100px rgba(124, 58, 237, 0.6);
+      border: 2px solid rgba(167, 139, 250, 0.3);
+      position: relative;
+    }
+
+    #closePopup {
+      position: absolute;
+      top: 1.5rem;
+      right: 2rem;
+      font-size: 2.8rem;
+      cursor: pointer;
+      color: #fbbf24;
+      opacity: 0.8;
+      transition: 0.3s;
+    }
+
+    #closePopup:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+
+    .popup-content h2 {
+      margin-bottom: 2.5rem;
+      font-size: clamp(2.2rem, 5vw, 3rem);
+      text-align: center;
+      background: linear-gradient(135deg, #a78bfa, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .popup-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+      gap: clamp(1.2rem, 3vw, 1.8rem);
+      margin-bottom: 3rem;
+    }
+
+    .popup-grid li {
+      list-style: none;
+    }
+
+    .popup-grid li a {
+      display: block;
+      padding: clamp(1.2rem, 3vw, 1.8rem);
+      background: rgba(124, 58, 237, 0.15);
+      border-radius: 24px;
+      font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+      font-weight: 700;
+      text-align: center;
+      transition: all 0.6s ease;
+      border: 1px solid rgba(167, 139, 250, 0.2);
+    }
+
+    .popup-grid li a:hover {
+      background: rgba(167, 139, 250, 0.3);
+      transform: translateY(-12px) scale(1.06);
+      box-shadow: 0 25px 50px rgba(124, 58, 237, 0.4);
+    }
+
+    .extra-title {
+      margin: 2rem 0 1.5rem;
+      font-size: clamp(1.8rem, 4vw, 2.2rem);
+      text-align: center;
+      background: linear-gradient(135deg, #ec4899, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ===================================
+       6. SECTIONS & CARDS
+       =================================== */
+    section {
+      padding: clamp(8rem, 15vw, 12rem) 5%;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: clamp(2.8rem, 7vw, 4.2rem);
+      margin-bottom: clamp(4rem, 8vw, 7rem);
+      font-weight: 900;
+      background: linear-gradient(135deg, #7c3aed, #ec4899, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+      gap: clamp(2rem, 5vw, 4rem);
+    }
+
+    .card {
+      background: rgba(30, 27, 75, 0.4);
+      backdrop-filter: blur(30px);
+      padding: clamp(2.5rem, 5vw, 4rem);
+      border-radius: 40px;
+      text-align: center;
+      box-shadow: 0 30px 80px rgba(124, 58, 237, 0.3);
+      border: 1px solid rgba(167, 139, 250, 0.2);
+      transition: all 0.8s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-25px) scale(1.05);
+      box-shadow: 0 50px 100px rgba(124, 58, 237, 0.5);
+    }
+
+    .card h3 {
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, #c4b5fd, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+    }
+
+    .card p {
+      font-size: clamp(1rem, 2vw, 1.1rem);
+      opacity: 0.9;
+    }
+
+    /* ===================================
+       7. FAQ
+       =================================== */
+    .faq-item {
+      background: rgba(30, 27, 75, 0.4);
+      backdrop-filter: blur(20px);
+      margin-bottom: 2.5rem;
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .faq-item h3 {
+      padding: clamp(2rem, 4vw, 3rem);
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      color: white;
+      font-size: clamp(1.3rem, 3vw, 1.8rem);
+      cursor: pointer;
+      transition: background 0.4s;
+    }
+
+    .faq-item p {
+      padding: 0 clamp(2rem, 4vw, 3rem) clamp(2rem, 4vw, 3rem);
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.8s ease;
+      opacity: 0.9;
+    }
+
+    .faq-item.active p {
+      max-height: 500px;
+      padding: clamp(1rem, 3vw, 2rem) clamp(2rem, 4vw, 3rem) clamp(2rem, 4vw, 3rem);
+    }
+
+    /* ===================================
+       8. FOOTER
+       =================================== */
+    footer {
+      background: linear-gradient(135deg, #1e1b4b, #0f0c29);
+      padding: clamp(4rem, 8vw, 6rem) 5%;
+      text-align: center;
+      border-top: 1px solid rgba(124, 58, 237, 0.3);
+    }
+
+    footer p {
+      margin-bottom: 2.5rem;
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      opacity: 0.9;
+    }
+
+    footer .social-links {
+      display: flex;
+      justify-content: center;
+      gap: clamp(2rem, 5vw, 3rem);
+      flex-wrap: wrap;
+    }
+
+    footer .social-links img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 50%;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      transition: all 0.4s ease;
+    }
+
+    footer .social-links img:hover {
+      transform: scale(1.3) rotate(15deg);
+      box-shadow: 0 15px 30px rgba(124, 58, 237, 0.6);
+    }
+
+    /* ===================================
+       9. BACK TO TOP
+       =================================== */
+    #backToTop {
+      position: fixed;
+      bottom: 4rem;
+      right: 4rem;
+      background: linear-gradient(135deg, #ec4899, #fbbf24);
+      color: white;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      font-size: 3rem;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 20px 50px rgba(244, 63, 94, 0.6);
+      transition: all 0.4s ease;
+      z-index: 999;
+    }
+
+    #backToTop:hover {
+      transform: scale(1.15);
+    }
+
+    /* ===================================
+       10. RESPONSIVE
+       =================================== */
+    @media (max-width: 768px) {
+      .hamburger { display: flex; }
+      nav {
+        position: fixed;
+        top: 100%;
+        left: -100%;
+        width: 100%;
+        background: rgba(15, 12, 41, 0.95);
+        flex-direction: column;
+        padding: 4rem 0;
+        transition: left 0.6s ease;
+        gap: 2.5rem;
+        align-items: center;
+        backdrop-filter: blur(30px);
+      }
+      nav.active { left: 0; }
+      .hero-content { padding-top: 100px; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-content { padding-top: 80px; }
+      .hero::before { animation-duration: 40s; }
+      #backToTop { width: 60px; height: 60px; font-size: 2.5rem; bottom: 2rem; right: 2rem; }
+    }
+    section a{
+      color: #3b82f6;
+    }
+    .logo{
+      margin-right: 20px;
+    }
+    #typing{
+      margin-top: 50px;
+    }
+    #getStarted{
+      margin-bottom: 20px;
+    }
+
+  </style>
 </head>
-
 <body>
+
   <header>
-    <div class="logo" onclick="scrollToTop()">Note Zilla</div>
+    <div class="logo">NoteZilla</div>
     <div class="hamburger" onclick="toggleMenu(this)">
       <div></div><div></div><div></div>
     </div>
@@ -43,225 +589,148 @@
       <a href="#notes">Notes</a>
       <a href="#faq">FAQ</a>
       <a href="V.HTML">Notice</a>
-      <a href="credit.html">Team Member</a>
+      <a href="credit.html">Team</a>
       <a href="#contact">Contact</a>
-      <a href="Chatbox.html"><img src="Images/New.jpg"><strong>Chat Room</strong></a>
-      <a href="login.html"><button class="login-btn">Login</button></a>
-      <button class="toggle-dark" id="darkToggle">☾</button>
+      <a href="Chatbox.html"><strong>Chat Room</strong></a>
     </nav>
   </header>
 
-  <!-- Hero -->
   <section class="hero" id="home">
-    <h1 id="typing">Welcome to Note Zilla</h1>
-    <!-- Get Started Button -->
-<p>Your smart way to organize, create & share notes easily.</p>
-    <!-- Get Started Button -->
-<!-- Get Started Button -->
-<button class="cta-btn" id="getStarted">Get Started</button>
+    <div class="hero-content">
+      <h1 id="typing"></h1>
+      <p>Your ultimate smart companion for organizing, creating & sharing notes like never before.</p>
+      <button class="cta-btn" id="getStarted">Explore Now</button>
+    </div>
+  </section>
 
-<!-- Subject Popup -->
-
-<div id="subjectPopup" class="popup">
-  <div class="popup-content">
-    <span id="closePopup">&times;</span>
-    <h2>Select Your Subject</h2>
-    <ul>
-      <li><a href="/AI/"><strong>Computer</strong></a></li>
-      <li><a href="/science"><strong> Science</strong></a></li>
-      <li><a href="/maths"><strong> Maths</strong></a></li>
-      <li><a href="/SST/"><strong> Social Science</strong></a></li>
-      <li><a href="/english"><strong> English</strong></a></li>
-      <li><a href="/hindi"> <strong>Hindi</a></strong></li>
-      <li><a href="/Sanskrit/"><strong>Sanskrit</strong></a></li>
-      <li><a href="mvpp.html"><strong>MVPP</strong></a></li>
+  <!-- Responsive Subject Popup -->
+  <div id="subjectPopup" class="popup">
+    <div class="popup-content">
+      <span id="closePopup">&times;</span>
+      <h2>Select Your Subject</h2>
+      <ul class="popup-grid">
+        <li><a href="/AI/"><strong>Computer</strong></a></li>
+        <li><a href="/science"><strong>Science</strong></a></li>
+        <li><a href="/maths"><strong>Maths</strong></a></li>
+        <li><a href="/SST/"><strong>Social Science</strong></a></li>
+        <li><a href="/english"><strong>English</strong></a></li>
+        <li><a href="/hindi"><strong>Hindi</strong></a></li>
+        <li><a href="/Sanskrit/"><strong>Sanskrit</strong></a></li>
+        <li><a href="mvpp.html"><strong>MVPP</strong></a></li>
       </ul>
-      <ul>
-        <h2>Extra Link</h2>
-        <li>
-        <a href="support-material.html"><span>Support Material</span></a>
-        </li>
-        <li>
-          <a href="Time-table.html"><span>Time Table</span></a>
-        </li>
-        <li>
-          <a href="syllabus/">Syllabus</a>
-        </li>
+      <h2 class="extra-title">Extra Links</h2>
+      <ul class="popup-grid">
+        <li><a href="support-material.html">Support Material</a></li>
+        <li><a href="Time-table.html">Time Table</a></li>
+        <li><a href="syllabus/">Syllabus</a></li>
       </ul>
-    </ul>
+    </div>
   </div>
-</div>
 
-
-  </section>
-
-
-  <!-- Features -->
   <section id="features">
-    <h2 class="section-title">Features</h2>
+    <h2 class="section-title">Epic Features</h2>
     <div class="cards">
-      <div class="card"><h3>Organize Notes</h3><p>Keep your notes tidy and accessible.</p></div>
-      <div class="card"><h3>Access Anywhere</h3><p>Use on any device anytime.</p></div>
-      <div class="card"><h3>Secure & Private</h3><p>Your data stays only with you.</p></div>
-      <div class="card"><h3>AI Assistant</h3><p>Get quick summaries and ideas using AI.</p></div>
+      <div class="card"><h3>Smart Organization</h3><p>Intuitive folders, tags & search – find anything instantly.</p></div>
+      <div class="card"><h3>Cross-Device Magic</h3><p>Seamless sync on every device you own.</p></div>
+      <div class="card"><h3>Unbreakable Security</h3><p>Military-grade encryption protects your ideas.</p></div>
+      <div class="card"><h3>Genius AI Boost</h3><p>AI-powered summaries, quizzes & creative sparks.</p></div>
     </div>
   </section>
 
-  <!-- Notes -->
   <section id="notes">
-    <h2 class="section-title">Recent Notes</h2>
+    <h2 class="section-title">Premium Notes Collection</h2>
     <div class="cards">
-      <div class="card"><h3>Math Notes</h3><p>All important formulas and theorems.</p></div>
-      <div class="card"><h3>Science Notes</h3><p>Concepts, equations, and experiments.</p></div>
-      <div class="card"><h3>English Notes</h3><p>Essays, grammar, and literature.</p></div>
-      <div class="card"><h3>Social Science Notes</h3><p>Geography, history, civics highlights.</p></div>
+      <div class="card"><h3>Math Mastery</h3><p>Crystal-clear formulas & problem-solving guides.</p></div>
+      <div class="card"><h3>Science Wonders</h3><p>Detailed concepts with stunning visuals.</p></div>
+      <div class="card"><h3>English Excellence</h3><p>Literature, grammar & writing perfection.</p></div>
+      <div class="card"><h3>Social Studies Deep Dive</h3><p>History, geography & civics made unforgettable.</p></div>
     </div>
   </section>
 
-  <!-- FAQ -->
   <section id="faq">
-    <h2 class="section-title">Frequently Asked Questions</h2>
-    <div class="faq-item"><h3>How can I download the app?</h3><p>You can download our Android/iOS app from the link in the <a href="https://median.co/share/pwxbldw#apk">Download</a> section.</p></div>
-    <div class="faq-item"><h3>Is my data safe?</h3><p>Yes, we use secure cloud storage and encryption.</p></div>
-    <div class="faq-item"><h3>Do I need an account?</h3><p>Creating an account allows you to save notes online.</p></div>
-    <div class="faq-item"><h3><img src="Images/New.jpg"></img> How I Join Chat Room?</h3><p>Just Click The Chat Room On Navbar Or <a href="Chatbox.html">Chat Room</a> Click Here To Join</p></div>
+    <h2 class="section-title">FAQ</h2>
+    <div class="faq-item"><h3>How to download the app?</h3><p>Grab it from the <a href="https://median.co/share/pwxbldw#apk">Download section</a>.</p></div>
+    <div class="faq-item"><h3>Data safety?</h3><p>100% secure with advanced encryption.</p></div>
+    <div class="faq-item"><h3>Need an account?</h3><p>Yes, for full sync & backup power.</p></div>
+    <div class="faq-item"><h3>Join Chat Room?</h3><p>Tap "Chat Room" or <a href="Chatbox.html">click here</a>.</p></div>
   </section>
 
-  <!-- Contact -->
   <section id="contact">
-    <h2 class="section-title">Contact Us</h2>
-    <p>Need help? Reach out via WhatsApp, Telegram, or Instagram. 
-      <br>
-      You also send message by using <a href="Contact.html">Contact page</a>
+    <h2 class="section-title">Connect With Us</h2>
+    <p style="text-align:center; font-size:clamp(1.3rem, 3vw, 1.8rem); max-width:1000px; margin:0 auto;">
+      Questions? Ideas? We're here – WhatsApp, Telegram, Instagram or <a href="Contact.html">Contact page</a>.
     </p>
-    
   </section>
 
-  <!-- Footer -->
   <footer>
-    <p>© <span id="year"></span> Note Zilla · All Rights Reserved</p>
-    <a href="https://whatsapp.com/channel/0029Vb7CpvgAzNbwokB7KV0y"><img src="Images/Whatsapp.png" alt="Whatsapp"></a>
-    <a href="#"><img src="Images/instagram.jpeg" alt="Instagram"></a>
-    <a href="https://t.me/+gxvgPedurnMyNTA1"><img src="Images/telegram.png" alt="Telegram"></a>
-    <a href="Chatbox.html"><img src="Images/New.jpg"></a>
+    <p>© <span id="year"></span> NoteZilla · All Rights Reserved</p>
+    <div class="social-links">
+      <a href="https://whatsapp.com/channel/0029Vb7CpvgAzNbwokB7KV0y"><img src="Images/Whatsapp.png" alt="WhatsApp"></a>
+      <a href="#"><img src="Images/instagram.jpeg" alt="Instagram"></a>
+      <a href="https://t.me/+gxvgPedurnMyNTA1"><img src="Images/telegram.png" alt="Telegram"></a>
+      <a href="Chatbox.html"><img src="Images/New.jpg" alt="Chat"></a>
+    </div>
   </footer>
 
-  <!-- Back To Top -->
   <button id="backToTop">↑</button>
 
   <script>
-    // Get elements
-const getStarted = document.getElementById('getStarted');
-const subjectPopup = document.getElementById('subjectPopup');
-const closePopup = document.getElementById('closePopup');
-
-// When "Get Started" is clicked
-getStarted.addEventListener('click', () => {
-  subjectPopup.style.display = 'flex';
-});
-
-// When close (×) is clicked
-closePopup.addEventListener('click', () => {
-  subjectPopup.style.display = 'none';
-});
-
-// When clicking outside popup
-window.addEventListener('click', (e) => {
-  if (e.target === subjectPopup) {
-    subjectPopup.style.display = 'none';
-  }
-});
-
-    // Hamburger Menu
-    function toggleMenu(el){document.querySelector('nav').classList.toggle('active');el.classList.toggle('open');}
-
-    // Smooth scroll active link highlight
-    document.querySelectorAll('nav a').forEach(a=>{
-      a.addEventListener('click',()=> {
-        document.querySelectorAll('nav a').forEach(link=>link.classList.remove('active'));
-        a.classList.add('active');
-      });
+    // Popup Controls
+    document.getElementById('getStarted').addEventListener('click', () => {
+      document.getElementById('subjectPopup').style.display = 'flex';
     });
 
+    document.getElementById('closePopup').addEventListener('click', () => {
+      document.getElementById('subjectPopup').style.display = 'none';
+    });
+
+    window.addEventListener('click', (e) => {
+      if (e.target === document.getElementById('subjectPopup')) {
+        document.getElementById('subjectPopup').style.display = 'none';
+      }
+    });
+
+    // Hamburger Menu
+    function toggleMenu(el) {
+      document.querySelector('nav').classList.toggle('active');
+      el.classList.toggle('open');
+    }
+
     // Dark Mode
-    document.getElementById('darkToggle').addEventListener('click',()=>{
+    document.getElementById('darkToggle').addEventListener('click', () => {
       document.body.classList.toggle('dark');
     });
 
-    // Typing effect
-    const text="Welcome to Note Zilla";
-    let i=0; const typing=document.getElementById('typing');
-    typing.textContent="";
-    (function type(){
-      if(i<text.length){typing.textContent+=text.charAt(i);i++;setTimeout(type,100);}
+    // Typing Effect
+    const text = "Welcome to NoteZilla";
+    let i = 0;
+    const typing = document.getElementById('typing');
+    (function type() {
+      if (i < text.length) {
+        typing.textContent += text.charAt(i);
+        i++;
+        setTimeout(type, 140);
+      }
     })();
 
-    // FAQ toggle
-    document.querySelectorAll('.faq-item').forEach(faq=>{
-      faq.addEventListener('click',()=>{
-        faq.querySelector('p').style.display = faq.querySelector('p').style.display==='block'?'none':'block';
+    // FAQ Accordion
+    document.querySelectorAll('.faq-item h3').forEach(h => {
+      h.addEventListener('click', () => {
+        h.parentElement.classList.toggle('active');
       });
     });
 
-    // Back To Top
-    const topBtn=document.getElementById('backToTop');
-    window.addEventListener('scroll',()=>{
-      topBtn.style.display = window.scrollY>400?'block':'none';
+    // Back to Top
+    const topBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+      topBtn.style.display = window.scrollY > 700 ? 'flex' : 'none';
     });
-    topBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
-
-    // Auto Year
-    document.getElementById('year').textContent=new Date().getFullYear();
-
-    // Smooth Scroll to subjects
-    document.getElementById('getStarted').addEventListener('click',()=>{
-      document.getElementById('features').scrollIntoView({behavior:'smooth'});
+    topBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    // Favicon
-    const link=document.createElement('link');
-    link.rel='icon'; link.href='images/favicon.png';
-    document.head.appendChild(link);
+    // Current Year
+    document.getElementById('year').textContent = new Date().getFullYear();
   </script>
-  <script src="https://formspree.io/js/formbutton-v1.min.js" defer></script>
-<script>
-  /* paste this line in verbatim */
-  window.formbutton=window.formbutton||function(){(formbutton.q=formbutton.q||[]).push(arguments)};
-  /* customize formbutton below*/     
-  formbutton("create", {
-    action: "https://formspree.io/f/xeokweek",
-    title: "How can we help?",
-    fields: [
-      { 
-        type: "email", 
-        label: "Email:", 
-        name: "email",
-        required: true,
-        placeholder: "your@email.com"
-      },
-      {
-        type: "textarea",
-        label: "Message:",
-        name: "message",
-        placeholder: "What's on your mind?",
-      },
-      { type: "submit" }      
-    ],
-    styles: {
-      title: {
-        backgroundColor: "gray"
-      },
-      button: {
-        backgroundColor: "gray"
-      }
-    }
-  });
-</script>
-  <script src="favicon.js">
-</script>
-<script src="Record.js"></script>
-
-
-
 </body>
 </html>

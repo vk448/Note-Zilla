@@ -6,378 +6,179 @@
   <title>MVPP - NoteZilla</title>
   <link rel="icon" href="../Images/Favicon.png">
   <meta name="google-site-verification" content="C2-yDbzzyS4qMdBWgM3WARN6saZ1KX7ndHrd_Uc38mg" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap');
-    :root {
-      --primary:#4e73df;
-      --secondary:#1cc88a;
-      --accent:#f6ad55;
-      --bg:#f5f6fa;
-      --text:#333;
-    }
-
-    * {margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-    body {background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
-
-    /* HEADER */
-    header {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:15px 50px;
-      background:#fff;
-      box-shadow:0 4px 6px rgba(0,0,0,0.1);
-      position:sticky;top:0;z-index:100;
-    }
-    .logo {
-      font-weight:900;
-      font-size:1.8rem;
-      background:linear-gradient(90deg,var(--primary),var(--secondary));
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-    }
-    nav {display:flex;align-items:center;gap:15px;}
-    nav a {text-decoration:none;color:#333;font-weight:500;transition:color 0.2s;}
-    nav a:hover {color:var(--primary);}
-    .login-btn {
-      background:var(--secondary);
-      color:white;
-      border:none;
-      padding:8px 16px;
-      border-radius:6px;
-      cursor:pointer;
-      font-weight:bold;
-      transition:background 0.2s;
-    }
-    .login-btn:hover {background:#17a673;}
-    .hamburger {display:none;flex-direction:column;cursor:pointer;gap:5px;}
-    .hamburger div {width:25px;height:3px;background-color:#333;transition:all 0.3s;}
-    @media(max-width:768px){
-      nav{display:none;flex-direction:column;width:100%;gap:10px;margin-top:10px;}
-      nav.active{display:flex;}
-      .hamburger{display:flex;}
-    }
-
-    /* HERO */
-    .hero {
-      text-align:center;
-      padding:80px 20px 50px;
-      color:white;
-      background:linear-gradient(120deg,rgba(78,115,223,0.8),rgba(28,200,138,0.8));
-      border-radius:20px;
-      margin:30px auto;
-      width:90%;
-      box-shadow:0 8px 20px rgba(0,0,0,0.2);
-    }
-
-    .hero h1 {
-      font-size:3rem;
-      font-weight:900;
-      letter-spacing:1px;
-    }
-    .hero p {
-      font-size:1.2rem;
-      margin-top:10px;
-      color:#f2f2f2;
-    }
-
-    /* SEARCH BAR */
-    .search-container {
-      display:flex;
-      justify-content:center;
-      margin:2rem auto;
-      width:90%;
-      max-width:600px;
-    }
-    .search-container input {
-      width:100%;
-      padding:12px 16px;
-      border:2px solid var(--primary);
-      border-radius:30px;
-      font-size:1rem;
-      outline:none;
-      transition:0.3s;
-    }
-    .search-container input:focus {
-      border-color:var(--secondary);
-      box-shadow:0 0 8px var(--secondary);
-    }
-
-    /* SUBJECT CARDS */
-    .subject-grid {
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-      gap:2rem;
-      width:90%;
-      margin:1rem auto 4rem;
-    }
-    .subject-card {
-      background:#fff;
-      border-radius:20px;
-      box-shadow:0 5px 20px rgba(0,0,0,0.1);
-      text-align:center;
-      padding:2rem 1rem;
-      transition:all 0.3s ease;
-      cursor:pointer;
-      position:relative;
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      height:150px;
-    }
-    .subject-card::before {
-      content:"";
-      position:absolute;
-      top:-50%;left:-50%;
-      width:200%;height:200%;
-      background:linear-gradient(120deg,var(--primary),var(--secondary));
-      transform:rotate(45deg);
-      opacity:0;
-      transition:0.4s;
-    }
-    .subject-card:hover::before {opacity:0.15;}
-    .subject-card:hover {
-      transform:translateY(-5px) scale(1.03);
-      box-shadow:0 8px 25px rgba(0,0,0,0.15);
-    }
-
-    .subject-card h2 {font-size:1.3rem;font-weight:700;color:var(--primary);z-index:1;}
-    .subject-card p {font-size:0.9rem;color:#555;margin-top:0.5rem;z-index:1;}
-
-    .loader {
-      border:4px solid #f3f3f3;
-      border-top:4px solid var(--primary);
-      border-radius:50%;
-      width:40px;height:40px;
-      animation:spin 1s linear infinite;
-      margin:0 auto;
-    }
-    @keyframes spin {0%{transform:rotate(0deg);}100%{transform:rotate(360deg);} }
-
-    /* FOOTER */
-    footer {
-      background:#fff;
-      color:#555;
-      text-align:center;
-      padding:1rem;
-      font-size:0.9rem;
-      box-shadow:0 -4px 6px rgba(0,0,0,0.05);
-      border-radius:12px;
-      margin-top:auto;
-    }
-    footer span {color:var(--primary);font-weight:600;}
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Same premium cosmic design as all other subject pages -->
+  <link rel="stylesheet" href="subject.css">
 </head>
 <body>
 
-<header>
-  <div class="logo"><a href="../">Note Zilla</a></div>
-  <div class="hamburger" onclick="toggleMenu(this)"><div></div><div></div><div></div></div>
-  <nav>
-    <a href="../index.html">Home</a>
-    <a href="#notes">MVPP Notes</a>
-    <a href="../credit.html">About</a>
-    <a href="../contact.html">Contact</a>
-   <a href="../login.html"><button class="login-btn">Login</button></a>
+  <header>
+    <div class="logo" onclick="window.location.href='../'">NoteZilla</div>
+    <div class="hamburger" onclick="toggleMenu(this)">
+      <div></div><div></div><div></div>
+    </div>
+    <nav>
+      <a href="../index.html">Home</a>
+      <a href="#notes" class="active">MVPP Notes</a>
+      <a href="../credit.html">About</a>
+      <a href="../contact.html">Contact</a>
+      <a href="../login.html"><button class="login-btn">Login</button></a>
+      <button class="toggle-dark" id="darkToggle">☾</button>
+    </nav>
+  </header>
 
-  </nav>
+  <section class="page-hero">
+    <h1>MVPP Notes</h1>
+    <p>All chapters and study materials for Class 9 MVPP – comprehensive, clear, and exam-ready.</p>
+  </section>
 
-</header>
-
-<section class="hero">
-  <h1>MVPP Notes</h1>
-  <p>All chapters and study materials for Class 9 MVPP</p>
-</section>
-
-<div class="search-container">
-  <input type="text" id="searchBar" placeholder="🔍 Search chapters...">
-</div>
-
-<section class="subject-grid" id="subjectGrid">
-  <div style="text-align:center;width:100%;padding:30px;">
-    <div class="loader" style="margin-bottom:10px;"></div>
-    <p>Loading notes...</p>
+  <!-- Fixed Search Bar -->
+  <div class="search-container">
+    <input type="text" id="searchBar" placeholder="🔍 Search chapters, topics...">
   </div>
-</section>
 
-<footer>
-  © 2025 <span>NoteZilla</span> All Rights Reserved
-</footer>
+  <section class="subject-grid" id="subjectGrid">
+    <div style="grid-column: 1 / -1; text-align:center; padding:60px 20px;">
+      <div class="loader"></div>
+      <p class="loading-text">Loading MVPP chapters...</p>
+    </div>
+  </section>
 
-<script src="sst.js">
-</script>
+  <footer>
+    <p>© 2025 <span>NoteZilla</span> · All Rights Reserved</p>
+  </footer>
 
-<script src="../favicon.js"></script>
-<script src="../Record.js"></script>
-<script src="https://formspree.io/js/formbutton-v1.min.js" defer></script>
-<script>
- 
-</script>
   <script>
-  function home(){
-    window.location.href = '../'
-  };
-  function toggleMenu(el){
-  document.querySelector('nav').classList.toggle('active');
-  el.classList.toggle('open');
-}
-
-const sheetURL = "https://script.google.com/macros/s/AKfycbx6Yi6nb-biO1Qw9pz3_1FvCwOQNLEQvi-TUIjdgsF7b9kf8FPgqsH9fIZ4n-neAVhn/exec";
-const subjectName = "Mvpp";
-const subjectGrid = document.getElementById("subjectGrid");
-
-// Show cached data instantly if available
-const cached = localStorage.getItem(`notes_${subjectName}`);
-if (cached) renderNotes(JSON.parse(cached));
-fetchData(); // Then fetch fresh data
-
-async function fetchData() {
-  try {
-    const res = await fetch(sheetURL);
-    const data = await res.json();
-    const filtered = data.filter(d => d.Subject === subjectName);
-    localStorage.setItem(`notes_${subjectName}`, JSON.stringify(filtered));
-    renderNotes(filtered);
-  } catch (err) {
-    console.error("Failed to load:", err);
-    subjectGrid.innerHTML = `<p style="text-align:center;color:red;">⚠️ Failed to load notes. Try again later.</p>`;
-  }
-}
-
-function renderNotes(notes) {
-  subjectGrid.innerHTML = "";
-  if (!notes.length) {
-    subjectGrid.innerHTML = `<p style="text-align:center;color:gray;">No chapters available.</p>`;
-    return;
-  }
-
-  notes.forEach(chap => {
-    let formattedDate = "";
-
-    // ✅ Fix NaN/NaN/NaN issue
-    if (chap.Date && chap.Date.trim() !== "") {
-      let date;
-      // Try to parse automatically
-      if (!isNaN(Date.parse(chap.Date))) {
-        date = new Date(chap.Date);
-      } else {
-        // Try manual split (handles 22/10/2025 or 22-10-2025)
-        const parts = chap.Date.split(/[-/]/);
-        if (parts.length === 3) {
-          const [d, m, y] = parts;
-          date = new Date(`${y}-${m}-${d}`);
-        }
-      }
-
-      if (date && !isNaN(date)) {
-        const day = String(date.getDate()).padStart(2, "0");
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const year = date.getFullYear();
-        formattedDate = `${day}/${month}/${year}`;
-      }
+    // Hamburger Menu
+    function toggleMenu(el) {
+      document.querySelector('nav').classList.toggle('active');
+      el.classList.toggle('open');
     }
 
-    const card = document.createElement("div");
-    card.className = "subject-card";
-    card.innerHTML = `<h2>${chap["Chapter Name"]}</h2><p>${formattedDate || "—"}</p>`;
-    card.addEventListener("click", () => {
-      if (chap.Link?.trim()) window.open(chap.Link, "_blank");
-      else alert("Link not available for this chapter.");
+    // Dark Mode
+    document.getElementById('darkToggle')?.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
     });
-    subjectGrid.appendChild(card);
-  });
-}
 
-// 🔍 Search Functionality
-const searchBar = document.getElementById("searchBar");
-searchBar.addEventListener("keyup", () => {
-  const value = searchBar.value.toLowerCase();
-  document.querySelectorAll(".subject-card").forEach(card => {
-    const text = card.querySelector("h2")?.innerText.toLowerCase() || "";
-    card.style.display = text.includes(value) ? "flex" : "none";
-  });
-});
- /* paste this line in verbatim */
-  window.formbutton=window.formbutton||function(){(formbutton.q=formbutton.q||[]).push(arguments)};
-  /* customize formbutton below*/     
-  formbutton("create", {
-    action: "https://formspree.io/f/xeokweek",
-    title: "How can we help?",
-    fields: [
-      { 
-        type: "email", 
-        label: "Email:", 
-        name: "email",
-        required: true,
-        placeholder: "your@email.com"
-      },
-      {
-        type: "textarea",
-        label: "Message:",
-        name: "message",
-        placeholder: "What's on your mind?",
-      },
-      { type: "submit" }      
-    ],
-    styles: {
-      title: {
-        backgroundColor: "gray"
-      },
-      button: {
-        backgroundColor: "gray"
+    // Header scroll effect
+    window.addEventListener('scroll', () => {
+      const header = document.querySelector('header');
+      if (window.scrollY > 50) {
+        header.style.background = 'rgba(15, 12, 41, 0.8)';
+        header.style.backdropFilter = 'blur(40px)';
+      } else {
+        header.style.background = 'rgba(15, 12, 41, 0.4)';
+        header.style.backdropFilter = 'blur(30px)';
+      }
+    });
+
+    // --- MVPP Notes Loading & Search Logic ---
+    const sheetURL = "https://script.google.com/macros/s/AKfycbx6Yi6nb-biO1Qw9pz3_1FvCwOQNLEQvi-TUIjdgsF7b9kf8FPgqsH9fIZ4n-neAVhn/exec";
+    const subjectName = "Mvpp";
+    const subjectGrid = document.getElementById("subjectGrid");
+
+    // Show cached data instantly if available
+    const cached = localStorage.getItem(`notes_${subjectName}`);
+    if (cached) renderNotes(JSON.parse(cached));
+    fetchData(); // Then fetch fresh data
+
+    async function fetchData() {
+      try {
+        const res = await fetch(sheetURL);
+        const data = await res.json();
+        const filtered = data.filter(d => d.Subject === subjectName);
+        localStorage.setItem(`notes_${subjectName}`, JSON.stringify(filtered));
+        renderNotes(filtered);
+      } catch (err) {
+        console.error("Failed to load:", err);
+        subjectGrid.innerHTML = `<p style="text-align:center;color:#ff6b6b;grid-column:1/-1;">⚠️ Failed to load notes. Try again later.</p>`;
       }
     }
-  });
-  // --- Universal NoteZilla Login Display System ---
-  (function() {
-    const fullName = localStorage.getItem("fullName");
-    const username = localStorage.getItem("username");
-    const role = localStorage.getItem("userRole");
 
-    // 1️⃣ Replace Login Button Text with Name (if logged in)
-    const loginBtn = document.querySelector(".login-btn");
-    if (loginBtn && fullName) {
-      loginBtn.textContent = fullName;
-      loginBtn.style.background = "linear-gradient(135deg,#203a43,#2c5364)";
-      loginBtn.style.color = "#fff";
-      loginBtn.style.fontWeight = "600";
+    function renderNotes(notes) {
+      subjectGrid.innerHTML = "";
+      if (!notes.length) {
+        subjectGrid.innerHTML = `<p style="text-align:center;color:#aaa;grid-column:1/-1;">No chapters available yet.</p>`;
+        return;
+      }
 
-      // Logout on click
-      loginBtn.onclick = () => {
-        const confirmLogout = confirm(`Logout from ${fullName}?`);
-        if (confirmLogout) {
-          localStorage.removeItem("fullName");
-          localStorage.removeItem("username");
-          localStorage.removeItem("userRole");
-          window.location.reload();
+      notes.forEach(chap => {
+        let formattedDate = "—";
+
+        if (chap.Date && chap.Date.trim() !== "") {
+          let date;
+          if (!isNaN(Date.parse(chap.Date))) {
+            date = new Date(chap.Date);
+          } else {
+            const parts = chap.Date.split(/[-/]/);
+            if (parts.length === 3) {
+              const [d, m, y] = parts;
+              date = new Date(`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`);
+            }
+          }
+
+          if (date && !isNaN(date.getTime())) {
+            const day = String(date.getDate()).padStart(2, "0");
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const year = date.getFullYear();
+            formattedDate = `${day}/${month}/${year}`;
+          }
         }
-      };
+
+        const card = document.createElement("div");
+        card.className = "subject-card";
+        card.innerHTML = `
+          <h2>${chap["Chapter Name"] || "Untitled Chapter"}</h2>
+          <p>${formattedDate}</p>
+        `;
+        card.addEventListener("click", () => {
+          if (chap.Link?.trim()) {
+            window.open(chap.Link, "_blank");
+          } else {
+            alert("Link not available for this chapter yet.");
+          }
+        });
+        subjectGrid.appendChild(card);
+      });
     }
 
-    // 2️⃣ Show Name on Header (if element exists)
-    const userDisplay = document.getElementById("userNameDisplay");
-    if (userDisplay && fullName) {
-      userDisplay.textContent = `👋 ${fullName}`;
-      userDisplay.style.fontWeight = "600";
-    }
+    // Search Functionality
+    const searchBar = document.getElementById("searchBar");
+    searchBar.addEventListener("keyup", () => {
+      const value = searchBar.value.toLowerCase();
+      document.querySelectorAll(".subject-card").forEach(card => {
+        const chapterName = card.querySelector("h2")?.innerText.toLowerCase() || "";
+        card.style.display = chapterName.includes(value) ? "flex" : "none";
+      });
+    });
 
-    // 3️⃣ If Not Logged In
-    if (!fullName && loginBtn) {
-      loginBtn.textContent = "Login";
-      loginBtn.onclick = () => window.location.href = "login.html";
-    }
+    // --- Universal Login Display System ---
+    (function() {
+      const fullName = localStorage.getItem("fullName");
+      const loginBtn = document.querySelector(".login-btn");
 
-    // 4️⃣ Optional: Restrict admin-only pages
-    if (document.body.classList.contains("admin-page") && !role) {
-      alert("⚠️ You must log in first!");
-      window.location.href = "login.html";
-    }
-  })();
+      if (loginBtn && fullName) {
+        loginBtn.textContent = fullName;
+        loginBtn.style.background = "linear-gradient(135deg,#203a43,#2c5364)";
+        loginBtn.style.fontWeight = "600";
 
+        loginBtn.onclick = (e) => {
+          e.preventDefault();
+          const confirmLogout = confirm(`Logout from ${fullName}?`);
+          if (confirmLogout) {
+            localStorage.removeItem("fullName");
+            localStorage.removeItem("username");
+            localStorage.removeItem("userRole");
+            window.location.reload();
+          }
+        };
+      } else if (loginBtn) {
+        loginBtn.onclick = () => window.location.href = "../login.html";
+      }
+    })();
   </script>
-  <script src="Record.js"></script>
+
+  <script src="../Record.js"></script>
 </body>
 </html>

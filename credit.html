@@ -3,156 +3,442 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Credits - Note Zilla</title>
+  <title>Credits - NoteZilla</title>
   <link rel="icon" href="images/favicon.png">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+  <meta name="google-site-verification" content="C2-yDbzzyS4qMdBWgM3WARN6saZ1KX7ndHrd_Uc38mg" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
   <style>
- 
-    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-    body{background:#f5f6fa;color:#333;line-height:1.6;display:flex;flex-direction:column;align-items:center;}
-    
-    header{width:100%;background:#fff;padding:15px 30px;display:flex;justify-content:center;align-items:center;
-      box-shadow:0 4px 6px rgba(0,0,0,0.1);position:sticky;top:0;z-index:100;}
-    .logo{font-weight:900;font-size:1.8rem;background:linear-gradient(90deg,#4e73df,#1cc88a);
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;}
+    /* ===================================
+       FULL STANDALONE CSS - COSMIC PREMIUM DESIGN (LIKE HOME PAGE)
+       =================================== */
 
-    h1{text-align:center;margin:40px 0;color:#4e73df;font-size:2.2rem;}
-
-    .credits-container{
-      display:flex;flex-direction:column;gap:25px;width:100%;max-width:800px;padding:20px;
-    }
-    .credit-card{
-      display:flex;align-items:center;background:#fff;padding:22px;border-radius:14px;
-      box-shadow:0 6px 20px rgba(0,0,0,0.12);gap:25px;transition:all 0.3s;
-    }
-    .credit-card:hover{
-      transform:translateY(-8px);box-shadow:0 15px 35px rgba(0,0,0,0.2);
-    }
-    .credit-card img{
-      width:130px;height:130px;border-radius:50%;object-fit:cover;
-      border:5px solid #4e73df;box-shadow:0 8px 20px rgba(0,0,0,0.2);
-    }
-    .info h3{color:#4e73df;margin-bottom:8px;font-size:1.6rem;}
-    .info .role{font-weight:700;color:#1cc88a;font-size:1.1rem;margin-bottom:8px;}
-    .info .email{color:#555;font-size:1rem;}
-
-    .no-admin{text-align:center;color:#e74c3c;font-size:1.4rem;margin:50px 0;}
-
-    @media(max-width:600px){
-      .credit-card{flex-direction:column;text-align:center;}
-      .credit-card img{margin-bottom:15px;}
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      text-decoration: none;
     }
 
-    footer{
-      text-align:center;padding:25px;background:#fff;margin-top:60px;width:100%;
-      box-shadow:0 -4px 10px rgba(0,0,0,0.05);
+    html {
+      scroll-behavior: smooth;
     }
-    .home a{
-      display:inline-block;padding:14px 30px;background:#1cc88a;color:#fff;
-      border-radius:30px;text-decoration:none;font-weight:600;margin:20px 0;
-      transition:0.3s;
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #0f0c29;
+      color: #e0e7ff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background 0.8s ease;
     }
-    .home a:hover{background:#4e73df;transform:scale(1.05);}
-       footer img{
-  height: 30px;
-  width: 30px;
-  border-radius: 50px;
-  margin: 10px 5px;
-}
+
+    body.dark {
+      background: #0a0719;
+    }
+
+    /* Header */
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: clamp(1.2rem, 3vw, 2rem) 5% clamp(1.5rem, 4vw, 2.5rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 12, 41, 0.4);
+      backdrop-filter: blur(30px);
+      border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+      z-index: 1000;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .logo {
+      font-size: clamp(2.2rem, 6vw, 3rem);
+      font-weight: 900;
+      background: linear-gradient(135deg, #a78bfa, #ec4899, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      cursor: pointer;
+      transition: transform 0.4s ease;
+    }
+
+    .logo:hover {
+      transform: scale(1.05) rotate(2deg);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: clamp(2rem, 5vw, 4rem);
+    }
+
+    nav a {
+      font-weight: 600;
+      font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+      position: relative;
+      transition: all 0.4s ease;
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 3px;
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      border-radius: 4px;
+      transition: all 0.5s ease;
+      transform: translateX(-50%);
+    }
+
+    nav a:hover::after, nav a.active::after { width: 100%; }
+    nav a:hover, nav a.active { color: #fbbf24; transform: translateY(-4px); }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      cursor: pointer;
+      z-index: 1001;
+    }
+
+    .hamburger div {
+      width: 40px;
+      height: 5px;
+      background: #c4b5fd;
+      border-radius: 3px;
+      transition: all 0.4s ease;
+    }
+
+    /* Page Hero */
+    .page-hero {
+      position: relative;
+      min-height: 70vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: clamp(100px, 15vw, 180px) 5% 80px;
+      margin-top: 80px;
+      overflow: hidden;
+    }
+
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background: radial-gradient(circle at 20% 80%, #7c3aed 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, #ec4899 0%, transparent 50%),
+                  radial-gradient(circle at 50% 50%, #3b82f6 0%, transparent 40%);
+      opacity: 0.6;
+      animation: smoothFloat 28s ease-in-out infinite;
+    }
+
+    .page-hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(135deg, #1e1b4b 0%, #2d1b69 60%, #4c1d95 100%);
+      opacity: 0.95;
+    }
+
+    @keyframes smoothFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(4%, -4%) scale(1.03); }
+      66% { transform: translate(-3%, 3%) scale(1.02); }
+    }
+
+    .page-hero h1 {
+      font-size: clamp(3.5rem, 9vw, 6rem);
+      font-weight: 900;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, #c4b5fd, #fbbf24, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .page-hero p {
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      max-width: 800px;
+      opacity: 0.9;
+    }
+
+    /* Credits Grid */
+    .credits-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: clamp(2rem, 5vw, 3rem);
+      width: 90%;
+      max-width: 1400px;
+      margin: 100px auto 6rem;
+      padding: 0 5%;
+    }
+
+    .credit-card {
+      background: rgba(30, 27, 75, 0.4);
+      backdrop-filter: blur(30px);
+      border-radius: 40px;
+      padding: clamp(2rem, 5vw, 3rem);
+      text-align: center;
+      box-shadow: 0 30px 80px rgba(124, 58, 237, 0.3);
+      border: 1px solid rgba(167, 139, 250, 0.2);
+      transition: all 0.8s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .credit-card:hover {
+      transform: translateY(-20px) scale(1.05);
+      box-shadow: 0 50px 100px rgba(124, 58, 237, 0.5);
+    }
+
+    .credit-card img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 5px solid rgba(167, 139, 250, 0.6);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .credit-card h3 {
+      font-size: clamp(1.8rem, 4vw, 2.4rem);
+      background: linear-gradient(135deg, #c4b5fd, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+    }
+
+    .credit-card .role {
+      font-size: clamp(1.2rem, 3vw, 1.6rem);
+      font-weight: 700;
+      color: #a78bfa;
+    }
+
+    .credit-card .email {
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      opacity: 0.9;
+    }
+
+    .no-admin {
+      grid-column: 1 / -1;
+      text-align: center;
+      font-size: 1.8rem;
+      color: #ff6b6b;
+      padding: 60px;
+    }
+
+    /* Back Button */
+    .home {
+      margin: 40px auto 80px;
+    }
+
+    .home a {
+      display: inline-block;
+      padding: clamp(1rem, 3vw, 1.5rem) clamp(2.5rem, 6vw, 4rem);
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      color: white;
+      border-radius: 60px;
+      font-size: clamp(1.2rem, 3vw, 1.6rem);
+      font-weight: 700;
+      box-shadow: 0 15px 40px rgba(124, 58, 237, 0.4);
+      transition: all 0.6s ease;
+    }
+
+    .home a:hover {
+      transform: translateY(-10px) scale(1.08);
+      box-shadow: 0 30px 70px rgba(124, 58, 237, 0.6);
+    }
+
+    /* Footer */
+    footer {
+      background: linear-gradient(135deg, #1e1b4b, #0f0c29);
+      padding: clamp(4rem, 8vw, 6rem) 5%;
+      text-align: center;
+      border-top: 1px solid rgba(124, 58, 237, 0.3);
+    }
+
+    footer p {
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      opacity: 0.9;
+      margin-bottom: 1.5rem;
+    }
+
+    footer span {
+      background: linear-gradient(135deg, #a78bfa, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+    }
+
+    footer img {
+      height: 50px;
+      width: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 15px;
+      transition: transform 0.4s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+
+    footer img:hover {
+      transform: scale(1.2) rotate(10deg);
+    }
+
+    @media (max-width: 768px) {
+      .hamburger { display: flex; }
+      nav {
+        position: fixed;
+        top: 100%;
+        left: -100%;
+        width: 100%;
+        background: rgba(15, 12, 41, 0.95);
+        flex-direction: column;
+        padding: 4rem 0;
+        transition: left 0.6s ease;
+        gap: 2.5rem;
+        align-items: center;
+        backdrop-filter: blur(30px);
+      }
+      nav.active { left: 0; }
+    }
   </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">Note Zilla - Team</div>
-</header>
+  <header>
+    <div class="logo" onclick="window.location.href='index.html'">NoteZilla</div>
+    <div class="hamburger" onclick="toggleMenu(this)">
+      <div></div><div></div><div></div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="credit.html" class="active">Team</a>
+      <a href="contact.html">Contact</a>
+      <button class="toggle-dark" id="darkToggle">☾</button>
+    </nav>
+  </header>
 
-<h1>Our Admins & Co-Admins</h1>
+  <section class="page-hero">
+    <h1>Our Team</h1>
+    <p>Meet the dedicated admins and co-admins behind NoteZilla.</p>
+  </section>
 
-<div class="credits-container" id="adminList">
-  <p style="text-align:center;color:#777;">Loading team members...</p>
-</div>
+  <div class="credits-container" id="adminList">
+    <p style="grid-column: 1 / -1; text-align:center; opacity:0.7; font-size:1.4rem;">Loading team members...</p>
+  </div>
 
-<div class="home">
-  <a href="/">Back To Home</a>
-</div>
+  <div class="home">
+    <a href="index.html">Back to Home</a>
+  </div>
 
-<footer>
-  <p>&copy; 2025 Note Zilla - All Rights Reserved</p>
-  <a href="https://whatsapp.com/channel/0029Vb7CpvgAzNbwokB7KV0y"><img src="Images/Whatsapp.png" alt="WhatsApp"></a>
-  <a href=""><img src="Images/instagram.jpeg" alt="Instagram"></a>
-  <a href="https://t.me/+gxvgPedurnMyNTA1"><img src="Images/telegram.png" alt="Telegram"></a>
-</footer>
+  <footer>
+    <p>© 2025 <span>NoteZilla</span> · All Rights Reserved</p>
+    <div>
+      <a href="https://whatsapp.com/channel/0029Vb7CpvgAzNbwokB7KV0y"><img src="Images/Whatsapp.png" alt="WhatsApp"></a>
+      <a href="#"><img src="Images/instagram.jpeg" alt="Instagram"></a>
+      <a href="https://t.me/+gxvgPedurnMyNTA1"><img src="Images/telegram.png" alt="Telegram"></a>
+    </div>
+  </footer>
 
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <!-- Load Firebase SDKs FIRST -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
-    authDomain: "chat-box-e01e5.firebaseapp.com",
-    databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
-    projectId: "chat-box-e01e5",
-    storageBucket: "chat-box-e01e5.firebasestorage.app",
-    messagingSenderId: "597491149800",
-    appId: "1:597491149800:web:7bd908925f70b62018125d",
-    measurementId: "G-FJ6PKK2FNQ"
-  };
+  <!-- Your Original Firebase Script (100% Unchanged) -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
+      authDomain: "chat-box-e01e5.firebaseapp.com",
+      databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
+      projectId: "chat-box-e01e5",
+      storageBucket: "chat-box-e01e5.firebasestorage.app",
+      messagingSenderId: "597491149800",
+      appId: "1:597491149800:web:7bd908925f70b62018125d",
+      measurementId: "G-FJ6PKK2FNQ"
+    };
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-  const adminList = document.getElementById("adminList");
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const adminList = document.getElementById("adminList");
 
-  db.ref("admins").once("value").then(snapshot => {
-    const admins = [];
+    db.ref("admins").once("value").then(snapshot => {
+      const admins = [];
 
-snapshot.forEach(child => {
-  const user = child.val();
-  const role = (user.role || "").toLowerCase(); // make it lowercase for consistency
-  if (role === "owner" || role === "work provider" || role === "admin" || role === "notice provider" || role === "co-admin" || role === "notice work provider"   ) {
-    admins.push(user);
-  }
-});
+      snapshot.forEach(child => {
+        const user = child.val();
+        const role = (user.role || "").toLowerCase(); // make it lowercase for consistency
+        if (role === "owner" || role === "work provider" || role === "admin" || role === "notice provider" || role === "co-admin" || role === "notice work provider") {
+          admins.push(user);
+        }
+      });
 
-if (admins.length === 0) {
-  adminList.innerHTML = "<p class='no-admin'>No Admin or Co-Admin registered yet!</p>";
-  return;
-}
+      if (admins.length === 0) {
+        adminList.innerHTML = "<p class='no-admin'>No Admin or Co-Admin registered yet!</p>";
+        return;
+      }
 
-// Custom sorting: owner first, then Admin, then work provider, then notice provider
-admins.sort((a, b) => {
-  const order = { "owner": 1, "admin": 2, "work provider": 3, "notice provider": 4, "co-admin": 5, "notice work provider": 6 };
-  const roleA = (a.role || "").toLowerCase();
-  const roleB = (b.role || "").toLowerCase();
-  return (order[roleA] || 99) - (order[roleB] || 99);
-});
+      // Custom sorting: owner first, then Admin, then work provider, then notice provider
+      admins.sort((a, b) => {
+        const order = { "owner": 1, "admin": 2, "work provider": 3, "notice provider": 4, "co-admin": 5, "notice work provider": 6 };
+        const roleA = (a.role || "").toLowerCase();
+        const roleB = (b.role || "").toLowerCase();
+        return (order[roleA] || 99) - (order[roleB] || 99);
+      });
 
+      let html = "";
+      admins.forEach(user => {
+        const photo = user.photoURL && user.photoURL.startsWith("data:")
+          ? user.photoURL
+          : (user.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`);
 
-    let html = "";
-    admins.forEach(user => {
-      const photo = user.photoURL && user.photoURL.startsWith("data:")
-        ? user.photoURL
-        : (user.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`);
-
-      html += `
-        <div class="credit-card">
-          <img src="${photo}" alt="${user.fullName}">
-          <div class="info">
-            <h3>${user.fullName}</h3>
-            <p class="role">${user.role === "owner" ? "Owner" : user.role}</p>
-            <p class="email">${user.email}</p>
+        html += `
+          <div class="credit-card">
+            <img src="${photo}" alt="${user.fullName}">
+            <div class="info">
+              <h3>${user.fullName}</h3>
+              <p class="role">${user.role === "owner" ? "Owner" : user.role}</p>
+              <p class="email">${user.email}</p>
+            </div>
           </div>
-        </div>
-      `;
+        `;
+      });
+
+      adminList.innerHTML = html;
+
+    }).catch(err => {
+      adminList.innerHTML = `<p style="color:red;text-align:center;">Error: ${err.message}</p>`;
+    });
+  </script>
+
+  <!-- Other Scripts -->
+  <script>
+    function toggleMenu(el) {
+      document.querySelector('nav').classList.toggle('active');
+      el.classList.toggle('open');
+    }
+
+    document.getElementById('darkToggle')?.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
     });
 
-    adminList.innerHTML = html;
-
-  }).catch(err => {
-    adminList.innerHTML = `<p style="color:red;text-align:center;">Error: ${err.message}</p>`;
-  });
-</script>
-
+    window.addEventListener('scroll', () => {
+      const header = document.querySelector('header');
+      if (window.scrollY > 50) {
+        header.style.background = 'rgba(15, 12, 41, 0.8)';
+        header.style.backdropFilter = 'blur(40px)';
+      } else {
+        header.style.background = 'rgba(15, 12, 41, 0.4)';
+        header.style.backdropFilter = 'blur(30px)';
+      }
+    });
+  </script>
 </body>
 </html>

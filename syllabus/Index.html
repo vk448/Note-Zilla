@@ -1,200 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Syllabus</title>
-<meta name="google-site-verification" content="C2-yDbzzyS4qMdBWgM3WARN6saZ1KX7ndHrd_Uc38mg" />
-<link rel="icon" href="../Images/Favicon.png">
-<script>
-    // favicon.js
-const link = document.createElement('link');
-link.rel = 'icon';
-link.type = 'image/png';
-link.href = '../images/favicon.png'; // yahan apne icon ka naam likho
-document.head.appendChild(link);
-
-  </script>
-</body>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap');
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
-  text-align: center;
-}
-
-body {
-  background: #ffffff;
-  color: #333;
-  line-height: 1.6;
-}
-
-/* Header */
-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 15px 50px;
-  background: #fff;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.logo {
-  font-weight: 900;
-  font-size: 1.8rem;
-  background: linear-gradient(90deg, #4e73df, #1cc88a);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Back link */
-.back {
-  display: inline-block;
-  margin: 20px auto;
-  text-decoration: none;
-  color: #1cc88a;
-  font-weight: 500;
-}
-.back:hover {
-  color: #17a673;
-}
-
-/* Page Titles */
-h1 {
-  font-size: 2.5rem;
-  text-align: center;
-  margin: 20px 0;
-  color: #4e73df;
-}
-h2 {
-  font-size: 2rem;
-  text-align: center;
-  margin-bottom: 30px;
-  color: #1cc88a;
-}
-
-/* Buttons */
-.btn {
-  display: inline-block;
-  margin: 10px auto;
-  padding: 12px 30px;
-  background: #4e73df;
-  color: white;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: bold;
-  transition: background 0.2s, transform 0.2s;
-}
-.btn:hover {
-  background: #1cc88a;
-  transform: translateY(-3px);
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-  h1 {
-    font-size: 2rem;
-  }
-  h2 {
-    font-size: 1.5rem;
-  }
-  .btn {
-    width: 80%;
-    font-size: 16px;
-  }
-}
-.hero {
-      text-align:center;
-      padding:80px 20px 50px;
-      color:white;
-      background:linear-gradient(120deg,rgba(78,115,223,0.8),rgba(28,200,138,0.8));
-      border-radius:20px;
-      margin:30px auto;
-      width:90%;
-      box-shadow:0 8px 20px rgba(0,0,0,0.2);
-    }
-
-    .hero h1 {
-      font-size:3rem;
-      font-weight:900;
-      letter-spacing:1px;
-      color: white;
-    }
-    .hero h2 {
-      font-size:1.2rem;
-      margin-top:10px;
-      color:#f2f2f2;
-    }
-
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Syllabus - NoteZilla</title>
+  <link rel="icon" href="../Images/Favicon.png">
+  <meta name="google-site-verification" content="C2-yDbzzyS4qMdBWgM3WARN6saZ1KX7ndHrd_Uc38mg" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Same premium cosmic design as Maths & other subject pages -->
+  <link rel="stylesheet" href="../subject.css">
 </head>
 <body>
 
-<!-- Header -->
-<header>
-  <div class="logo"><a href="../">Note Zilla</a></div>
-</header>
+  <header>
+    <div class="logo" onclick="window.location.href='../'">NoteZilla</div>
+    <div class="hamburger" onclick="toggleMenu(this)">
+      <div></div><div></div><div></div>
+    </div>
+    <nav>
+      <a href="../index.html">Home</a>
+      <a href="#syllabus" class="active">Syllabus</a>
+      <a href="../credit.html">About</a>
+      <a href="../contact.html">Contact</a>
+      <a href="../login.html"><button class="login-btn">Login</button></a>
+      <button class="toggle-dark" id="darkToggle">☾</button>
+    </nav>
+  </header>
 
-<section class="hero">
-<h1>Syllabus All Subjects</h1>
-<h2>Subjects</h2>
-</section>
-<div>
-  <a href="9_Maths_EM.pdf" class="btn">Maths</a>
-  <a href="9_Science_EM.pdf" class="btn">Science</a>
-  <a href="9_sst_EM.pdf" class="btn">Social Science</a>
-  <a href="9_Hindi_HM.pdf" class="btn">Hindi</a>
-  <a href="9_English_EM.pdf" class="btn">English</a>
-  <a href="9_Sanskrit_HM.pdf" class="btn">Sanskrit</a>
-  <a href="9_Punjabi_HM.pdf" class="btn">Punjabi</a>
-</div>
-<!-- Read the Formbutton docs at formspree.io/formbutton/docs. See more examples at codepen.io/formspree -->
-<script src="https://formspree.io/js/formbutton-v1.min.js" defer></script>
-<script>
-  /* paste this line in verbatim */
-  window.formbutton=window.formbutton||function(){(formbutton.q=formbutton.q||[]).push(arguments)};
-  /* customize formbutton below*/     
-  formbutton("create", {
-    action: "https://formspree.io/f/xeokweek",
-    title: "How can we help?",
-    fields: [
-      { 
-        type: "email", 
-        label: "Email:", 
-        name: "email",
-        required: true,
-        placeholder: "your@email.com"
-      },
-      {
-        type: "textarea",
-        label: "Message:",
-        name: "message",
-        placeholder: "What's on your mind?",
-      },
-      { type: "submit" }      
-    ],
-    styles: {
-      title: {
-        backgroundColor: "gray"
-      },
-      button: {
-        backgroundColor: "gray"
-      }
+  <section class="page-hero">
+    <h1>Syllabus</h1>
+    <p>Download the latest syllabus for all Class 9 subjects – official and up-to-date PDFs.</p>
+  </section>
+
+  <!-- Syllabus Buttons Grid -->
+  <section class="subject-grid" style="margin-top: 120px;">
+    <a href="9_Maths_EM.pdf" class="subject-card">
+      <h2>Maths</h2>
+      <p>English Medium Syllabus</p>
+    </a>
+    <a href="9_Science_EM.pdf" class="subject-card">
+      <h2>Science</h2>
+      <p>English Medium Syllabus</p>
+    </a>
+    <a href="9_sst_EM.pdf" class="subject-card">
+      <h2>Social Science</h2>
+      <p>English Medium Syllabus</p>
+    </a>
+    <a href="9_Hindi_HM.pdf" class="subject-card">
+      <h2>Hindi</h2>
+      <p>Hindi Medium Syllabus</p>
+    </a>
+    <a href="9_English_EM.pdf" class="subject-card">
+      <h2>English</h2>
+      <p>English Medium Syllabus</p>
+    </a>
+    <a href="9_Sanskrit_HM.pdf" class="subject-card">
+      <h2>Sanskrit</h2>
+      <p>Hindi Medium Syllabus</p>
+    </a>
+    <a href="9_Punjabi_HM.pdf" class="subject-card">
+      <h2>Punjabi</h2>
+      <p>Hindi Medium Syllabus</p>
+    </a>
+  </section>
+
+  <footer>
+    <p>© 2025 <span>NoteZilla</span> · All Rights Reserved</p>
+  </footer>
+
+  <script>
+    // Hamburger Menu
+    function toggleMenu(el) {
+      document.querySelector('nav').classList.toggle('active');
+      el.classList.toggle('open');
     }
-  });
-</script>
-   <script src="../Record.js"></script>
-     <script>
-  function home(){
-    window.location.href = '../'
-  }
+
+    // Dark Mode
+    document.getElementById('darkToggle')?.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+    });
+
+    // Header scroll effect
+    window.addEventListener('scroll', () => {
+      const header = document.querySelector('header');
+      if (window.scrollY > 50) {
+        header.style.background = 'rgba(15, 12, 41, 0.8)';
+        header.style.backdropFilter = 'blur(40px)';
+      } else {
+        header.style.background = 'rgba(15, 12, 41, 0.4)';
+        header.style.backdropFilter = 'blur(30px)';
+      }
+    });
   </script>
-  </body>
+
+  <script src="../Record.js"></script>
+</body>
 </html>

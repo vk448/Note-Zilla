@@ -5,242 +5,334 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Class IX A - Time Table</title>
   <link rel="icon" href="Images/Favicon.png">
- <style>
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap');
+  <meta name="google-site-verification" content="C2-yDbzzyS4qMdBWgM3WARN6saZ1KX7ndHrd_Uc38mg" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  /* ===== General Reset ===== */
-  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-  body { background: #f9fafb; color: #333; line-height: 1.6; text-align: center; padding: 20px; }
+  <style>
+    /* ===================================
+       FULL STANDALONE CSS - EXACTLY LIKE HOME PAGE (COSMIC PREMIUM DESIGN)
+       =================================== */
 
-  /* ===== Header ===== */
-  header {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 50px;
-    background: #fff;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-  }
+    /* Global Reset & Base */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-  header .logo {
-    font-weight: 900;
-    font-size: 1.8rem;
-    background: linear-gradient(90deg, #4e73df, #1cc88a);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
+    html {
+      scroll-behavior: smooth;
+    }
 
-  nav {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-  }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #0f0c29;
+      color: #e0e7ff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background 0.8s ease;
+    }
 
-  nav a {
-    text-decoration: none;
-    color: #333;
-    font-weight: 500;
-    transition: 0.3s;
-  }
+    body.dark {
+      background: #0a0719;
+    }
 
-  nav a:hover {
-    color: #4e73df;
-  }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
 
-  .hamburger {
-    display: none;
-    flex-direction: column;
-    cursor: pointer;
-    gap: 5px;
-  }
+    button {
+      cursor: pointer;
+      border: none;
+      outline: none;
+      font-family: inherit;
+    }
 
-  .hamburger div {
-    width: 25px;
-    height: 3px;
-    background-color: #333;
-    transition: all 0.3s;
-  }
+    /* Hero Background Animation */
+    .page-hero {
+      position: relative;
+      min-height: 70vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: clamp(100px, 15vw, 180px) 5% 80px;
+      margin-top: 80px;
+      overflow: hidden;
+    }
 
-  /* ===== Back Link ===== */
-  a.back {
-    display: inline-block;
-    margin: 20px 0;
-    font-weight: 500;
-    text-decoration: none;
-    color: green;
-    text-shadow: 0 0 10px greenyellow, 0 0 20px green, 0 0 30px yellowgreen;
-    transition: 0.3s ease;
-  }
-  a.back:hover {
-    transform: translateX(-8px);
-    color: yellow;
-    text-shadow: 0 0 10px yellow, 0 0 20px yellowgreen, 0 0 30px greenyellow;
-  }
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background: 
+        radial-gradient(circle at 20% 80%, #7c3aed 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, #ec4899 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, #3b82f6 0%, transparent 40%);
+      opacity: 0.6;
+      animation: smoothFloat 28s ease-in-out infinite;
+      will-change: transform;
+    }
 
-  /* ===== Title ===== */
-  h2 {
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 30px;
-    color: #4e73df;
-  }
+    .page-hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(135deg, #1e1b4b 0%, #2d1b69 60%, #4c1d95 100%);
+      opacity: 0.95;
+    }
 
-  /* ===== Table ===== */
-  .table-container {
-    width: 100%;
-    overflow-x: auto;
-    margin-bottom: 50px;
-  }
+    @keyframes smoothFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(4%, -4%) scale(1.03); }
+      66% { transform: translate(-3%, 3%) scale(1.02); }
+    }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0px 6px 15px rgba(0,0,0,0.2);
-  }
+    @media (prefers-reduced-motion: reduce) {
+      .page-hero::before { animation: none; }
+    }
 
-  th, td {
-    padding: 14px;
-    text-align: center;
-    font-size: 16px;
-    white-space: nowrap;
-  }
+    /* Header */
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: clamp(1.2rem, 3vw, 2rem) 5% clamp(1.5rem, 4vw, 2.5rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 12, 41, 0.4);
+      backdrop-filter: blur(30px);
+      border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+      z-index: 1000;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      transition: all 0.4s ease;
+    }
 
-  th {
-    background: linear-gradient(135deg, #4e73df, #1cc88a);
-    color: white;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-size: 15px;
-  }
+    .logo {
+      font-size: clamp(2.2rem, 6vw, 3rem);
+      font-weight: 900;
+      background: linear-gradient(135deg, #a78bfa, #ec4899, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      transition: transform 0.4s ease;
+      cursor: pointer;
+    }
 
-  tr:nth-child(even) { background: #f9f9f9; }
-  tr:hover { background: #eafaea; transition: 0.3s; }
-  strong { color: #d32f2f; }
+    .logo:hover {
+      transform: scale(1.05) rotate(2deg);
+    }
 
-  /* ===== Responsive ===== */
-  @media (max-width: 768px) {
-    nav { display: none; flex-direction: column; width: 100%; gap: 10px; margin-top: 10px; }
-    nav.active { display: flex; }
-    .hamburger { display: flex; }
-    th, td { padding: 10px; font-size: 14px; }
-  }
+    nav {
+      display: flex;
+      align-items: center;
+      gap: clamp(2rem, 5vw, 4rem);
+    }
 
-  @media (max-width: 480px) {
-    th, td { padding: 8px; font-size: 12px; }
-  }
-</style>
+    nav a {
+      font-weight: 600;
+      font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+      position: relative;
+      transition: all 0.4s ease;
+      padding: 0.5rem 0;
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 3px;
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      border-radius: 4px;
+      transition: all 0.5s ease;
+      transform: translateX(-50%);
+    }
+
+    nav a:hover::after, nav a.active::after { width: 100%; }
+    nav a:hover, nav a.active { color: #fbbf24; transform: translateY(-4px); }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      cursor: pointer;
+      z-index: 1001;
+    }
+
+    .hamburger div {
+      width: 40px;
+      height: 5px;
+      background: #c4b5fd;
+      border-radius: 3px;
+      transition: all 0.4s ease;
+    }
+
+    /* Page Hero Text */
+    .page-hero h1 {
+      font-size: clamp(3.5rem, 9vw, 6rem);
+      font-weight: 900;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, #c4b5fd, #fbbf24, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .page-hero p {
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      max-width: 800px;
+      opacity: 0.9;
+    }
+
+    /* Table Container */
+    .table-container {
+      margin-top: 100px;
+      padding: 0 5%;
+      max-width: 1400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .table-wrapper {
+      background: rgba(30, 27, 75, 0.4);
+      backdrop-filter: blur(30px);
+      border-radius: 40px;
+      padding: clamp(2rem, 5vw, 3rem);
+      box-shadow: 0 30px 80px rgba(124, 58, 237, 0.3);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    th, td {
+      padding: clamp(1rem, 2vw, 1.5rem);
+      text-align: center;
+      font-size: clamp(1rem, 2vw, 1.2rem);
+    }
+
+    th {
+      background: rgba(124, 58, 237, 0.6);
+      color: white;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    td {
+      background: rgba(255, 255, 255, 0.05);
+      transition: background 0.3s ease;
+    }
+
+    tr:hover td {
+      background: rgba(236, 72, 153, 0.2);
+    }
+
+    /* Recess Highlight */
+    tr.recess td {
+      color: #ff6b6b !important;
+      font-weight: bold;
+      background: rgba(255, 107, 107, 0.15) !important;
+    }
+
+    /* Footer */
+    footer {
+      background: linear-gradient(135deg, #1e1b4b, #0f0c29);
+      padding: clamp(4rem, 8vw, 6rem) 5%;
+      text-align: center;
+      border-top: 1px solid rgba(124, 58, 237, 0.3);
+      margin-top: auto;
+    }
+
+    footer p {
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      opacity: 0.9;
+    }
+
+    footer span {
+      background: linear-gradient(135deg, #a78bfa, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hamburger { display: flex; }
+      nav {
+        position: fixed;
+        top: 100%;
+        left: -100%;
+        width: 100%;
+        background: rgba(15, 12, 41, 0.95);
+        flex-direction: column;
+        padding: 4rem 0;
+        transition: left 0.6s ease;
+        gap: 2.5rem;
+        align-items: center;
+        backdrop-filter: blur(30px);
+      }
+      nav.active { left: 0; }
+      th, td { padding: 12px 8px; font-size: 14px; }
+    }
+
+    @media (max-width: 480px) {
+      th, td { padding: 10px 6px; font-size: 13px; }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Header -->
   <header>
-    <div class="logo">Note Zilla</div>
+    <div class="logo" onclick="window.location.href='index.html'">NoteZilla</div>
     <div class="hamburger" onclick="toggleMenu(this)">
-      <div></div>
-      <div></div>
-      <div></div>
+      <div></div><div></div><div></div>
     </div>
     <nav>
       <a href="index.html">Home</a>
-      <a href="#timetable">Time Table</a>
+      <a href="#timetable" class="active">Time Table</a>
       <a href="credit.html">About</a>
-      <a href="#">Contact</a>
+      <a href="contact.html">Contact</a>
+      <button class="toggle-dark" id="darkToggle">☾</button>
     </nav>
   </header>
 
-  <!-- Back Link -->
-  <a href="index.html" class="back">← Back to Home</a>
+  <section class="page-hero">
+    <h1>Class IX A - Time Table</h1>
+    <p>Complete daily schedule with periods, subjects, teachers, and timings.</p>
+  </section>
 
-  <!-- Title -->
-  <h2 id="timetable">Class IX A - Time Table</h2>
-
-  <!-- Table Container -->
-  <div class="table‑container">
-    <table id="timetableTable">
-      <thead>
-        <tr>
-          <th>Time</th>
-          <th>Period</th>
-          <th>Subject / Teacher</th>
-          <th>Days</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- rows will be populated by JS -->
-      </tbody>
-    </table>
+  <div class="table-container">
+    <div class="table-wrapper">
+      <table id="timetableTable">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Period</th>
+            <th>Subject / Teacher</th>
+            <th>Days</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Rows will be populated by JS -->
+        </tbody>
+      </table>
+    </div>
   </div>
 
-  <script>
-    
-    function toggleMenu(element) {
-      const nav = document.querySelector('header nav');
-      nav.classList.toggle('active');
-      element.classList.toggle('open');
-    }
+  <footer>
+    <p>© 2025 <span>NoteZilla</span> · All Rights Reserved</p>
+  </footer>
 
-    const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyWteSKyyQH_5c1FPCO8018ih5rl1J8uAMN0QQ2YWg8n5JBKwgZEh2XGn4SKRXmpx1-/exec";  // replace with your actual URL
-
-    fetch(SHEET_API_URL)
-      .then(response => response.json())
-      .then(rows => {
-        const tbody = document.querySelector("#timetableTable tbody");
-        rows.forEach(row => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${row.Time}</td>
-            <td>${row.Period}</td>
-            <td>${row.SubjectTeacher}</td>
-            <td>${row.Days}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-      })
-      .catch(error => {
-        console.error("Error loading timetable data:", error);
-        const tbody = document.querySelector("#timetableTable tbody");
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td colspan="4">Unable to load timetable.</td>`;
-        tbody.appendChild(tr);
-      });
-  </script>
-
-  <!-- Formspree + visitor logging scripts (unchanged) -->
-  <script src="https://formspree.io/js/formbutton-v1.min.js" defer></script>
-  <script>
-    window.formbutton = window.formbutton || function(){ (formbutton.q = formbutton.q || []).push(arguments); };
-    formbutton("create", {
-      action: "https://formspree.io/f/xeokweek",
-      title: "How can we help?",
-      fields: [
-        {
-          type: "email",
-          label: "Email:",
-          name: "email",
-          required: true,
-          placeholder: "your@email.com"
-        },
-        {
-          type: "textarea",
-          label: "Message:",
-          name: "message",
-          placeholder: "What's on your mind?"
-        },
-        { type: "submit" }
-      ],
-      styles: {
-        title: { backgroundColor: "gray" },
-        button: { backgroundColor: "gray" }
-      }
-    });
-  </script>
-<script>
+ <script>
 function toggleMenu(element) {
   const nav = document.querySelector('header nav');
   nav.classList.toggle('active');
@@ -305,7 +397,6 @@ fetch(SHEET_API_URL)
 </script>
 
 
-
-
+  <script src="Record.js"></script>
 </body>
 </html>

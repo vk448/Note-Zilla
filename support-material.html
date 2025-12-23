@@ -1,187 +1,374 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Support Material - Note Zilla</title>
-<link rel="icon" href="Images/Favicon.png">
-<style>
-  footer img{
-  height: 30px;
-  width: 30px;
-  border-radius: 50px;
-  margin: 10px 5px;
-}
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support Material - NoteZilla</title>
+  <link rel="icon" href="Images/Favicon.png">
+  <meta name="google-site-verification" content="C2-yDbzzyS4qMdBWgM3WARN6saZ1KX7ndHrd_Uc38mg" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-/* ============================ General Reset =========================== */
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-body { background: #f9fafb; color: #333; line-height: 1.6; }
+  <style>
+    /* ===================================
+       FULL STANDALONE CSS - COSMIC PREMIUM DESIGN (LIKE HOME PAGE)
+       =================================== */
 
-/* ============================ Header =========================== */
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 50px;
-  background: #fff;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.logo {
-  font-weight: 900;
-  font-size: 1.8rem;
-  background: linear-gradient(90deg, #4e73df, #1cc88a);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-nav { display: flex; align-items: center; gap: 15px; }
-nav a { text-decoration: none; color: #333; font-weight: 500; transition: color 0.2s; }
-nav a:hover { color: #4e73df; }
-.back { text-decoration: none; color: #17a673; font-weight: 500; }
-.back:hover { text-shadow: 0 0 10px #1cc88a; }
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      text-decoration: none;
+    }
 
-/* Hamburger for mobile */
-.hamburger { display: none; flex-direction: column; cursor: pointer; gap: 5px; }
-.hamburger div { width: 25px; height: 3px; background-color: #333; transition: all 0.3s; }
+    html {
+      scroll-behavior: smooth;
+    }
 
-/* ============================ Hero / Title =========================== */
-.hero {
-  text-align: center;
-  padding: 100px 20px 50px;
-}
-.hero h1 { font-size: 3rem; font-weight: 900; color: #4e73df; margin-bottom: 20px; }
-.hero p { font-size: 1.2rem; color: #555; margin-bottom: 30px; }
-.construction { font-size: 28px; color: #ffcc00; font-weight: bold; margin-bottom: 20px; text-shadow: 1px 1px 5px rgba(0,0,0,0.2); animation: blink 1.5s infinite; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #0f0c29;
+      color: #e0e7ff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background 0.8s ease;
+    }
 
-/* ============================ Emergency Card =========================== */
-.emergency-card {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
-  border-radius: 10px;
-  background: linear-gradient(180deg,#fff7f7 0%,#fff1f1 100%);
-  border: 1px solid rgba(255,0,0,0.12);
-  box-shadow: 0 6px 16px rgba(255,0,0,0.04);
-  font-family: system-ui;
-  color: #3b2b2b;
-  margin-top: 20px;
-  transition: transform .12s ease, box-shadow .12s ease;
-}
-.emergency-card .icon { font-size: 20px; line-height:1; }
-.emergency-card a { color:#b71c1c; font-weight:600; text-decoration:underline; }
-.emergency-card:hover { transform: translateY(-2px); box-shadow:0 12px 30px rgba(183,28,28,0.08); }
-footer {
-  text-align: center;
-  padding: 20px;
-  background: #fff;
-  box-shadow: 0 -4px 6px rgba(0,0,0,0.05);
-  margin-top: 50px;
-}
-/* Responsive */
-@media(max-width:768px){ nav{display:none; flex-direction:column;width:100%;gap:10px;margin-top:10px} nav.active{display:flex} .hamburger{display:flex} }
-</style>
+    body.dark {
+      background: #0a0719;
+    }
+
+    /* Header */
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: clamp(1.2rem, 3vw, 2rem) 5% clamp(1.5rem, 4vw, 2.5rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 12, 41, 0.4);
+      backdrop-filter: blur(30px);
+      border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+      z-index: 1000;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .logo {
+      font-size: clamp(2.2rem, 6vw, 3rem);
+      font-weight: 900;
+      background: linear-gradient(135deg, #a78bfa, #ec4899, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      cursor: pointer;
+      transition: transform 0.4s ease;
+    }
+
+    .logo:hover {
+      transform: scale(1.05) rotate(2deg);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: clamp(2rem, 5vw, 4rem);
+    }
+
+    nav a {
+      font-weight: 600;
+      font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+      position: relative;
+      transition: all 0.4s ease;
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 3px;
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      border-radius: 4px;
+      transition: all 0.5s ease;
+      transform: translateX(-50%);
+    }
+
+    nav a:hover::after, nav a.active::after { width: 100%; }
+    nav a:hover, nav a.active { color: #fbbf24; transform: translateY(-4px); }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      cursor: pointer;
+      z-index: 1001;
+    }
+
+    .hamburger div {
+      width: 40px;
+      height: 5px;
+      background: #c4b5fd;
+      border-radius: 3px;
+      transition: all 0.4s ease;
+    }
+
+    /* Page Hero */
+    .page-hero {
+      position: relative;
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: clamp(100px, 15vw, 180px) 5% 80px;
+      margin-top: 80px;
+      overflow: hidden;
+    }
+
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background: radial-gradient(circle at 20% 80%, #7c3aed 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, #ec4899 0%, transparent 50%),
+                  radial-gradient(circle at 50% 50%, #3b82f6 0%, transparent 40%);
+      opacity: 0.6;
+      animation: smoothFloat 28s ease-in-out infinite;
+    }
+
+    .page-hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(135deg, #1e1b4b 0%, #2d1b69 60%, #4c1d95 100%);
+      opacity: 0.95;
+    }
+
+    @keyframes smoothFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(4%, -4%) scale(1.03); }
+      66% { transform: translate(-3%, 3%) scale(1.02); }
+    }
+
+    .page-hero h1 {
+      font-size: clamp(3.5rem, 9vw, 6rem);
+      font-weight: 900;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, #c4b5fd, #fbbf24, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .page-hero p {
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      max-width: 800px;
+      opacity: 0.9;
+      margin-bottom: 2rem;
+    }
+
+    /* Under Construction Message */
+    .construction {
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      font-weight: 900;
+      color: #fbbf24;
+      margin: 2rem 0;
+      text-shadow: 0 0 20px rgba(251, 191, 36, 0.6);
+      animation: pulseGlow 2s infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      from { text-shadow: 0 0 20px rgba(251, 191, 36, 0.6); }
+      to { text-shadow: 0 0 40px rgba(251, 191, 36, 0.9); }
+    }
+
+    /* Emergency Card */
+    .emergency-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 15px;
+      padding: clamp(1.2rem, 3vw, 1.8rem) clamp(2rem, 5vw, 3rem);
+      background: rgba(30, 27, 75, 0.6);
+      backdrop-filter: blur(20px);
+      border-radius: 40px;
+      border: 1px solid rgba(255, 107, 107, 0.4);
+      box-shadow: 0 20px 50px rgba(255, 107, 107, 0.2);
+      max-width: 800px;
+      font-size: clamp(1.2rem, 3vw, 1.6rem);
+      color: #e0e7ff;
+      transition: all 0.6s ease;
+    }
+
+    .emergency-card .icon {
+      font-size: clamp(2rem, 5vw, 3rem);
+    }
+
+    .emergency-card a {
+      color: #ff6b6b;
+      font-weight: 700;
+      text-decoration: underline;
+      transition: color 0.4s ease;
+    }
+
+    .emergency-card a:hover {
+      color: #fbbf24;
+    }
+
+    .emergency-card:hover {
+      transform: translateY(-10px) scale(1.05);
+      box-shadow: 0 30px 70px rgba(255, 107, 107, 0.4);
+    }
+
+    /* Back to Home Button */
+    .back-btn {
+      display: inline-block;
+      margin: 60px auto 100px;
+      padding: clamp(1rem, 3vw, 1.5rem) clamp(2.5rem, 6vw, 4rem);
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      color: white;
+      border-radius: 60px;
+      font-size: clamp(1.2rem, 3vw, 1.6rem);
+      font-weight: 700;
+      box-shadow: 0 15px 40px rgba(124, 58, 237, 0.4);
+      transition: all 0.6s ease;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-10px) scale(1.08);
+      box-shadow: 0 30px 70px rgba(124, 58, 237, 0.6);
+    }
+
+    /* Footer */
+    footer {
+      background: linear-gradient(135deg, #1e1b4b, #0f0c29);
+      padding: clamp(4rem, 8vw, 6rem) 5%;
+      text-align: center;
+      border-top: 1px solid rgba(124, 58, 237, 0.3);
+    }
+
+    footer p {
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      opacity: 0.9;
+      margin-bottom: 1.5rem;
+    }
+
+    footer span {
+      background: linear-gradient(135deg, #a78bfa, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+    }
+
+    footer img {
+      height: 50px;
+      width: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 15px;
+      transition: transform 0.4s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+
+    footer img:hover {
+      transform: scale(1.2) rotate(10deg);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hamburger { display: flex; }
+      nav {
+        position: fixed;
+        top: 100%;
+        left: -100%;
+        width: 100%;
+        background: rgba(15, 12, 41, 0.95);
+        flex-direction: column;
+        padding: 4rem 0;
+        transition: left 0.6s ease;
+        gap: 2.5rem;
+        align-items: center;
+        backdrop-filter: blur(30px);
+      }
+      nav.active { left: 0; }
+      .emergency-card { flex-direction: column; text-align: center; padding: 2rem; }
+    }
+
+    @media (max-width: 480px) {
+      .page-hero { min-height: 70vh; }
+    }
+  </style>
 </head>
 <body>
 
-<!-- Header -->
-<header>
-  <div class="logo" id="href" onclick="home()">Note Zilla</div>
-  <div class="hamburger" onclick="toggleMenu(this)"><div></div><div></div><div></div></div>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="#hero">Support</a>
-    <a href="credit.html">About</a>
-    <a href="#">Contact</a>
-  </nav>
-</header>
-
-<!-- Back Button -->
-<div style="text-align:center; margin-top:120px;">
-  <a href="index.html" class="back">← Back to Home</a>
-</div>
-
-<!-- Hero Section -->
-<section class="hero" id="hero">
-  <h1>SUPPORT MATERIAL</h1>
-  <p>For All Subjects</p>
-  <div class="construction">🚧 Under Construction 🚧</div>
-
-  <!-- Emergency Card -->
-  <div class="emergency-card">
-    <span class="icon">🚨</span>
-    <div class="text">In Emergency Visit 
-      <a href="https://edustud.nic.in/edu/support_material_2024_25.html" target="_blank" rel="noopener">Edudel</a>
+  <header>
+    <div class="logo" onclick="window.location.href='index.html'">NoteZilla</div>
+    <div class="hamburger" onclick="toggleMenu(this)">
+      <div></div><div></div><div></div>
     </div>
-  </div>
-</section>
-<footer>
-  <p>&copy; 2025 Note Zilla All Right Are Reserved</p>
-  <a href="https://whatsapp.com/channel/0029Vb7CpvgAzNbwokB7KV0y"><img src="Images/Whatsapp.png"></a>
-  <a href=""><img src="Images/instagram.jpeg"></a>
-  <a href="https://t.me/+gxvgPedurnMyNTA1"><img src="Images/telegram.png"></a>
-</footer>
-<script>
-function toggleMenu(element){
-  const nav = document.querySelector('header nav');
-  nav.classList.toggle('active');
-  element.classList.toggle('open');
-}
-</script>
-<!-- Read the Formbutton docs at formspree.io/formbutton/docs. See more examples at codepen.io/formspree -->
-<script src="https://formspree.io/js/formbutton-v1.min.js" defer></script>
-<script>
-  /* paste this line in verbatim */
-  window.formbutton=window.formbutton||function(){(formbutton.q=formbutton.q||[]).push(arguments)};
-  /* customize formbutton below*/     
-  formbutton("create", {
-    action: "https://formspree.io/f/xeokweek",
-    title: "How can we help?",
-    fields: [
-      { 
-        type: "email", 
-        label: "Email:", 
-        name: "email",
-        required: true,
-        placeholder: "your@email.com"
-      },
-      {
-        type: "textarea",
-        label: "Message:",
-        name: "message",
-        placeholder: "What's on your mind?",
-      },
-      { type: "submit" }      
-    ],
-    styles: {
-      title: {
-        backgroundColor: "gray"
-      },
-      button: {
-        backgroundColor: "gray"
-      }
-    }
-  });
-</script>
-</body>
-<script>
-    // favicon.js
-const link = document.createElement('link');
-link.rel = 'icon';
-link.type = 'image/png';
-link.href = 'images/favicon.png'; // yahan apne icon ka naam likho
-document.head.appendChild(link);
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="#support" class="active">Support Material</a>
+      <a href="credit.html">About</a>
+      <a href="contact.html">Contact</a>
+      <button class="toggle-dark" id="darkToggle">☾</button>
+    </nav>
+  </header>
 
-  </script>
+  <section class="page-hero" id="support">
+    <h1>SUPPORT MATERIAL</h1>
+    <p>For All Subjects – Coming Soon!</p>
+    <div class="construction">🚧 Under Construction 🚧</div>
+
+    <!-- Emergency Card -->
+    <div class="emergency-card">
+      <span class="icon">🚨</span>
+      <div class="text">
+        In Emergency Visit 
+        <a href="https://edustud.nic.in/edu/support_material_2024_25.html" target="_blank" rel="noopener">Edudel Support Material</a>
+      </div>
+    </div>
+  </section>
+
+  <div style="text-align:center;">
+    <a href="index.html" class="back-btn">← Back to Home</a>
+  </div>
+
+  <footer>
+    <p>© 2025 <span>NoteZilla</span> · All Rights Reserved</p>
+    <div>
+      <a href="https://whatsapp.com/channel/0029Vb7CpvgAzNbwokB7KV0y"><img src="Images/Whatsapp.png" alt="WhatsApp"></a>
+      <a href="#"><img src="Images/instagram.jpeg" alt="Instagram"></a>
+      <a href="https://t.me/+gxvgPedurnMyNTA1"><img src="Images/telegram.png" alt="Telegram"></a>
+    </div>
+  </footer>
+
   <script>
-  function home(){
-    window.location.href = '/'
-  }
+    // Hamburger Menu
+    function toggleMenu(el) {
+      document.querySelector('nav').classList.toggle('active');
+      el.classList.toggle('open');
+    }
+
+    // Dark Mode
+    document.getElementById('darkToggle')?.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+    });
+
+    // Header Scroll Effect
+    window.addEventListener('scroll', () => {
+      const header = document.querySelector('header');
+      if (window.scrollY > 50) {
+        header.style.background = 'rgba(15, 12, 41, 0.8)';
+        header.style.backdropFilter = 'blur(40px)';
+      } else {
+        header.style.background = 'rgba(15, 12, 41, 0.4)';
+        header.style.backdropFilter = 'blur(30px)';
+      }
+    });
   </script>
+
   <script src="Record.js"></script>
 </body>
 </html>
