@@ -4,219 +4,385 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NoteZilla - Login</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="Images/Favicon.png">
+  <meta name="google-site-verification" content="C2-yDbzzyS4qMdBWgM3WARN6saZ1KX7ndHrd_Uc38mg" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
   <style>
-    :root {
-      --primary: #203a43;
-      --accent: #4fc3f7;
-      --danger: #e74c3c;
-      --success: #27ae60;
-      --warning: #f39c12;
+    /* ===================================
+       COSMIC PREMIUM LOGIN DESIGN - FULLY SCROLLABLE PAGE
+       =================================== */
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-    body{
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      min-height:100vh;display:flex;justify-content:center;align-items:center;color:white;
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #0f0c29;
+      color: #e0e7ff;
+      min-height: 100vh;
+      overflow-y: auto; /* Page scrollable */
+      transition: background 0.8s ease;
+    }
+
+    body.dark {
+      background: #0a0719;
+    }
+
+    /* Fixed Background Animation (stays during scroll) */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background: radial-gradient(circle at 20% 80%, #7c3aed 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, #ec4899 0%, transparent 50%),
+                  radial-gradient(circle at 50% 50%, #3b82f6 0%, transparent 40%);
+      opacity: 0.6;
+      animation: smoothFloat 28s ease-in-out infinite;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(135deg, #1e1b4b 0%, #2d1b69 60%, #4c1d95 100%);
+      opacity: 0.95;
+    }
+
+    @keyframes smoothFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(4%, -4%) scale(1.03); }
+      66% { transform: translate(-3%, 3%) scale(1.02); }
+    }
+
+    /* Login Container - Centered with margin for scroll */
+    .container {
+      background: rgba(30, 27, 75, 0.4);
+      backdrop-filter: blur(30px);
+      padding: clamp(3rem, 8vw, 5rem);
+      border-radius: 40px;
+      width: 90%;
+      max-width: 480px;
+      text-align: center;
+      box-shadow: 0 30px 80px rgba(124, 58, 237, 0.4);
+      border: 1px solid rgba(167, 139, 250, 0.2);
+      z-index: 1;
+      margin: 120px auto; /* Top & bottom space for scrolling */
+    }
+
+    h1 {
+      font-size: clamp(3rem, 8vw, 4.5rem);
+      font-weight: 900;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #c4b5fd, #fbbf24, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    h2 {
+      font-size: clamp(1.4rem, 4vw, 1.8rem);
+      margin-bottom: 3rem;
+      opacity: 0.9;
+      color: #a78bfa;
+    }
+
+    input {
+      width: 100%;
+      padding: clamp(1.2rem, 3vw, 1.6rem);
+      margin: 1rem 0;
+      border: none;
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      color: white;
+      font-size: clamp(1.1rem, 3vw, 1.4rem);
+      outline: none;
+      transition: all 0.4s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      font-family: 'Poppins', sans-serif; /* Clean font */
+    }
+
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    input:focus {
+      transform: scale(1.03);
+      box-shadow: 0 20px 50px rgba(124, 58, 237, 0.4);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    button {
+      width: 100%;
+      padding: clamp(1.2rem, 3vw, 1.6rem);
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      color: white;
+      border: none;
+      border-radius: 60px;
+      font-size: clamp(1.3rem, 4vw, 1.8rem);
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 1.5rem;
+      box-shadow: 0 15px 40px rgba(124, 58, 237, 0.4);
+      transition: all 0.6s ease;
+    }
+
+    button:hover {
+      transform: translateY(-10px) scale(1.08);
+      box-shadow: 0 30px 70px rgba(124, 58, 237, 0.6);
+    }
+
+    /* Loader */
+    #loader {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 7, 25, 0.95);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      font-size: clamp(1.6rem, 5vw, 2.2rem);
+      color: white;
+    }
+
+    .spinner {
+      width: 80px;
+      height: 80px;
+      border: 8px solid rgba(255,255,255,0.2);
+      border-top: 8px solid #fbbf24;
+      border-radius: 50%;
+      animation: spin 1.2s linear infinite;
+      margin-bottom: 2rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      top: 30px;
+      right: 30px;
+      z-index: 10000;
+    }
+
+    .toast {
+      background: #27ae60;
+      color: white;
+      padding: clamp(1rem, 3vw, 1.4rem) clamp(1.8rem, 5vw, 2.5rem);
+      border-radius: 20px;
+      margin-bottom: 1rem;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+      font-weight: 700;
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      min-width: 300px;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transform: translateX(120%);
+      opacity: 0;
+      transition: all 0.6s ease;
+    }
+
+    .toast.show {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .toast.error { background: #e74c3c; }
+    .toast.warning { background: #f39c12; }
+
+    /* Links */
+    .notice {
+      margin-top: 2.5rem;
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      opacity: 0.9;
+    }
+
+    .notice a {
+      color: #a78bfa;
+      font-weight: 600;
+      text-decoration: underline;
+      transition: color 0.4s ease;
+    }
+
+    .notice a:hover {
+      color: #fbbf24;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .container { 
+        margin: 80px auto;
+        padding: 2.5rem; 
+      }
+      .toast-container { right: 15px; left: 15px; }
+      .toast { min-width: auto; }
     }
     .container{
-      background:white;color:#333;padding:50px 40px;border-radius:22px;
-      box-shadow:0 25px 70px rgba(0,0,0,0.6);width:90%;max-width:420px;text-align:center;
+      margin-top: 0;
+      padding-top: 0;
     }
-    h1{font-size:2.8rem;color:var(--primary);margin-bottom:8px;font-weight:700;}
-    h2{font-size:1.5rem;color:#555;margin-bottom:30px;}
-    input{
-      width:100%;padding:18px;margin:12px 0;border-radius:14px;
-      border:2px solid #ddd;font-size:16px;transition:0.3s;
-    }
-    input:focus{
-      border-color:var(--accent);outline:none;
-      box-shadow:0 0 0 5px rgba(79,195,247,0.2);
-    }
-    button{
-      width:100%;padding:18px;background:linear-gradient(135deg,var(--primary),#2c5364);
-      color:white;border:none;border-radius:14px;font-size:1.3rem;font-weight:700;
-      cursor:pointer;margin-top:10px;transition:0.3s;
-    }
-    button:hover{
-      transform:translateY(-3px);box-shadow:0 15px 30px rgba(0,0,0,0.4);
-    }
-    #loader{
-      display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:9999;
-      color:white;justify-content:center;align-items:center;flex-direction:column;font-size:1.8rem;
-    }
-    .spinner{
-      width:70px;height:70px;border:8px solid #ffffff33;
-      border-top:8px solid var(--accent);border-radius:50%;
-      animation:s 1s linear infinite;margin-bottom:20px;
-    }
-    @keyframes s{to{transform:rotate(360deg)}}
-    .notice{margin-top:25px;color:#666;}
-    .notice a{color:#2c5364;font-weight:600;text-decoration:none;}
-    .notice a:hover{color:#1cc88a;text-decoration:underline;}
-    .toast-container{
-      position:fixed;top:30px;right:30px;z-index:10000;
-    }
-    .toast{
-      background:var(--success);color:white;padding:16px 28px;border-radius:12px;
-      margin-bottom:12px;box-shadow:0 10px 30px rgba(0,0,0,0.4);
-      font-weight:600;min-width:320px;display:flex;align-items:center;gap:14px;
-      transform:translateX(120%);transition:transform 0.6s ease, opacity 0.6s ease;opacity:0;
-    }
-    .toast.show{
-      transform:translateX(0);opacity:1;
-    }
-    .toast.error{background:var(--danger);}
-    .toast.warning{background:var(--warning);}
+    
   </style>
 </head>
 <body>
-<div id="loader">
-  <div class="spinner"></div>
-  <div>Logging in...</div>
-</div>
 
-<div class="container">
-  <h1>NoteZilla</h1>
-  <h2>Admin Login</h2>
-  <input type="text" id="loginInput" placeholder="Username or Email" autocomplete="off">
-  <input type="password" id="password" placeholder="Password" autocomplete="off">
-  <button onclick="login()">Login Now</button>
-  <div class="notice">
-    Not registered? <a href="admin-register.html">Register Here</a><br><br>
-    <a href="reset-password.html">Forgot Password?</a>
+  <!-- Full Screen Loader -->
+  <div id="loader">
+    <div class="spinner"></div>
+    <div>Logging in...</div>
   </div>
-</div>
 
-<div class="toast-container" id="toastBox"></div>
+  <!-- Login Form -->
+  <div class="container">
+    <h1>NoteZilla</h1>
+    <h2>Admin Login</h2>
+    <input type="text" id="loginInput" placeholder="Username or Email" autocomplete="off">
+    <input type="password" id="password" placeholder="Password" autocomplete="off">
+    <button onclick="login()">Login Now</button>
 
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <div class="notice">
+      Not registered? <a href="admin-register.html">Register Here</a><br><br>
+      <a href="reset-password.html">Forgot Password?</a>
+    </div>
+  </div>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
-    authDomain: "chat-box-e01e5.firebaseapp.com",
-    databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
-    projectId: "chat-box-e01e5",
-    storageBucket: "chat-box-e01e5.firebasestorage.app",
-    messagingSenderId: "597491149800",
-    appId: "1:597491149800:web:7bd908925f70b62018125d"
-  };
+  <!-- Toast Notifications -->
+  <div class="toast-container" id="toastBox"></div>
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
-  function showToast(message, type = "success") {
-    const box = document.getElementById("toastBox");
-    const toast = document.createElement("div");
-    toast.classList.add("toast", type);
-    const icons = { success: "✔️", error: "❌", warning: "⚠️" };
-    toast.innerHTML = `${icons[type]} ${message}`;
-    box.appendChild(toast);
-    setTimeout(() => toast.classList.add("show"), 100);
-    setTimeout(() => {
-      toast.classList.remove("show");
-      setTimeout(() => toast.remove(), 600);
-    }, 4000);
-  }
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
+      authDomain: "chat-box-e01e5.firebaseapp.com",
+      databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
+      projectId: "chat-box-e01e5",
+      storageBucket: "chat-box-e01e5.firebasestorage.app",
+      messagingSenderId: "597491149800",
+      appId: "1:597491149800:web:7bd908925f70b62018125d"
+    };
 
-  function hideLoader() {
-    document.getElementById("loader").style.display = "none";
-  }
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-  async function login() {
-    const input = document.getElementById("loginInput").value.trim();
-    const password = document.getElementById("password").value.trim();
-
-    if (!input || !password) {
-      showToast("Please fill both fields!", "error");
-      return;
+    function showToast(message, type = "success") {
+      const box = document.getElementById("toastBox");
+      const toast = document.createElement("div");
+      toast.classList.add("toast", type);
+      const icons = { success: "✅", error: "❌", warning: "⚠️" };
+      toast.innerHTML = `${icons[type]} ${message}`;
+      box.appendChild(toast);
+      setTimeout(() => toast.classList.add("show"), 100);
+      setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 600);
+      }, 4000);
     }
 
-    document.getElementById("loader").style.display = "flex";
+    function hideLoader() {
+      document.getElementById("loader").style.display = "none";
+    }
 
-    try {
-      const snapshot = await db.ref("admins").once("value");
+    async function login() {
+      const input = document.getElementById("loginInput").value.trim();
+      const password = document.getElementById("password").value.trim();
 
-      if (!snapshot.exists()) {
-        showToast("No admin accounts found in the database.", "error");
-        hideLoader();
+      if (!input || !password) {
+        showToast("Please fill both fields!", "error");
         return;
       }
 
-      let userFound = null;
+      document.getElementById("loader").style.display = "flex";
 
-      snapshot.forEach(child => {
-        if (userFound) return; // Stop if already found
+      try {
+        const snapshot = await db.ref("admins").once("value");
 
-        const u = child.val();
-        if (!u) return;
-
-        const storedUsername = (u.username || "").trim().toLowerCase();
-        const storedEmail = (u.email || "").trim().toLowerCase();
-        const inputLower = input.toLowerCase();
-
-        const isMatch = storedUsername === inputLower || storedEmail === inputLower;
-
-        if (isMatch) {
-          let storedPassword = u.password || "";
-
-          // Try to decode Base64 first
-          try {
-            storedPassword = atob(u.password);
-          } catch (e) {
-            // If not Base64-encoded, use as-is
-          }
-
-          if (storedPassword === password) {
-            userFound = { id: child.key, ...u };
-          }
+        if (!snapshot.exists()) {
+          showToast("No admin accounts found in the database.", "error");
+          hideLoader();
+          return;
         }
-      });
 
-      if (!userFound) {
-        showToast("Incorrect username/email or password!", "error");
-        hideLoader();
-        return;
-      }
+        let userFound = null;
 
-      // Handle account status
-      if (userFound.status === "pending") {
-        showToast("Your account is pending admin approval!", "warning");
-        hideLoader();
-      } else if (userFound.status === "rejected") {
-        showToast("Your account was rejected by admin!", "error");
-        hideLoader();
-      } else if (userFound.status === "approved") {
-        sessionStorage.setItem("adminUser", JSON.stringify(userFound));
-        sessionStorage.setItem("userId", userFound.id);
-        showToast(`Welcome back, ${userFound.fullName || userFound.username || "Admin"}!`, "success");
-        setTimeout(() => {
-          window.location.href = "admin-panel.html";
-        }, 1500);
-      } else {
-        showToast("Invalid account status. Contact support.", "error");
-        hideLoader();
-      }
+        snapshot.forEach(child => {
+          if (userFound) return;
 
-    } catch (error) {
-      console.error("Firebase Error:", error);
-      hideLoader();
+          const u = child.val();
+          if (!u) return;
 
-      if (error.code === "PERMISSION_DENIED") {
-        showToast("Access denied! Please check Firebase Database Rules.", "error");
-      } else {
-        showToast("Connection failed. Check internet or try again later.", "error");
+          const storedUsername = (u.username || "").trim().toLowerCase();
+          const storedEmail = (u.email || "").trim().toLowerCase();
+          const inputLower = input.toLowerCase();
+
+          const isMatch = storedUsername === inputLower || storedEmail === inputLower;
+
+          if (isMatch) {
+            let storedPassword = u.password || "";
+
+            try {
+              storedPassword = atob(u.password);
+            } catch (e) {}
+
+            if (storedPassword === password) {
+              userFound = { id: child.key, ...u };
+            }
+          }
+        });
+
+        if (!userFound) {
+          showToast("Incorrect username/email or password!", "error");
+          hideLoader();
+          return;
+        }
+
+        if (userFound.status === "pending") {
+          showToast("Your account is pending admin approval!", "warning");
+          hideLoader();
+        } else if (userFound.status === "rejected") {
+          showToast("Your account was rejected by admin!", "error");
+          hideLoader();
+        } else if (userFound.status === "approved") {
+          sessionStorage.setItem("adminUser", JSON.stringify(userFound));
+          sessionStorage.setItem("userId", userFound.id);
+          showToast(`Welcome back, ${userFound.fullName || userFound.username || "Admin"}!`, "success");
+          setTimeout(() => {
+            window.location.href = "admin-panel.html";
+          }, 1500);
+        } else {
+          showToast("Invalid account status. Contact support.", "error");
+          hideLoader();
+        }
+
+      } catch (error) {
+        console.error("Firebase Error:", error);
+        hideLoader();
+
+        if (error.code === "PERMISSION_DENIED") {
+          showToast("Access denied! Please check Firebase Database Rules.", "error");
+        } else {
+          showToast("Connection failed. Check internet or try again later.", "error");
+        }
       }
     }
-  }
 
-  // Login on Enter key press
-  document.addEventListener("keypress", e => {
-    if (e.key === "Enter") {
-      login();
-    }
-  });
-</script>
+    // Login on Enter key
+    document.addEventListener("keypress", e => {
+      if (e.key === "Enter") {
+        login();
+      }
+    });
+  </script>
 </body>
 </html>

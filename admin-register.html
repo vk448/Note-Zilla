@@ -1,410 +1,580 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Admin Registration | NoteZilla</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-<style>
-:root {
-  --primary:#0f2027;
-  --secondary:#203a43;
-  --accent:#2c5364;
-  --success:#16a34a;
-  --danger:#dc2626;
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{
-  font-family:'Inter',sans-serif;
-  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
-  padding:20px;
-}
-.container{
-  max-width:440px;
-  width:100%;
-  background:#fff;
-  border-radius:16px;
-  padding:40px 35px;
-  box-shadow:0 10px 40px rgba(0,0,0,0.3);
-  text-align:center;
-}
-.logo{
-  font-size:2.8rem;
-  font-weight:700;
-  background:linear-gradient(135deg,#203a43,#2c5364);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  margin-bottom:8px;
-}
-h2{color:#1a1a1a;margin-bottom:30px;font-weight:600;}
-.photo-upload{
-  width:140px;height:140px;margin:0 auto 25px;
-  border:4px dashed var(--accent);
-  border-radius:50%;
-  background:#f8fdff;
-  cursor:pointer;
-  position:relative;
-  overflow:hidden;
-  transition:0.3s;
-}
-.photo-upload:hover{border-color:#4c9aff;background:#e8f4ff;}
-.photo-upload img{width:100%;height:100%;object-fit:cover;display:none;}
-.photo-upload i{
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  font-size:2.8rem;
-  color:var(--accent);
-}
-.remove-photo{
-  position:absolute;top:8px;right:8px;
-  background:var(--danger);
-  color:white;border:none;width:30px;height:30px;
-  border-radius:50%;cursor:pointer;font-size:1rem;display:none;
-}
-label{display:block;text-align:left;margin:16px 0 8px;font-weight:600;color:#333;}
-input,select{
-  width:100%;
-  padding:14px 16px;
-  border:2px solid #ddd;
-  border-radius:12px;
-  font-size:1rem;
-  transition:0.3s;
-}
-input:focus,select:focus{
-  outline:none;
-  border-color:var(--accent);
-  box-shadow:0 0 0 4px rgba(44,83,100,0.15);
-}
-input::placeholder{color:#aaa;}
-button[type="submit"]{
-  width:100%;
-  padding:16px;
-  margin-top:30px;
-  background:linear-gradient(135deg,#203a43,#2c5364);
-  color:white;
-  border:none;
-  border-radius:12px;
-  font-size:1.1rem;
-  font-weight:600;
-  cursor:pointer;
-  transition:0.3s;
-}
-button[type="submit"]:hover:not(:disabled){
-  transform:translateY(-3px);
-  box-shadow:0 10px 25px rgba(32,58,67,0.4);
-}
-button[type="submit"]:disabled{
-  background:#999;
-  cursor:not-allowed;
-}
-.loader{
-  display:none;
-  position:fixed;inset:0;
-  background:rgba(0,0,0,0.9);
-  z-index:9999;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  color:white;font-size:1.5rem;
-}
-.spinner{
-  width:70px;height:70px;
-  border:6px solid rgba(255,255,255,0.3);
-  border-top:6px solid white;
-  border-radius:50%;
-  animation:spin 1s linear infinite;
-  margin-bottom:20px;
-}
-@keyframes spin{to{transform:rotate(360deg);}}
-.toast{
-  position:fixed;
-  bottom:30px;
-  left:50%;
-  transform:translateX(-50%) translateY(100px);
-  padding:14px 28px;
-  background:#111;
-  color:white;
-  border-radius:12px;
-  font-weight:500;
-  z-index:10000;
-  transition:transform 0.4s ease;
-  box-shadow:0 10px 30px rgba(0,0,0,0.3);
-}
-.toast.show{transform:translateX(-50%) translateY(0);}
-.toast.success{background:var(--success);}
-.toast.error{background:var(--danger);}
-.otp-section{
-  display:none;
-  margin-top:20px;
-  padding:20px;
-  border-radius:12px;
-  background:#e0f7fa;
-  border:1px solid #00bcd4;
-}
-.otp-section input{
-  text-align:center;
-  letter-spacing:10px;
-  font-size:1.5rem;
-}
-.otp-section .otp-actions{
-  margin-top:12px;
-  display:flex;
-  gap:10px;
-  justify-content:center;
-}
-.otp-section button{
-  padding:10px 18px;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-  font-weight:600;
-}
-.otp-section .verify-btn{background:var(--success);color:white;}
-.otp-section .resend-btn{background:transparent;color:#00bcd4;border:2px solid #00bcd4;}
-.timer{margin-top:10px;font-weight:600;color:#0288d1;}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Registration | NoteZilla</title>
+  <link rel="icon" href="Images/Favicon.png">
+  <meta name="google-site-verification" content="C2-yDbzzyS4qMdBWgM3WARN6saZ1KX7ndHrd_Uc38mg" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <style>
+    /* ===================================
+       COSMIC PREMIUM REGISTRATION DESIGN - PAGE FULLY SCROLLABLE
+       =================================== */
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #0f0c29;
+      color: #e0e7ff;
+      min-height: 100vh;
+      overflow-y: auto; /* Page scrollable */
+      transition: background 0.8s ease;
+    }
+
+    body.dark {
+      background: #0a0719;
+    }
+
+    /* Background Animation */
+    body::before {
+      content: '';
+      position: fixed; /* Fixed so it stays during scroll */
+      inset: 0;
+      z-index: -2;
+      background: radial-gradient(circle at 20% 80%, #7c3aed 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, #ec4899 0%, transparent 50%),
+                  radial-gradient(circle at 50% 50%, #3b82f6 0%, transparent 40%);
+      opacity: 0.6;
+      animation: smoothFloat 28s ease-in-out infinite;
+    }
+
+    body::after {
+      content: '';
+      position: fixed; /* Fixed overlay */
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(135deg, #1e1b4b 0%, #2d1b69 60%, #4c1d95 100%);
+      opacity: 0.95;
+    }
+
+    @keyframes smoothFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(4%, -4%) scale(1.03); }
+      66% { transform: translate(-3%, 3%) scale(1.02); }
+    }
+
+    /* Container - Now scrollable content */
+    .container {
+      background: rgba(30, 27, 75, 0.4);
+      backdrop-filter: blur(30px);
+      padding: clamp(3rem, 8vw, 5rem);
+      border-radius: 40px;
+      width: 90%;
+      max-width: 520px;
+      margin: 120px auto 100px; /* Top & bottom margin for scrolling space */
+      text-align: center;
+      box-shadow: 0 30px 80px rgba(124, 58, 237, 0.4);
+      border: 1px solid rgba(167, 139, 250, 0.2);
+      z-index: 1;
+      position: relative;
+    }
+
+    /* Rest of your styles remain the same */
+    .logo {
+      font-size: clamp(3rem, 8vw, 4.5rem);
+      font-weight: 900;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #c4b5fd, #fbbf24, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    h2 {
+      font-size: clamp(1.8rem, 5vw, 2.4rem);
+      margin-bottom: 2.5rem;
+      opacity: 0.9;
+      color: #a78bfa;
+    }
+
+    /* Photo Upload */
+    .photo-upload {
+      width: 160px;
+      height: 160px;
+      margin: 0 auto 2rem;
+      border: 5px dashed rgba(167, 139, 250, 0.6);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.6s ease;
+    }
+
+    .photo-upload:hover {
+      border-color: #fbbf24;
+      background: rgba(251, 191, 36, 0.1);
+      transform: scale(1.05);
+    }
+
+    .photo-upload img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .photo-upload i {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 3.5rem;
+      color: rgba(167, 139, 250, 0.8);
+    }
+
+    .remove-photo {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: none;
+      transition: all 0.4s ease;
+    }
+
+    .remove-photo:hover {
+      background: #e74c3c;
+      transform: scale(1.1);
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      margin: 1.2rem 0 0.6rem;
+      font-weight: 600;
+      font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+      opacity: 0.9;
+    }
+
+    input, select {
+      width: 100%;
+      padding: clamp(1.2rem, 3vw, 1.6rem);
+      margin-bottom: 0.5rem;
+      border: none;
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      color: white;
+      font-size: clamp(1.1rem, 3vw, 1.4rem);
+      outline: none;
+      transition: all 0.4s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    input::placeholder, select::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    input:focus, select:focus {
+      transform: scale(1.03);
+      box-shadow: 0 20px 50px rgba(124, 58, 237, 0.4);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: clamp(1.2rem, 3vw, 1.6rem);
+      margin-top: 2rem;
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      color: white;
+      border: none;
+      border-radius: 60px;
+      font-size: clamp(1.3rem, 4vw, 1.8rem);
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 15px 40px rgba(124, 58, 237, 0.4);
+      transition: all 0.6s ease;
+    }
+
+    button[type="submit"]:hover:not(:disabled) {
+      transform: translateY(-10px) scale(1.08);
+      box-shadow: 0 30px 70px rgba(124, 58, 237, 0.6);
+    }
+
+    button[type="submit"]:disabled {
+      background: #666;
+      cursor: not-allowed;
+    }
+
+    #loader {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 7, 25, 0.95);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      font-size: clamp(1.6rem, 5vw, 2.2rem);
+      color: white;
+    }
+
+    .spinner {
+      width: 80px;
+      height: 80px;
+      border: 8px solid rgba(255,255,255,0.2);
+      border-top: 8px solid #fbbf24;
+      border-radius: 50%;
+      animation: spin 1.2s linear infinite;
+      margin-bottom: 2rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      padding: clamp(1rem, 3vw, 1.4rem) clamp(2rem, 5vw, 3rem);
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: clamp(1.1rem, 3vw, 1.4rem);
+      z-index: 10000;
+      transition: transform 0.6s ease;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+      min-width: 300px;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .toast.success { background: #27ae60; }
+    .toast.error { background: #e74c3c; }
+
+    .otp-section {
+      display: none;
+      margin-top: 2rem;
+      padding: clamp(1.5rem, 4vw, 2.5rem);
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(167, 139, 250, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    .otp-section input {
+      text-align: center;
+      letter-spacing: 15px;
+      font-size: clamp(1.8rem, 5vw, 2.4rem);
+      padding: clamp(1rem, 3vw, 1.4rem);
+    }
+
+    .otp-actions {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .otp-actions button {
+      padding: clamp(0.8rem, 2.5vw, 1.2rem) clamp(1.5rem, 4vw, 2.5rem);
+      border: none;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      cursor: pointer;
+      transition: all 0.4s ease;
+    }
+
+    .verify-btn {
+      background: #27ae60;
+      color: white;
+    }
+
+    .verify-btn:hover {
+      background: #1e8449;
+      transform: translateY(-5px);
+    }
+
+    .resend-btn {
+      background: transparent;
+      color: #a78bfa;
+      border: 2px solid #a78bfa;
+    }
+
+    .resend-btn:hover {
+      background: rgba(167, 139, 250, 0.2);
+      transform: translateY(-5px);
+    }
+
+    .timer {
+      margin-top: 1rem;
+      font-size: clamp(1.2rem, 3vw, 1.6rem);
+      font-weight: 700;
+      color: #fbbf24;
+    }
+
+    @media (max-width: 480px) {
+      .container { margin: 80px auto; padding: 2.5rem; }
+      .photo-upload { width: 130px; height: 130px; }
+      .photo-upload i { font-size: 3rem; }
+      .otp-section input { letter-spacing: 10px; }
+    }
+  </style>
 </head>
 <body>
 
-<div class="loader" id="loader">
-  <div class="spinner"></div>
-  <div>Processing...</div>
-</div>
+  <div class="loader" id="loader">
+    <div class="spinner"></div>
+    <div>Processing...</div>
+  </div>
 
-<div class="container">
-  <div class="logo">NoteZilla</div>
-  <h2>Admin Registration</h2>
+  <div class="container">
+    <div class="logo">NoteZilla</div>
+    <h2>Admin Registration</h2>
 
-  <form id="registerForm" novalidate>
-    <div class="photo-upload" id="uploadBox">
-      <i class="fas fa-camera"></i>
-      <img id="photoPreview" alt="Profile Preview"/>
-      <button type="button" class="remove-photo" id="removePhoto">×</button>
-      <input type="file" id="photoInput" accept="image/*" hidden/>
-    </div>
-    <p><b>Upload Profile Image *</b></p>
-
-    <label>Full Name *</label>
-    <input type="text" id="fullName" placeholder="John Doe" required/>
-
-    <label>Username *</label>
-    <input type="text" id="username" placeholder="johndoe123" required minlength="4"/>
-
-    <label>Email Address *</label>
-    <input type="email" id="email" placeholder="you@example.com" required/>
-
-    <label>Password *</label>
-    <input type="password" id="password" placeholder="Create strong password" required minlength="6"/>
-
-    <label>Confirm Password *</label>
-    <input type="password" id="confirmPassword" required/>
-
-    <label>Phone Number *</label>
-    <input type="tel" id="phone" placeholder="9876543210" pattern="[0-9]{10}" required/>
-
-    <label>Gender *</label>
-    <select id="gender" required>
-      <option value="" disabled selected>Select gender</option>
-      <option>Male</option>
-      <option>Female</option>
-      <option>Other</option>
-    </select>
-
-    <label>Role *</label>
-    <select id="role" required>
-      <option value="" disabled selected>Select role</option>
-      <option>Admin</option>
-      <option>Co-Admin</option>
-      <option>Teacher</option>
-      <option>User</option>
-    </select>
-
-    <!-- OTP Section -->
-    <div class="otp-section" id="otpSection">
-      <p>We've sent a 6-digit OTP to <strong id="emailDisplay"></strong></p>
-      <input type="text" id="otpInput" maxlength="6" placeholder="------"/>
-      <div class="timer" id="otpTimer">03:00</div>
-      <div class="otp-actions">
-        <button type="button" class="verify-btn" id="verifyBtn">Verify OTP</button>
-        <button type="button" class="resend-btn" id="resendBtn" style="display:none;">Resend OTP</button>
+    <form id="registerForm" novalidate>
+      <div class="photo-upload" id="uploadBox">
+        <i class="fas fa-camera"></i>
+        <img id="photoPreview" alt="Profile Preview"/>
+        <button type="button" class="remove-photo" id="removePhoto">×</button>
+        <input type="file" id="photoInput" accept="image/*" hidden/>
       </div>
-    </div>
+      <p style="margin-bottom:1.5rem;opacity:0.9;"><b>Upload Profile Image *</b></p>
 
-    <button type="submit" id="submitBtn">Submit for Approval & Send OTP</button>
-  </form>
-</div>
+      <label>Full Name *</label>
+      <input type="text" id="fullName" placeholder="John Doe" required/>
 
-<div class="toast" id="toast"></div>
+      <label>Username *</label>
+      <input type="text" id="username" placeholder="johndoe123" required minlength="4"/>
 
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+      <label>Email Address *</label>
+      <input type="email" id="email" placeholder="you@example.com" required/>
 
-<script>
-emailjs.init("XjSbu3DTfQtOBKW-l"); // EmailJS UserID
+      <label>Password *</label>
+      <input type="password" id="password" placeholder="Create strong password" required minlength="6"/>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
-  authDomain: "chat-box-e01e5.firebaseapp.com",
-  databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
-  projectId: "chat-box-e01e5",
-  storageBucket: "chat-box-e01e5.firebasestorage.app",
-  messagingSenderId: "597491149800",
-  appId: "1:597491149800:web:7bd908925f70b62018125d"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-const pendingRef = db.ref("admins_pending");
+      <label>Confirm Password *</label>
+      <input type="password" id="confirmPassword" required/>
 
-const uploadBox=document.getElementById("uploadBox");
-const photoInput=document.getElementById("photoInput");
-const photoPreview=document.getElementById("photoPreview");
-const removePhoto=document.getElementById("removePhoto");
-const loader=document.getElementById("loader");
-const toast=document.getElementById("toast");
-const form=document.getElementById("registerForm");
-const otpSection=document.getElementById("otpSection");
-const otpInput=document.getElementById("otpInput");
-const verifyBtn=document.getElementById("verifyBtn");
-const resendBtn=document.getElementById("resendBtn");
-const otpTimer=document.getElementById("otpTimer");
-const emailDisplay=document.getElementById("emailDisplay");
-const submitBtn=document.getElementById("submitBtn");
+      <label>Phone Number *</label>
+      <input type="tel" id="phone" placeholder="9876543210" pattern="[0-9]{10}" required/>
 
-let photoBase64=null;
-let generatedOTP=null;
-let otpVerified=false;
-let timerInterval=null;
-let timeLeft=180;
+      <label>Gender *</label>
+      <select id="gender" required>
+        <option value="" disabled selected>Select gender</option>
+        <option>Male</option>
+        <option>Female</option>
+        <option>Other</option>
+      </select>
 
-// Toast function
-function showToast(msg,type="error"){
-  toast.textContent=msg;
-  toast.className=`toast ${type} show`;
-  setTimeout(()=>toast.classList.remove("show"),4000);
-}
+      <label>Role *</label>
+      <select id="role" required>
+        <option value="" disabled selected>Select role</option>
+        <option>Admin</option>
+        <option>Co-Admin</option>
+        <option>Teacher</option>
+        <option>User</option>
+      </select>
 
-// Image Upload
-uploadBox.addEventListener("click",()=>photoInput.click());
-photoInput.addEventListener("change",e=>{
-  const file=e.target.files[0];
-  if(!file)return;
-  if(!file.type.startsWith("image/"))return showToast("Only images allowed");
-  if(file.size>2*1024*1024)return showToast("Max 2MB");
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    photoBase64=ev.target.result;
-    photoPreview.src=photoBase64;
-    photoPreview.style.display="block";
-    uploadBox.querySelector("i").style.display="none";
-    removePhoto.style.display="block";
-  };
-  reader.readAsDataURL(file);
-});
-removePhoto.addEventListener("click",e=>{
-  e.stopPropagation();
-  photoBase64=null;
-  photoPreview.src="";
-  photoPreview.style.display="none";
-  uploadBox.querySelector("i").style.display="block";
-  removePhoto.style.display="none";
-  photoInput.value="";
-});
+      <div class="otp-section" id="otpSection">
+        <p>We've sent a 6-digit OTP to <strong id="emailDisplay"></strong></p>
+        <input type="text" id="otpInput" maxlength="6" placeholder="------"/>
+        <div class="timer" id="otpTimer">03:00</div>
+        <div class="otp-actions">
+          <button type="button" class="verify-btn" id="verifyBtn">Verify OTP</button>
+          <button type="button" class="resend-btn" id="resendBtn" style="display:none;">Resend OTP</button>
+        </div>
+      </div>
 
-// Generate OTP
-function generateOTP(){ return Math.floor(100000+Math.random()*900000).toString(); }
+      <button type="submit" id="submitBtn">Submit</button>
+    </form>
+  </div>
 
-// Send OTP
-async function sendOTP(email){
-  generatedOTP=generateOTP();
-  try{
-    await emailjs.send("service_3p5ogj7","template_kqox2bf",{to_email:email,passcode:generatedOTP});
-    showToast("OTP sent to email!","success");
-    otpSection.style.display="block";
-    emailDisplay.textContent=email;
-    startOTPTimer();
-  }catch(err){ showToast("Failed to send OTP","error"); }
-}
+  <div class="toast" id="toast"></div>
 
-// OTP Timer
-function startOTPTimer(){
-  clearInterval(timerInterval);
-  timeLeft=180;
-  resendBtn.style.display="none";
-  verifyBtn.style.display="inline-block";
-  updateTimerDisplay();
-  timerInterval=setInterval(()=>{
-    timeLeft--;
-    updateTimerDisplay();
-    if(timeLeft<=0){
-      clearInterval(timerInterval);
-      resendBtn.style.display="inline-block";
-      verifyBtn.style.display="none";
-      showToast("OTP expired! You can resend now.","error");
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+  <script>
+    emailjs.init("XjSbu3DTfQtOBKW-l");
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
+      authDomain: "chat-box-e01e5.firebaseapp.com",
+      databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
+      projectId: "chat-box-e01e5",
+      storageBucket: "chat-box-e01e5.firebasestorage.app",
+      messagingSenderId: "597491149800",
+      appId: "1:597491149800:web:7bd908925f70b62018125d"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const pendingRef = db.ref("admins_pending");
+
+    const uploadBox = document.getElementById("uploadBox");
+    const photoInput = document.getElementById("photoInput");
+    const photoPreview = document.getElementById("photoPreview");
+    const removePhoto = document.getElementById("removePhoto");
+    const loader = document.getElementById("loader");
+    const toast = document.getElementById("toast");
+    const form = document.getElementById("registerForm");
+    const otpSection = document.getElementById("otpSection");
+    const otpInput = document.getElementById("otpInput");
+    const verifyBtn = document.getElementById("verifyBtn");
+    const resendBtn = document.getElementById("resendBtn");
+    const otpTimer = document.getElementById("otpTimer");
+    const emailDisplay = document.getElementById("emailDisplay");
+    const submitBtn = document.getElementById("submitBtn");
+
+    let photoBase64 = null;
+    let generatedOTP = null;
+    let otpVerified = false;
+    let timerInterval = null;
+    let timeLeft = 180;
+
+    function showToast(msg, type = "error") {
+      toast.textContent = msg;
+      toast.className = `toast ${type} show`;
+      setTimeout(() => toast.classList.remove("show"), 4000);
     }
-  },1000);
-}
-function updateTimerDisplay(){
-  const m=String(Math.floor(timeLeft/60)).padStart(2,'0');
-  const s=String(timeLeft%60).padStart(2,'0');
-  otpTimer.textContent=`${m}:${s}`;
-}
 
-// Verify OTP
-verifyBtn.addEventListener("click",()=>{
-  if(otpInput.value===generatedOTP){
-    clearInterval(timerInterval);
-    otpVerified=true;
-    showToast("OTP verified successfully!","success");
-    otpInput.disabled=true;
-    verifyBtn.disabled=true;
-  }else showToast("Incorrect OTP","error");
-});
+    uploadBox.addEventListener("click", () => photoInput.click());
+    photoInput.addEventListener("change", e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith("image/")) return showToast("Only images allowed");
+      if (file.size > 2 * 1024 * 1024) return showToast("Max 2MB");
+      const reader = new FileReader();
+      reader.onload = ev => {
+        photoBase64 = ev.target.result;
+        photoPreview.src = photoBase64;
+        photoPreview.style.display = "block";
+        uploadBox.querySelector("i").style.display = "none";
+        removePhoto.style.display = "block";
+      };
+      reader.readAsDataURL(file);
+    });
 
-// Resend OTP
-resendBtn.addEventListener("click",()=>{
-  const email=document.getElementById("email").value.trim();
-  if(email) sendOTP(email);
-});
+    removePhoto.addEventListener("click", e => {
+      e.stopPropagation();
+      photoBase64 = null;
+      photoPreview.src = "";
+      photoPreview.style.display = "none";
+      uploadBox.querySelector("i").style.display = "block";
+      removePhoto.style.display = "none";
+      photoInput.value = "";
+    });
 
-// Submit Form
-form.addEventListener("submit",async e=>{
-  e.preventDefault();
-  const email=document.getElementById("email").value.trim();
-  if(!otpVerified){ sendOTP(email); return showToast("OTP sent! Verify it to submit.","success"); }
+    function generateOTP() { return Math.floor(100000 + Math.random() * 900000).toString(); }
 
-  const data={
-    fullName:document.getElementById("fullName").value.trim(),
-    username:document.getElementById("username").value.trim().toLowerCase(),
-    email:email.toLowerCase(),
-    password:document.getElementById("password").value,
-    confirmPassword:document.getElementById("confirmPassword").value,
-    phone:document.getElementById("phone").value.trim(),
-    gender:document.getElementById("gender").value,
-    role:document.getElementById("role").value
-  };
+    async function sendOTP(email) {
+      generatedOTP = generateOTP();
+      try {
+        await emailjs.send("service_3p5ogj7", "template_kqox2bf", { to_email: email, passcode: generatedOTP });
+        showToast("OTP sent to email!", "success");
+        otpSection.style.display = "block";
+        emailDisplay.textContent = email;
+        startOTPTimer();
+      } catch (err) {
+        showToast("Failed to send OTP", "error");
+      }
+    }
 
-  if(!data.fullName) return showToast("Full name required");
-  if(data.username.length<4) return showToast("Username too short");
-  if(data.password.length<6) return showToast("Password too weak");
-  if(data.password!==data.confirmPassword) return showToast("Passwords do not match");
-  if(!/^\d{10}$/.test(data.phone)) return showToast("Phone must be 10 digits");
+    function startOTPTimer() {
+      clearInterval(timerInterval);
+      timeLeft = 180;
+      resendBtn.style.display = "none";
+      verifyBtn.style.display = "inline-block";
+      updateTimerDisplay();
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          resendBtn.style.display = "inline-block";
+          verifyBtn.style.display = "none";
+          showToast("OTP expired! You can resend now.", "error");
+        }
+      }, 1000);
+    }
 
-  submitBtn.disabled=true; loader.style.display="flex";
-  try{
-    await pendingRef.push({...data,photoURL:photoBase64||"",status:"pending",createdAt:firebase.database.ServerValue.TIMESTAMP});
-    showToast("Registration submitted successfully!","success");
-    setTimeout(()=> location.href="admin-login.html",1500);
-  }catch(err){ showToast("Submission failed","error"); }
-  finally{ loader.style.display="none"; submitBtn.disabled=false; }
-});
-</script>
+    function updateTimerDisplay() {
+      const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+      const s = String(timeLeft % 60).padStart(2, '0');
+      otpTimer.textContent = `${m}:${s}`;
+    }
+
+    verifyBtn.addEventListener("click", () => {
+      if (otpInput.value === generatedOTP) {
+        clearInterval(timerInterval);
+        otpVerified = true;
+        showToast("OTP verified successfully!", "success");
+        otpInput.disabled = true;
+        verifyBtn.disabled = true;
+      } else {
+        showToast("Incorrect OTP", "error");
+      }
+    });
+
+    resendBtn.addEventListener("click", () => {
+      const email = document.getElementById("email").value.trim();
+      if (email) sendOTP(email);
+    });
+
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+
+      if (!otpVerified) {
+        sendOTP(email);
+        return;
+      }
+
+      const data = {
+        fullName: document.getElementById("fullName").value.trim(),
+        username: document.getElementById("username").value.trim().toLowerCase(),
+        email: email.toLowerCase(),
+        password: document.getElementById("password").value,
+        phone: document.getElementById("phone").value.trim(),
+        gender: document.getElementById("gender").value,
+        role: document.getElementById("role").value
+      };
+
+      if (!data.fullName) return showToast("Full name required");
+      if (data.username.length < 4) return showToast("Username too short");
+      if (data.password.length < 6) return showToast("Password too weak");
+      if (data.password !== document.getElementById("confirmPassword").value) return showToast("Passwords do not match");
+      if (!/^\d{10}$/.test(data.phone)) return showToast("Phone must be 10 digits");
+
+      submitBtn.disabled = true;
+      loader.style.display = "flex";
+
+      try {
+        await pendingRef.push({
+          ...data,
+          photoURL: photoBase64 || "",
+          status: "pending",
+          createdAt: firebase.database.ServerValue.TIMESTAMP
+        });
+        showToast("Registration submitted successfully!", "success");
+        setTimeout(() => location.href = "admin-login.html", 1500);
+      } catch (err) {
+        showToast("Submission failed", "error");
+      } finally {
+        loader.style.display = "none";
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
 </body>
 </html>
