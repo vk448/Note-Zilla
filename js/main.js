@@ -17,6 +17,18 @@ function playSound(sound) {
 document.body.addEventListener('click', () => userInteracted = true, { once: true });
 document.body.addEventListener('keydown', () => userInteracted = true, { once: true });
 
+// Profile photo preview on select
+document.getElementById('profilePhoto').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            document.getElementById('profilePreview').src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
 document.getElementById('joinBtn').onclick = () => {
     userInteracted = true;
     myName = document.getElementById('nameInput').value.trim();
@@ -153,13 +165,10 @@ function displayMessage(msg, group = false) {
 
     content += `<div class="msg-time">${new Date(msg.time).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</div>`;
 
-    if (sent) {
-        content += `<div class="msg-menu" onclick="deleteMessage('${msg.msgId}')">🗑️</div>`;
-    }
+    if (sent) content += `<div class="msg-menu" onclick="deleteMessage('${msg.msgId}')">🗑️</div>`;
 
     bubble.innerHTML = content;
 
-    // Right click context menu
     if (sent) {
         bubble.addEventListener('contextmenu', e => {
             e.preventDefault();
@@ -209,11 +218,102 @@ document.getElementById('imageModal').onclick = e => {
     if (e.target === document.getElementById('imageModal')) closeImageModal();
 };
 
-// ... rest of sendMessage, paste, responsive code same as previous
+// Fixed sendMessage – ab message 100% jaayega
+function sendMessage() {
+    if (!currentChat) return;
 
-// (Keep the rest from previous main.js: sendMessage, paste, handleResize, backBtn, etc.)
+    const text = document.getElementById('msgInput').value.trim();
+    const file = document.getElementById('mediaInput').files[0];
 
-// Final responsive code (add at end)
+    if (!text && !file && audioChunks.length === 0) return;
+
+    const msg = {
+        sender: myId,
+        senderName: myName,
+        time: firebase.database.ServerValue.TIMESTAMP,
+        msgId: db.ref().push().key
+    };
+
+    if (text) msg.text = text;
+
+    const path = isWorldGroup ? 'chats/world_group' : 'chats/' + currentChat;
+
+    const pushRef = db.ref(path).push();
+
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            if (file.type.includes('image')) msg.photo = e.target.result;
+            if (file.type.includes('video')) msg.video = e.target.result;
+            pushRef.set(msg).then(() => {
+                playSound(outgoing);
+                document.getElementById('msgInput').value = '';
+                document.getElementById('mediaInput').value = '';
+            });
+        };
+        reader.readAsDataURL(file);
+    } else if (audioChunks.length > 0) {
+        const blob = new Blob(audioChunks, {type: 'audio/webm'});
+        const reader = new FileReader();
+        reader.onload = e => {
+            msg.audio = e.target.result;
+            pushRef.set(msg).then(() => {
+                playSound(outgoing);
+                resetRecording();
+            });
+        };
+        reader.readAsDataURL(blob);
+    } else {
+        pushRef.set(msg).then(() => {
+            playSound(outgoing);
+            document.getElementById('msgInput').value = '';
+        });
+    }
+}
+
+document.getElementById('sendBtn').onclick = sendMessage;
+document.getElementById('mediaInput').onchange = sendMessage;
+
+document.getElementById('msgInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+
+    if (currentChat) {
+        const otherId = currentChat.split('_').find(id => id !== myId);
+        db.ref('typing/' + myId + '_' + otherId).set(true);
+        clearTimeout(window.typingTimer);
+        window.typingTimer = setTimeout(() => {
+            db.ref('typing/' + myId + '_' + otherId).set(false);
+        }, 800);
+    }
+});
+
+// Paste image/video
+document.getElementById('msgInput').addEventListener('paste', e => {
+    for (let item of e.clipboardData.items) {
+        if (item.type.indexOf('image') !== -1 || item.type.indexOf('video') !== -1) {
+            const blob = item.getAsFile();
+            const reader = new FileReader();
+            reader.onload = ev => {
+                const msg = {
+                    sender: myId,
+                    senderName: myName,
+                    time: firebase.database.ServerValue.TIMESTAMP,
+                    msgId: db.ref().push().key
+                };
+                if (blob.type.includes('image')) msg.photo = ev.target.result;
+                if (blob.type.includes('video')) msg.video = ev.target.result;
+                const path = isWorldGroup ? 'chats/world_group' : 'chats/' + currentChat;
+                db.ref(path).push(msg).then(() => playSound(outgoing));
+            };
+            reader.readAsDataURL(blob);
+        }
+    }
+});
+
+// Responsive handling
 function handleResize() {
     if (window.innerWidth > 768) {
         document.querySelector('.sidebar').classList.remove('hidden');
