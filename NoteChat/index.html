@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoteChat - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="top-header">
+        <img id="profilePic" class="profile" src="" alt="Profile">
+        <div class="search">
+            <div class="search-input">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search users or chats">
+            </div>
+        </div>
+        <div class="icons">
+            <i class="fas fa-user-plus" id="addFriendBtn" title="Add Friend"></i>
+            <i class="fas fa-users" title="Communities"></i>
+            <i class="fas fa-bell" title="Updates"></i>
+            <i class="fas fa-ellipsis-v" title="Menu"></i>
+        </div>
+    </div>
+
+    <div class="app">
+        <div class="sidebar">
+            <div class="sidebar-tabs">
+                <div class="tab active">Users & Chats</div>
+            </div>
+            <div class="chat-list" id="userList">
+                <!-- Loaded dynamically -->
+            </div>
+        </div>
+
+        <div class="chat-window">
+            <div class="chat-header">
+                <img class="avatar" id="chatAvatar" src="">
+                <div class="info">
+                    <div class="name" id="chatName">Select a chat</div>
+                    <div class="status" id="chatStatus">Click a user to start chatting</div>
+                </div>
+                <!-- <div class="icons">
+                    <i class="fas fa-video"></i>
+                    <i class="fas fa-phone"></i>
+                    <i class="fas fa-search"></i>
+                    <i class="fas fa-ellipsis-v"></i>
+                </div> -->
+            </div>
+            <div class="messages" id="messages">
+                <p style="text-align:center; color:#8696a0; margin-top:100px;">Select a chat to view messages</p>
+            </div>
+            <div class="input-area">
+                <i class="far fa-smile"></i>
+                <i class="fas fa-paperclip" id="attachBtn"></i>
+                <input type="file" id="mediaInput" accept="image/*,video/*" style="display:none;">
+                <input type="text" class="message-input" id="messageInput" placeholder="Type a message">
+                <div class="send-btn" id="sendBtn"><i class="fas fa-paper-plane"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <img id="modalProfilePic" src="" alt="Profile">
+            <h3 id="profileNameDisplay"></h3>
+            <input type="text" id="profileNameEdit" placeholder="New name">
+            <input type="file" id="profilePicInput" accept="image/*">
+            <div style="margin-top:20px;">
+                <button onclick="saveProfile()">Save</button>
+                <button onclick="closeModal('profileModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="addFriendModal" class="modal">
+        <div class="modal-content">
+            <h3>Add Friend</h3>
+            <input type="email" id="friendEmail" placeholder="friend@example.com">
+            <div style="margin-top:20px;">
+                <button onclick="addFriend()">Add</button>
+                <button onclick="closeModal('addFriendModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+   <!-- Audio - Real WhatsApp tones -->
+<audio id="incomingSound" src="sound/incoming.mp3" preload="auto"></audio>
+<audio id="outgoingSound" src="sound/outgoing.mp3" preload="auto"></audio>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+    <script src="js/firebase-config.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

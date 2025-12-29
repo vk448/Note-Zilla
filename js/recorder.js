@@ -10,7 +10,7 @@ async function toggleRecording() {
             mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
             window.mediaRecorderInstance = mediaRecorder;
         } catch (err) {
-            alert("Microphone access denied!");
+            alert("Mic access denied!");
             return;
         }
     }
