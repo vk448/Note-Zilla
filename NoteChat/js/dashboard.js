@@ -75,7 +75,7 @@ function loadUsersAndChats() {
     worldItem.className = 'chat-item active';
     worldItem.dataset.chatId = 'world-group';
     worldItem.innerHTML = `
-        <div class="avatar" style="background-image:url('https://via.placeholder.com/50?text=W'); background-size:cover;"></div>
+        <div class="avatar" style="background-image:url('../Images/worldchat.png'); background-size:cover;"></div>
         <div class="chat-info">
             <div class="top">
                 <div class="name">World Group Chat</div>
