@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe | Multi-Mode Hub</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+
+        :root {
+            --glass: rgba(255, 255, 255, 0.9);
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --bg-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --x-color: #ff4757;
+            --o-color: #2e86de;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            margin: 0; min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: #1e293b; padding: 15px;
+        }
+
+        .container {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            width: 100%; max-width: 400px;
+            text-align: center; border: 1px solid rgba(255,255,255,0.3);
+            box-sizing: border-box;
+        }
+
+        h1 { font-weight: 800; font-size: 2.2rem; margin: 0 0 20px; color: white; text-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+        /* Modern Buttons */
+        .btn {
+            width: 100%; padding: 14px; margin: 8px 0; border: none; border-radius: 18px;
+            font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn:active { transform: scale(0.96); }
+        .btn-menu { background: white; color: #475569; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .btn-menu:hover { background: #f8fafc; color: var(--primary); }
+        .btn-action { background: var(--primary); color: white; }
+        .btn-share { background: #10b981; color: white; }
+        .btn-exit { background: #fee2e2; color: #ef4444; margin-top: 15px; }
+
+        /* Board Style */
+        #board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 25px 0; }
+        .cell {
+            aspect-ratio: 1; background: white; border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.8rem; font-weight: 800; cursor: pointer;
+            transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .cell.taken { cursor: default; }
+        .cell.x { color: var(--x-color); }
+        .cell.o { color: var(--o-color); }
+
+        /* Input Style */
+        input {
+            width: 100%; padding: 14px; margin: 10px 0; border-radius: 15px;
+            border: 2px solid #e2e8f0; outline: none; text-align: center; font-size: 1.1rem;
+            box-sizing: border-box;
+        }
+
+        #status { font-weight: 600; font-size: 1.1rem; color: #64748b; margin-bottom: 10px; }
+        .id-card { background: #f1f5f9; padding: 15px; border-radius: 20px; margin-bottom: 20px; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <h1>Tic Tac Toe</h1>
+
+    <div class="container">
+        <div id="lobby">
+            <button class="btn btn-menu" onclick="startMode('bot')">🤖 VS Smart Bot</button>
+            <button class="btn btn-menu" onclick="startMode('local')">👥 Pass & Play</button>
+            <button class="btn btn-menu" onclick="showPrivate()">🔑 Play with Friend</button>
+            <button class="btn btn-menu" onclick="startMode('online')">🌐 Random Match</button>
+        </div>
+
+        <div id="private-setup" class="hidden">
+            <button class="btn btn-action" onclick="createPrivate()">Create New Room</button>
+            <div style="margin:15px; color:#94a3b8; font-size:0.9rem">--- OR ---</div>
+            <input type="text" id="joinIdInput" placeholder="Enter Room ID">
+            <button class="btn btn-action" style="background:var(--secondary)" onclick="joinPrivate()">Join Room</button>
+            <button class="btn btn-exit" onclick="location.reload()">Back</button>
+        </div>
+
+        <div id="game" class="hidden">
+            <div id="shareBox" class="id-card hidden">
+                <small>Room ID:</small>
+                <div id="displayId" style="font-size:1.6rem; font-weight:800; color:var(--primary); margin:5px 0">---</div>
+                <div style="display:flex; gap:10px">
+                    <button class="btn btn-menu" style="flex:1" onclick="copyId()">Copy</button>
+                    <button class="btn btn-share" style="flex:1" onclick="shareID()">Share</button>
+                </div>
+            </div>
+            
+            <div id="status">Ready?</div>
+            <div id="board"></div>
+            
+            <button id="resetBtn" class="btn btn-action hidden" onclick="resetGame()">Play Again</button>
+            <button class="btn btn-exit" onclick="location.reload()">Exit Hub</button>
+        </div>
+    </div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
+        authDomain: "chat-box-e01e5.firebaseapp.com",
+        databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
+        projectId: "chat-box-e01e5",
+        storageBucket: "chat-box-e01e5.firebasestorage.app",
+        messagingSenderId: "597491149800",
+        appId: "1:597491149800:web:7bd908925f70b62018125d"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let mode, gRef, mySym = 'X', board = Array(9).fill(''), isMyTurn = true, gameOver = false, currentId = "";
+
+    function showPrivate() {
+        document.getElementById('lobby').classList.add('hidden');
+        document.getElementById('private-setup').classList.remove('hidden');
+    }
+
+    function startMode(m) {
+        mode = m;
+        document.getElementById('lobby').classList.add('hidden');
+        document.getElementById('private-setup').classList.add('hidden');
+        document.getElementById('game').classList.remove('hidden');
+        initBoard();
+        if (mode === 'online') findAutoMatch();
+    }
+
+    function createPrivate() {
+        currentId = Math.random().toString(36).substring(2, 7).toUpperCase();
+        startMode('private');
+        mySym = 'X';
+        gRef = db.ref('games/' + currentId);
+        gRef.set({ board: Array(9).fill(''), turn: 'X', p1: true });
+        document.getElementById('shareBox').classList.remove('hidden');
+        document.getElementById('displayId').innerText = currentId;
+        listenOnline();
+    }
+
+    function joinPrivate() {
+        currentId = document.getElementById('joinIdInput').value.trim().toUpperCase();
+        if (!currentId) return alert("Enter ID!");
+        db.ref('games/' + currentId).once('value', s => {
+            if (!s.exists()) return alert("Room not found!");
+            startMode('private');
+            mySym = 'O';
+            gRef = db.ref('games/' + currentId);
+            gRef.update({ p2: true });
+            listenOnline();
+        });
+    }
+
+    // --- ALL APP SHARE FEATURE ---
+    async function shareID() {
+        const shareData = {
+            title: 'Tic Tac Toe Online',
+            text: `Kheloge? Join my Tic Tac Toe room! \nRoom ID: ${currentId}\n`,
+            url: window.location.href 
+        };
+
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+            } catch (err) { console.log("Share failed"); }
+        } else {
+            copyId();
+            alert("Sharing not supported on this browser. ID Copied instead!");
+        }
+    }
+
+    function copyId() {
+        navigator.clipboard.writeText(currentId);
+        alert("ID Copied: " + currentId);
+    }
+
+    // --- GAME CORE ---
+    function initBoard() {
+        const bDiv = document.getElementById('board');
+        bDiv.innerHTML = '';
+        board.forEach((val, i) => {
+            const cell = document.createElement('div');
+            cell.className = 'cell' + (val ? ` taken ${val.toLowerCase()}` : '');
+            cell.innerText = val;
+            cell.onclick = () => handleMove(i);
+            bDiv.appendChild(cell);
+        });
+    }
+
+    function handleMove(i) {
+        if (board[i] || !isMyTurn || gameOver) return;
+        if (mode === 'private' || mode === 'online') {
+            gRef.once('value', s => {
+                const d = s.val();
+                if (d.turn === mySym && !d.winner) {
+                    let newB = d.board; newB[i] = mySym;
+                    gRef.update({ board: newB, turn: mySym === 'X' ? 'O' : 'X' });
+                }
+            });
+        } else {
+            board[i] = mySym;
+            initBoard();
+            if (!checkWinner()) {
+                if (mode === 'bot') {
+                    isMyTurn = false;
+                    updateStatus("Bot thinking...");
+                    setTimeout(smartBotMove, 600);
+                } else {
+                    mySym = mySym === 'X' ? 'O' : 'X';
+                    updateStatus(`Player ${mySym}'s Turn`);
+                }
+            }
+        }
+    }
+
+    function smartBotMove() {
+        const patterns = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+        const findSpot = (sym) => {
+            for (let p of patterns) {
+                const vals = p.map(idx => board[idx]);
+                if (vals.filter(v => v === sym).length === 2 && vals.filter(v => v === '').length === 1)
+                    return p[vals.indexOf('')];
+            }
+            return -1;
+        };
+        let move = findSpot('O'); if(move === -1) move = findSpot('X');
+        if (move === -1 && board[4] === '') move = 4;
+        if (move === -1) {
+            let empty = board.map((v,i) => v==='' ? i : null).filter(v => v!==null);
+            move = empty[Math.floor(Math.random()*empty.length)];
+        }
+        board[move] = 'O';
+        initBoard(); checkWinner();
+        if (!gameOver) { isMyTurn = true; updateStatus("Your Turn (X)"); }
+    }
+
+    function checkWinner() {
+        const patterns = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+        for (let [a,b,c] of patterns) {
+            if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                updateStatus(`🎉 Winner: ${board[a]}`);
+                gameOver = true; document.getElementById('resetBtn').classList.remove('hidden');
+                return board[a];
+            }
+        }
+        if (!board.includes('')) { updateStatus("🤝 Draw Game"); gameOver = true; document.getElementById('resetBtn').classList.remove('hidden'); return 'draw'; }
+        return null;
+    }
+
+    function findAutoMatch() {
+        updateStatus("🔍 Matching...");
+        const qRef = db.ref('ttt_queue');
+        qRef.once('value', snap => {
+            let found = false;
+            snap.forEach(room => {
+                if (!room.val().full && !found) {
+                    found = true; mySym = 'O'; gRef = db.ref('games/' + room.key);
+                    qRef.child(room.key).update({ full: true }); listenOnline();
+                }
+            });
+            if (!found) {
+                currentId = "AUTO_" + Math.random().toString(36).substring(7);
+                mySym = 'X'; gRef = db.ref('games/' + currentId);
+                gRef.set({ board: Array(9).fill(''), turn: 'X', p1: true });
+                qRef.child(currentId).set({ full: false }); listenOnline();
+            }
+        });
+    }
+
+    function listenOnline() {
+        gRef.on('value', s => {
+            const d = s.val(); if (!d) return;
+            board = d.board; initBoard();
+            if (!d.p2 && mode !== 'bot' && mode !== 'local') updateStatus("Waiting for opponent...");
+            else {
+                const win = checkWinner();
+                if (!win) { isMyTurn = d.turn === mySym; updateStatus(isMyTurn ? "🟢 Your Turn" : "⏳ Opponent's Turn"); }
+            }
+        });
+    }
+
+    function resetGame() {
+        if (mode === 'private' || mode === 'online') gRef.update({ board: Array(9).fill(''), turn: 'X' });
+        else { board = Array(9).fill(''); mySym = 'X'; isMyTurn = true; gameOver = false; document.getElementById('resetBtn').classList.add('hidden'); initBoard(); updateStatus("Player X's Turn"); }
+    }
+
+    function updateStatus(t) { document.getElementById('status').innerText = t; }
+</script>
+</body>
+</html>

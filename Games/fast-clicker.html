@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speed Clicker Online</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <style>
+        /* Shared Styles */
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;800&display=swap');
+        body { font-family: 'Outfit', sans-serif; background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%); margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .container { background: rgba(255,255,255,0.95); padding: 30px; border-radius: 25px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        .progress-bar { height: 25px; background: #e2e8f0; border-radius: 50px; overflow: hidden; margin: 10px 0 20px; }
+        .fill { height: 100%; width: 0%; transition: width 0.1s; background: #6366f1; }
+        #tapBtn { width: 150px; height: 150px; border-radius: 50%; border: 8px solid #6366f1; font-size: 1.5rem; font-weight: 800; cursor: pointer; background: white; transition: 0.1s; }
+        #tapBtn:active { transform: scale(0.9); background: #6366f1; color: white; }
+        .btn { padding: 12px 20px; border-radius: 50px; border: none; font-weight: 700; cursor: pointer; margin-top: 10px; width: 100%; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="lobby">
+            <h2>Speed Clicker</h2>
+            <button class="btn" style="background:#6366f1; color:white" onclick="startMatch()">Find Match</button>
+            <button class="btn" onclick="location.href='index.html'">Back Home</button>
+        </div>
+
+        <div id="game" class="hidden">
+            <p id="status">Waiting...</p>
+            <p>You</p>
+            <div class="progress-bar"><div id="myFill" class="fill"></div></div>
+            <p>Opponent</p>
+            <div class="progress-bar"><div id="oppFill" class="fill" style="background:#94a3b8"></div></div>
+            <button id="tapBtn" onclick="tap()">TAP!</button>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
+            authDomain: "chat-box-e01e5.firebaseapp.com",
+            databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
+            projectId: "chat-box-e01e5",
+            storageBucket: "chat-box-e01e5.firebasestorage.app",
+            messagingSenderId: "597491149800",
+            appId: "1:597491149800:web:7bd908925f70b62018125d"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        let gRef, player, gameOver = false;
+
+        function startMatch() {
+            document.getElementById('lobby').classList.add('hidden');
+            document.getElementById('game').classList.remove('hidden');
+            
+            const qRef = db.ref('click_queue');
+            qRef.once('value', snap => {
+                let found = false;
+                snap.forEach(room => {
+                    if(!room.val().full && !found) {
+                        found = true; player = 'P2';
+                        gRef = db.ref('click_rooms/' + room.key);
+                        qRef.child(room.key).update({ full: true });
+                        listen();
+                    }
+                });
+                if(!found) {
+                    const id = Math.random().toString(36).substring(7);
+                    player = 'P1'; gRef = db.ref('click_rooms/' + id);
+                    gRef.set({ p1: 0, p2: 0, active: true });
+                    qRef.child(id).set({ full: false });
+                    listen();
+                }
+            });
+        }
+
+        function tap() {
+            if(gameOver) return;
+            gRef.child(player === 'P1' ? 'p1' : 'p2').set(firebase.database.ServerValue.increment(1));
+        }
+
+        function listen() {
+            gRef.on('value', s => {
+                const d = s.val(); if(!d) return;
+                const myS = player === 'P1' ? d.p1 : d.p2;
+                const oppS = player === 'P1' ? d.p2 : d.p1;
+                document.getElementById('myFill').style.width = (myS * 2) + '%';
+                document.getElementById('oppFill').style.width = (oppS * 2) + '%';
+                
+                if(myS >= 50 || oppS >= 50) {
+                    gameOver = true;
+                    document.getElementById('status').innerText = myS >= 50 ? "🎉 YOU WON!" : "💀 DEFEAT!";
+                } else {
+                    document.getElementById('status').innerText = "First to 50!";
+                }
+            });
+        }
+    </script>
+</body>
+</html>

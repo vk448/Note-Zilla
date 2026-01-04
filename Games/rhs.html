@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fast RPS Multiplayer</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <style>
+        :root { --bg: #0f172a; --card: #1e293b; --primary: #6366f1; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: white; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        
+        .container { background: var(--card); padding: 2rem; border-radius: 1.5rem; width: 90%; max-width: 380px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); border: 1px solid #334155; }
+        
+        h2 { margin-top: 0; font-weight: 800; letter-spacing: -0.025em; }
+        
+        .choices { display: flex; justify-content: space-around; margin: 25px 0; }
+        
+        .btn-choice { 
+            font-size: 2.5rem; background: #334155; border: 2px solid transparent; 
+            padding: 12px; border-radius: 1rem; cursor: pointer; transition: all 0.1s; width: 90px; 
+        }
+        
+        .btn-choice:hover { background: #475569; }
+        .btn-choice:active { transform: scale(0.9); }
+        .btn-choice.selected { background: var(--primary); border-color: white; box-shadow: 0 0 15px rgba(99, 102, 241, 0.5); }
+        
+        .status { color: #94a3b8; margin: 15px 0; font-weight: 600; min-height: 1.5rem; }
+        
+        button.action { width: 100%; padding: 14px; border-radius: 10px; border: none; background: var(--primary); color: white; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+        button.action:active { opacity: 0.8; }
+        
+        input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #475569; background: #0f172a; color: white; margin-bottom: 12px; box-sizing: border-box; text-align: center; font-size: 1rem; }
+        
+        .id-badge { background: #0f172a; padding: 6px 12px; border-radius: 20px; font-family: monospace; color: var(--primary); font-weight: bold; display: inline-block; margin-bottom: 1rem; border: 1px solid #334155; }
+        
+        #result { font-size: 1.4rem; font-weight: 800; margin: 1.5rem 0; min-height: 2rem; }
+        
+        [style*="display: none"] { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div id="setup" class="container">
+        <h2>RPS Online</h2>
+        <button class="action" onclick="initGame('create')">Create Game</button>
+        <div style="margin: 1.5rem 0; opacity: 0.3; display: flex; align-items: center; justify-content: center;">
+            <hr style="width: 40%; margin: 0 10px;"> OR <hr style="width: 40%; margin: 0 10px;">
+        </div>
+        <input type="text" id="joinId" placeholder="Paste Game ID here">
+        <button class="action" onclick="initGame('join')" style="background:#475569">Join Game</button>
+    </div>
+
+    <div id="game" class="container" style="display:none">
+        <div id="displayId" class="id-badge">ID: ---</div>
+        <div id="status" class="status">Waiting for opponent...</div>
+        
+        <div class="choices">
+            <button class="btn-choice" onclick="makeMove('🪨', this)">🪨</button>
+            <button class="btn-choice" onclick="makeMove('📜', this)">📜</button>
+            <button class="btn-choice" onclick="makeMove('✂️', this)">✂️</button>
+        </div>
+
+        <div id="result"></div>
+        
+        <button id="resetBtn" class="action" onclick="resetRound()" style="display:none; background:#22c55e">Play Next Round</button>
+        <button class="action" onclick="location.reload()" style="background:transparent; color:#64748b; font-size: 0.8rem; margin-top: 10px;">Exit Lobby</button>
+    </div>
+
+<script>
+    // --- FIREBASE CONFIG ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
+        authDomain: "chat-box-e01e5.firebaseapp.com",
+        databaseURL: "https://chat-box-e01e5-default-rtdb.firebaseio.com",
+        projectId: "chat-box-e01e5",
+        storageBucket: "chat-box-e01e5.firebasestorage.app",
+        messagingSenderId: "597491149800",
+        appId: "1:597491149800:web:7bd908925f70b62018125d"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    let gId, player, gRef;
+
+    function initGame(type) {
+        if(type === 'create') {
+            gId = Math.random().toString(36).substring(2, 7).toUpperCase();
+            player = 'P1';
+            gRef = db.ref('rps/' + gId);
+            gRef.set({ active: true, P1: null, P2: null });
+        } else {
+            gId = document.getElementById('joinId').value.trim().toUpperCase();
+            if(!gId) return alert("Please enter a Game ID");
+            player = 'P2';
+            gRef = db.ref('rps/' + gId);
+        }
+
+        // Switch UI
+        document.getElementById('setup').style.display = 'none';
+        document.getElementById('game').style.display = 'block';
+        document.getElementById('displayId').innerText = "ID: " + gId;
+
+        // Start listening to database
+        gRef.on('value', syncData);
+    }
+
+    function makeMove(move, el) {
+        // Instant visual feedback (Optimistic UI)
+        document.querySelectorAll('.btn-choice').forEach(b => b.classList.remove('selected'));
+        el.classList.add('selected');
+        
+        // Push to Firebase
+        gRef.child(player).set(move);
+    }
+
+    function syncData(snapshot) {
+        const data = snapshot.val();
+        if(!data) return;
+
+        const status = document.getElementById('status');
+        const result = document.getElementById('result');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // Reveal moves only if both players have chosen
+        if(data.P1 && data.P2) {
+            const winner = getWinner(data.P1, data.P2);
+            result.innerText = `${data.P1} vs ${data.P2}`;
+            
+            if(winner === 'Tie') {
+                status.innerText = "It's a Tie! 🤝";
+            } else {
+                status.innerText = (winner === player) ? "You Won! 🎉" : "Opponent Won! 💀";
+            }
+            resetBtn.style.display = 'block';
+        } else {
+            // Waiting phase
+            result.innerText = "";
+            resetBtn.style.display = 'none';
+            
+            if (data[player]) {
+                status.innerText = "Waiting for Opponent... ⏳";
+            } else {
+                status.innerText = "Make your choice!";
+            }
+        }
+    }
+
+    function getWinner(p1, p2) {
+        if(p1 === p2) return 'Tie';
+        const winRules = {'🪨':'✂️', '📜':'🪨', '✂️':'📜'};
+        return winRules[p1] === p2 ? 'P1' : 'P2';
+    }
+
+    function resetRound() {
+        // Clear choices in DB
+        gRef.update({ P1: null, P2: null });
+        // UI Cleanup
+        document.querySelectorAll('.btn-choice').forEach(b => b.classList.remove('selected'));
+    }
+</script>
+</body>
+</html>
