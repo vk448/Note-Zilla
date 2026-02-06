@@ -10,81 +10,122 @@
         :root {
             --primary: #6366f1;
             --secondary: #a855f7;
-            --bg-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --accent: #00d2ff;
+            --bg-dark: #0f172a;
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.3s ease;
         }
 
         body {
             font-family: 'Outfit', sans-serif;
-            background: var(--bg-gradient);
-            background-attachment: fixed;
+            background: #0f172a;
             margin: 0;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: #1e293b;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background Blobs */
+        .bg-blob {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: var(--bg-gradient);
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.4;
+            border-radius: 50%;
+            animation: move 20s infinite alternate;
+        }
+
+        @keyframes move {
+            from { transform: translate(-20%, -20%); }
+            to { transform: translate(20%, 20%); }
         }
 
         .hub-container {
-            width: 90%;
-            max-width: 500px;
+            width: 95%;
+            max-width: 550px;
             text-align: center;
-            padding: 20px;
+            padding: 40px 20px;
+            position: relative;
         }
 
         h1 {
-            color: white;
-            font-size: 2.8rem;
+            font-size: clamp(2.5rem, 8vw, 3.5rem);
             font-weight: 800;
-            margin-bottom: 10px;
-            text-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            margin-bottom: 8px;
+            background: linear-gradient(to right, #fff, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
         }
 
         p.subtitle {
-            color: rgba(255,255,255,0.8);
-            margin-bottom: 40px;
+            color: #94a3b8;
+            margin-bottom: 50px;
             font-size: 1.1rem;
+            letter-spacing: 0.5px;
         }
 
         .game-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 20px;
+            gap: 24px;
         }
 
         .game-card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(15px);
-            padding: 25px;
-            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 20px;
+            border-radius: 28px;
             text-decoration: none;
-            color: #1e293b;
+            color: white;
             display: flex;
             align-items: center;
             gap: 20px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid rgba(255,255,255,0.3);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            transition: 0.5s;
+        }
+
+        .game-card:hover::before {
+            left: 100%;
         }
 
         .game-card:hover {
-            transform: scale(1.05) translateY(-5px);
-            background: white;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            transform: translateY(-8px) scale(1.02);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(168, 85, 247, 0.5);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
 
         .icon-box {
-            width: 60px;
-            height: 60px;
-            background: var(--bg-gradient);
-            border-radius: 18px;
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
-            color: white;
-            box-shadow: 0 8px 15px rgba(99, 102, 241, 0.3);
+            font-size: 2rem;
+            flex-shrink: 0;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
 
         .game-info {
@@ -93,71 +134,81 @@
 
         .game-info h3 {
             margin: 0;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: 700;
+            letter-spacing: -0.5px;
         }
 
         .game-info p {
             margin: 4px 0 0;
-            font-size: 0.9rem;
-            color: #64748b;
+            font-size: 0.95rem;
+            color: #94a3b8;
         }
 
         .badge {
             margin-left: auto;
-            background: #f1f5f9;
-            padding: 6px 12px;
-            border-radius: 10px;
+            background: rgba(99, 102, 241, 0.15);
+            padding: 8px 14px;
+            border-radius: 12px;
             font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--primary);
+            font-weight: 700;
+            color: #818cf8;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         footer {
-            margin-top: 50px;
-            color: rgba(255,255,255,0.6);
-            font-size: 0.8rem;
+            margin-top: 60px;
+            color: #475569;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body>
 
+    <div class="bg-blob" style="top: 10%; left: 10%; background: var(--primary);"></div>
+    <div class="bg-blob" style="bottom: 10%; right: 10%; background: var(--secondary); animation-delay: -5s;"></div>
+
     <div class="hub-container">
         <h1>Mini Games</h1>
-        <p class="subtitle">Select a game and start playing with friends!</p>
+        <p class="subtitle">Elevate your play, challenge your limits.</p>
 
         <div class="game-grid">
             
             <a href="tic tac toe.html" class="game-card">
-                <div class="icon-box" style="background: linear-gradient(135deg, #ff4757, #ff6b81);">❌</div>
+                <div class="icon-box" style="background: linear-gradient(135deg, #f43f5e, #fb7185);">✕</div>
                 <div class="game-info">
                     <h3>Tic Tac Toe</h3>
-                    <p>Classic strategy game.</p>
+                    <p>Classic strategy reimagined.</p>
                 </div>
-                <div class="badge">Multiplayer</div>
+                <div class="badge">PvP Mode</div>
             </a>
 
             <a href="memory.html" class="game-card">
-                <div class="icon-box" style="background: linear-gradient(135deg, #f59e0b, #d97706);">🧠</div>
+                <div class="icon-box" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">🧠</div>
                 <div class="game-info">
                     <h3>Memory Match</h3>
-                    <p>Test your brain power.</p>
+                    <p>Sharpen your cognitive skills.</p>
                 </div>
-                <div class="badge">Online Flip</div>
+                <div class="badge">Zen</div>
             </a>
 
             <a href="fast-clicker.html" class="game-card">
-                <div class="icon-box" style="background: linear-gradient(135deg, #10b981, #3b82f6);">⚡</div>
+                <div class="icon-box" style="background: linear-gradient(135deg, #06b6d4, #3b82f6);">⚡</div>
                 <div class="game-info">
                     <h3>Speed Clicker</h3>
-                    <p>Fastest finger wins!</p>
+                    <p>How fast are your reflexes?</p>
                 </div>
-                <div class="badge">Live Race</div>
+                <div class="badge">Blitz</div>
             </a>
 
         </div>
 
-        <footer>Built for Fun & Competition</footer>
+        <footer>&copy; 2024 Gaming Hub • Level Up</footer>
     </div>
 
 </body>
