@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory Online | Shared Animation</title>
+    <title>Memory Online | Multi-Mode</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
@@ -39,7 +39,8 @@
             font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.3s;
             display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .btn-menu { background: white; color: #475569; }
+        .btn-menu { background: white; color: #475569; border: 1px solid #e2e8f0; }
+        .btn-menu:hover { background: #f8fafc; transform: translateY(-2px); }
         .btn-action { background: #1e293b; color: white; }
         .btn-share { background: #10b981; color: white; }
         .btn-exit { background: #fee2e2; color: #ef4444; margin-top: 15px; }
@@ -49,7 +50,6 @@
             border: 2px solid #e2e8f0; outline: none; text-align: center; font-size: 1.1rem;
         }
 
-        /* --- SHARED FLIP ANIMATION --- */
         .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0; perspective: 1000px; }
         
         .card {
@@ -59,7 +59,6 @@
             cursor: pointer;
         }
 
-        /* Jab class 'flipped' add hogi toh 180 degree rotate hoga */
         .card.flipped { transform: rotateY(180deg); }
 
         .card-face {
@@ -87,9 +86,11 @@
 
     <div class="container">
         <div id="lobby">
-            <button class="btn btn-menu" onclick="showPrivate()">🔑 Play with Friend</button>
-            <button class="btn btn-menu" onclick="findAutoMatch()">🌐 Random Match</button>
-            <button class="btn btn-exit" onclick="location.href='index.html'">Back Home</button>
+            <button class="btn btn-menu" onclick="startLocal('bot')">🤖 VS Smart Bot</button>
+            <button class="btn btn-menu" onclick="startLocal('pass')">👥 Pass & Play</button>
+            <div style="margin: 15px 0; height: 1px; background: #e2e8f0;"></div>
+            <button class="btn btn-action" onclick="showPrivate()">🔑 Play with Friend</button>
+            <button class="btn btn-action" style="background:#6366f1" onclick="findAutoMatch()">🌐 Random Match</button>
         </div>
 
         <div id="private-setup" class="hidden">
@@ -116,12 +117,12 @@
             <div id="status" style="font-weight:600; margin:10px 0;">Connecting...</div>
             <div class="grid" id="grid"></div>
             
-            <button class="btn btn-exit" onclick="location.reload()">Quit</button>
+            <button class="btn btn-exit" onclick="location.reload()">Quit Game</button>
         </div>
     </div>
 
 <script>
-    // Firebase Config (Wahi purana)
+    // Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
         authDomain: "chat-box-e01e5.firebaseapp.com",
@@ -136,12 +137,43 @@
 
     const emojis = ['🎮','🚀','💎','🔥','👻','🍕','🐱','🌈'];
     let gRef, mySym, currentId, isMyTurn = false;
+    let gameMode = 'online'; // 'online', 'bot', 'pass'
+    let localState = {}; // Used for offline modes
+    let botMemory = {}; // Index: Emoji
 
-    function showPrivate() { document.getElementById('lobby').classList.add('hidden'); document.getElementById('private-setup').classList.remove('hidden'); }
+    // --- NAVIGATION ---
+    function showPrivate() { 
+        document.getElementById('lobby').classList.add('hidden'); 
+        document.getElementById('private-setup').classList.remove('hidden'); 
+    }
 
+    // --- LOCAL MODES (BOT & PASS) ---
+    function startLocal(mode) {
+        gameMode = mode;
+        mySym = 'p1';
+        isMyTurn = true;
+        const shuffled = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
+        
+        localState = {
+            cards: shuffled,
+            p1: 0, p2: 0,
+            turn: 'p1',
+            flipped: [-1, -1],
+            matched: [],
+            p2Ready: true
+        };
+
+        document.getElementById('lobby').classList.add('hidden');
+        document.getElementById('game').classList.remove('hidden');
+        buildGrid();
+        updateUI(localState);
+    }
+
+    // --- ONLINE MODES ---
     function createPrivate() {
+        gameMode = 'online';
         currentId = Math.random().toString(36).substring(2, 7).toUpperCase();
-        setupGame('p1', currentId);
+        setupOnline('p1', currentId);
         const shuffled = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
         gRef.set({ cards: shuffled, p1: 0, p2: 0, turn: 'p1', flipped: [-1, -1], matched: [], p1Ready: true });
         document.getElementById('shareBox').classList.remove('hidden');
@@ -149,28 +181,30 @@
     }
 
     function joinPrivate() {
+        gameMode = 'online';
         currentId = document.getElementById('joinIdInput').value.trim().toUpperCase();
         if(!currentId) return alert("ID Likho!");
         db.ref('memo_rooms/' + currentId).once('value', s => {
             if(!s.exists()) return alert("Room nahi mila!");
-            setupGame('p2', currentId);
+            setupOnline('p2', currentId);
             gRef.update({ p2Ready: true });
         });
     }
 
     function findAutoMatch() {
+        gameMode = 'online';
         const qRef = db.ref('memo_queue');
         qRef.once('value', snap => {
             let found = false;
             snap.forEach(room => {
                 if(!room.val().full && !found) {
-                    found = true; currentId = room.key; setupGame('p2', currentId);
+                    found = true; currentId = room.key; setupOnline('p2', currentId);
                     qRef.child(currentId).update({ full: true }); gRef.update({ p2Ready: true });
                 }
             });
             if(!found) {
                 currentId = "AUTO_" + Math.random().toString(36).substring(7);
-                setupGame('p1', currentId);
+                setupOnline('p1', currentId);
                 const shuffled = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
                 gRef.set({ cards: shuffled, p1: 0, p2: 0, turn: 'p1', flipped: [-1, -1], matched: [], p1Ready: true });
                 qRef.child(currentId).set({ full: false });
@@ -178,14 +212,18 @@
         });
     }
 
-    function setupGame(sym, id) {
+    function setupOnline(sym, id) {
         mySym = sym; 
         gRef = db.ref('memo_rooms/' + id);
         document.getElementById('private-setup').classList.add('hidden');
         document.getElementById('lobby').classList.add('hidden');
         document.getElementById('game').classList.remove('hidden');
-        
-        // Initial Grid Creation
+        buildGrid();
+        gRef.on('value', s => { if(s.exists()) updateUI(s.val()); });
+    }
+
+    // --- CORE GAME LOGIC ---
+    function buildGrid() {
         const grid = document.getElementById('grid');
         grid.innerHTML = '';
         for(let i=0; i<16; i++) {
@@ -196,73 +234,131 @@
             card.onclick = () => handleFlip(i);
             grid.appendChild(card);
         }
-        listen();
     }
 
     function handleFlip(i) {
-        if(!isMyTurn) return;
-        gRef.once('value', s => {
-            const d = s.val();
-            if(!d.p2Ready || d.winner) return;
-            if(d.flipped && d.flipped[0] !== -1 && d.flipped[1] !== -1) return;
-            if(d.matched && d.matched.includes(i)) return;
-            if(d.flipped && d.flipped.includes(i)) return;
-
-            let newFlipped = [...(d.flipped || [-1, -1])];
-            if(newFlipped[0] === -1) newFlipped[0] = i;
-            else {
-                newFlipped[1] = i;
-                processMove(newFlipped, d);
-            }
-            gRef.update({ flipped: newFlipped });
-        });
-    }
-
-    function processMove(flippedIdx, data) {
-        const c1 = data.cards[flippedIdx[0]], c2 = data.cards[flippedIdx[1]];
-        setTimeout(() => {
-            if(c1 === c2) {
-                let newMatched = [...(data.matched || []), ...flippedIdx];
-                gRef.update({ matched: newMatched, flipped: [-1, -1], [mySym]: data[mySym] + 1 });
-            } else {
-                gRef.update({ flipped: [-1, -1], turn: mySym === 'p1' ? 'p2' : 'p1' });
-            }
-        }, 1200); // 1.2s tak card dikhega phir wapas flip hoga
-    }
-
-    function listen() {
-        gRef.on('value', s => {
-            const d = s.val(); if(!d) return;
-            if(!d.p2Ready) { document.getElementById('status').innerText = "Waiting for Opponent..."; return; }
-            
-            isMyTurn = d.turn === mySym;
-            document.getElementById('status').innerText = isMyTurn ? "🟢 Your Turn" : "⏳ Opponent's Turn";
-
-            // Update Cards and Trigger Animations
-            d.cards.forEach((emoji, i) => {
-                const cardEl = document.getElementById('card-' + i);
-                const isFlipped = d.matched?.includes(i) || d.flipped?.includes(i);
-                
-                // Card face par emoji set karo
-                cardEl.querySelector('.card-back').innerText = emoji;
-
-                // Sync Animation: Agar Firebase mein flipped hai toh yahan bhi flip kardo
-                if(isFlipped) cardEl.classList.add('flipped');
-                else cardEl.classList.remove('flipped');
-
-                if(d.matched?.includes(i)) cardEl.classList.add('matched');
+        if (!isMyTurn && gameMode !== 'pass') return;
+        const data = gameMode === 'online' ? null : localState;
+        
+        if (gameMode === 'online') {
+            gRef.once('value', s => {
+                const d = s.val();
+                if(canFlip(i, d)) executeFlip(i, d);
             });
+        } else {
+            if(canFlip(i, data)) executeFlip(i, data);
+        }
+    }
 
-            document.getElementById('p1Score').innerText = d.p1;
-            document.getElementById('p2Score').innerText = d.p2;
-            document.getElementById('p1Box').className = `score ${d.turn==='p1'?'active':''}`;
-            document.getElementById('p2Box').className = `score ${d.turn==='p2'?'active':''}`;
+    function canFlip(i, d) {
+        if(!d.p2Ready || d.winner) return false;
+        if(d.flipped[0] !== -1 && d.flipped[1] !== -1) return false;
+        if(d.matched?.includes(i) || d.flipped.includes(i)) return false;
+        return true;
+    }
+
+    function executeFlip(i, d) {
+        let newFlipped = [...d.flipped];
+        if(newFlipped[0] === -1) newFlipped[0] = i;
+        else {
+            newFlipped[1] = i;
+            setTimeout(() => checkMatch(newFlipped, d), 1000);
+        }
+
+        // Add to bot memory if bot mode is active
+        if(gameMode === 'bot') botMemory[i] = d.cards[i];
+
+        if(gameMode === 'online') gRef.update({ flipped: newFlipped });
+        else { localState.flipped = newFlipped; updateUI(localState); }
+    }
+
+    function checkMatch(flippedIdx, d) {
+        const c1 = d.cards[flippedIdx[0]], c2 = d.cards[flippedIdx[1]];
+        const turn = d.turn;
+
+        if(c1 === c2) {
+            d.matched = [...(d.matched || []), ...flippedIdx];
+            d[turn] += 1;
+            d.flipped = [-1, -1];
+            // Clear matched cards from bot memory
+            delete botMemory[flippedIdx[0]]; delete botMemory[flippedIdx[1]];
+        } else {
+            d.flipped = [-1, -1];
+            d.turn = (turn === 'p1') ? 'p2' : 'p1';
+        }
+
+        if(gameMode === 'online') gRef.update(d);
+        else { localState = d; updateUI(localState); if(d.turn === 'p2' && gameMode === 'bot') setTimeout(botMove, 1200); }
+    }
+
+    // --- BOT AI ---
+    function botMove() {
+        if(localState.matched.length === 16) return;
+        
+        let move1, move2;
+        const available = [...Array(16).keys()].filter(i => !localState.matched.includes(i));
+        
+        // 1. Can bot find a pair in memory?
+        let knownPair = findPairInMemory();
+        if(knownPair) {
+            [move1, move2] = knownPair;
+        } else {
+            // 2. Pick a random card
+            move1 = available[Math.floor(Math.random() * available.length)];
+            botMemory[move1] = localState.cards[move1];
             
-            if(d.matched && d.matched.length === 16) {
-                let msg = d.p1 > d.p2 ? "P1 Jeeta!" : (d.p2 > d.p1 ? "P2 Jeeta!" : "Draw!");
-                document.getElementById('status').innerText = "🏆 " + msg;
+            // 3. After picking one, does it know where the other is?
+            let matchIdx = Object.keys(botMemory).find(idx => botMemory[idx] === localState.cards[move1] && idx != move1);
+            if(matchIdx !== undefined) {
+                move2 = parseInt(matchIdx);
+            } else {
+                let remaining = available.filter(i => i !== move1);
+                move2 = remaining[Math.floor(Math.random() * remaining.length)];
+                botMemory[move2] = localState.cards[move2];
             }
+        }
+
+        // Execute Bot sequence
+        executeFlip(move1, localState);
+        setTimeout(() => executeFlip(move2, localState), 1000);
+    }
+
+    function findPairInMemory() {
+        let entries = Object.entries(botMemory);
+        for(let i=0; i<entries.length; i++) {
+            for(let j=i+1; j<entries.length; j++) {
+                if(entries[i][1] === entries[j][1]) return [parseInt(entries[i][0]), parseInt(entries[j][0])];
+            }
+        }
+        return null;
+    }
+
+    // --- UI UPDATER ---
+    function updateUI(d) {
+        if(!d.p2Ready) { document.getElementById('status').innerText = "Waiting for Opponent..."; return; }
+        
+        isMyTurn = d.turn === mySym;
+        let turnText = d.turn === 'p1' ? "Player 1" : (gameMode === 'bot' ? "Bot 🤖" : "Player 2");
+        document.getElementById('status').innerText = (isMyTurn || (gameMode==='pass' && d.turn==='p2')) ? `🟢 ${turnText}'s Turn` : `⏳ ${turnText}'s Turn`;
+
+        d.cards.forEach((emoji, i) => {
+            const cardEl = document.getElementById('card-' + i);
+            const isFlipped = d.matched?.includes(i) || d.flipped?.includes(i);
+            cardEl.querySelector('.card-back').innerText = emoji;
+            if(isFlipped) cardEl.classList.add('flipped');
+            else cardEl.classList.remove('flipped');
+            if(d.matched?.includes(i)) cardEl.classList.add('matched');
         });
+
+        document.getElementById('p1Score').innerText = d.p1;
+        document.getElementById('p2Score').innerText = d.p2;
+        document.getElementById('p1Box').className = `score ${d.turn==='p1'?'active':''}`;
+        document.getElementById('p2Box').className = `score ${d.turn==='p2'?'active':''}`;
+        
+        if(d.matched && d.matched.length === 16) {
+            let winner = d.p1 > d.p2 ? "P1 Wins!" : (d.p2 > d.p1 ? (gameMode==='bot'?"Bot Wins!":"P2 Wins!") : "Draw!");
+            document.getElementById('status').innerText = "🏆 " + winner;
+        }
     }
 
     function copyId() { navigator.clipboard.writeText(currentId); alert("ID Copied!"); }
