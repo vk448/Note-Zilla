@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fast RPS Multiplayer</title>
+    <title>Fast RPS | Pro Edition</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     
@@ -28,7 +28,7 @@
         
         .status { color: #94a3b8; margin: 15px 0; font-weight: 600; min-height: 1.5rem; }
         
-        button.action { width: 100%; padding: 14px; border-radius: 10px; border: none; background: var(--primary); color: white; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+        button.action { width: 100%; padding: 14px; border-radius: 10px; border: none; background: var(--primary); color: white; font-weight: 700; cursor: pointer; transition: opacity 0.2s; margin-bottom: 8px; }
         button.action:active { opacity: 0.8; }
         
         input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #475569; background: #0f172a; color: white; margin-bottom: 12px; box-sizing: border-box; text-align: center; font-size: 1rem; }
@@ -37,29 +37,31 @@
         
         #result { font-size: 1.4rem; font-weight: 800; margin: 1.5rem 0; min-height: 2rem; }
         
+        hr { border: none; border-top: 1px solid #334155; margin: 15px 0; }
         [style*="display: none"] { display: none !important; }
     </style>
 </head>
 <body>
 
     <div id="setup" class="container">
-        <h2>RPS Online</h2>
-        <button class="action" onclick="initGame('create')">Create Game</button>
-        <div style="margin: 1.5rem 0; opacity: 0.3; display: flex; align-items: center; justify-content: center;">
-            <hr style="width: 40%; margin: 0 10px;"> OR <hr style="width: 40%; margin: 0 10px;">
-        </div>
-        <input type="text" id="joinId" placeholder="Paste Game ID here">
-        <button class="action" onclick="initGame('join')" style="background:#475569">Join Game</button>
+        <h2>RPS Games</h2>
+        <button class="action" onclick="startLocal('bot')">🤖 VS Smart Bot</button>
+        <button class="action" onclick="startLocal('pass')">👥 Pass & Play</button>
+        <hr>
+        <button class="action" style="background:#4338ca" onclick="initGame('create')">🔑 Play with Friend</button>
+        <button class="action" style="background:#1d4ed8" onclick="findRandom()">🌐 Random Match</button>
+        <input type="text" id="joinId" placeholder="Enter Game ID">
+        <button class="action" onclick="initGame('join')" style="background:#475569">Join Room</button>
     </div>
 
     <div id="game" class="container" style="display:none">
         <div id="displayId" class="id-badge">ID: ---</div>
-        <div id="status" class="status">Waiting for opponent...</div>
+        <div id="status" class="status">Waiting...</div>
         
         <div class="choices">
-            <button class="btn-choice" onclick="makeMove('🪨', this)">🪨</button>
-            <button class="btn-choice" onclick="makeMove('📜', this)">📜</button>
-            <button class="btn-choice" onclick="makeMove('✂️', this)">✂️</button>
+            <button class="btn-choice" onclick="handleInput('🪨', this)">🪨</button>
+            <button class="btn-choice" onclick="handleInput('📜', this)">📜</button>
+            <button class="btn-choice" onclick="handleInput('✂️', this)">✂️</button>
         </div>
 
         <div id="result"></div>
@@ -69,7 +71,6 @@
     </div>
 
 <script>
-    // --- FIREBASE CONFIG ---
     const firebaseConfig = {
         apiKey: "AIzaSyCVVqQnmO1Q83AucOqA5b5qUC4eo49sq6E",
         authDomain: "chat-box-e01e5.firebaseapp.com",
@@ -82,69 +83,129 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    let gId, player, gRef;
+    let gId, player, gRef, gameMode = 'online';
+    
+    // Bot memory to be "Smart"
+    let history = []; 
 
-    function initGame(type) {
+    // --- NAVIGATION ---
+    function startLocal(mode) {
+        gameMode = mode;
+        player = 'P1';
+        document.getElementById('setup').style.display = 'none';
+        document.getElementById('game').style.display = 'block';
+        document.getElementById('displayId').innerText = mode === 'bot' ? "Mode: VS BOT" : "Mode: PASS & PLAY";
+        document.getElementById('status').innerText = "P1: Choose your move";
+    }
+
+    async function findRandom() {
+        const qRef = db.ref('rps_queue');
+        const snap = await qRef.once('value');
+        let found = false;
+        
+        snap.forEach(child => {
+            if(!found) {
+                gId = child.key;
+                found = true;
+                qRef.child(gId).remove();
+                initGame('join', gId);
+            }
+        });
+
+        if(!found) {
+            gId = "RAND_" + Math.random().toString(36).substring(7).toUpperCase();
+            qRef.child(gId).set(true);
+            initGame('create', gId);
+        }
+    }
+
+    function initGame(type, customId = null) {
+        gameMode = 'online';
         if(type === 'create') {
-            gId = Math.random().toString(36).substring(2, 7).toUpperCase();
+            gId = customId || Math.random().toString(36).substring(2, 7).toUpperCase();
             player = 'P1';
             gRef = db.ref('rps/' + gId);
-            gRef.set({ active: true, P1: null, P2: null });
+            gRef.set({ P1: null, P2: null });
         } else {
-            gId = document.getElementById('joinId').value.trim().toUpperCase();
-            if(!gId) return alert("Please enter a Game ID");
+            gId = customId || document.getElementById('joinId').value.trim().toUpperCase();
+            if(!gId) return alert("Enter Game ID");
             player = 'P2';
             gRef = db.ref('rps/' + gId);
         }
 
-        // Switch UI
         document.getElementById('setup').style.display = 'none';
         document.getElementById('game').style.display = 'block';
         document.getElementById('displayId').innerText = "ID: " + gId;
-
-        // Start listening to database
         gRef.on('value', syncData);
     }
 
+    // --- CORE LOGIC ---
+    let localData = { P1: null, P2: null };
+
+    function handleInput(move, el) {
+        if(gameMode === 'online') {
+            makeMove(move, el);
+        } else if(gameMode === 'pass') {
+            if(!localData.P1) {
+                localData.P1 = move;
+                document.getElementById('status').innerText = "P2: Choose your move";
+                clearButtons();
+            } else if(!localData.P2) {
+                localData.P2 = move;
+                showLocalResult();
+            }
+        } else if(gameMode === 'bot') {
+            localData.P1 = move;
+            localData.P2 = getBotMove();
+            showLocalResult();
+        }
+    }
+
     function makeMove(move, el) {
-        // Instant visual feedback (Optimistic UI)
         document.querySelectorAll('.btn-choice').forEach(b => b.classList.remove('selected'));
         el.classList.add('selected');
-        
-        // Push to Firebase
         gRef.child(player).set(move);
+    }
+
+    function getBotMove() {
+        // Smart Bot Logic: Counters your most frequent move
+        if (history.length < 3) return ['🪨', '📜', '✂️'][Math.floor(Math.random()*3)];
+        
+        const counts = history.reduce((acc, move) => {
+            acc[move] = (acc[move] || 0) + 1;
+            return acc;
+        }, {});
+        
+        const favorite = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+        const counters = {'🪨':'📜', '📜':'✂️', '✂️':'🪨'};
+        return counters[favorite];
     }
 
     function syncData(snapshot) {
         const data = snapshot.val();
         if(!data) return;
-
         const status = document.getElementById('status');
         const result = document.getElementById('result');
         const resetBtn = document.getElementById('resetBtn');
 
-        // Reveal moves only if both players have chosen
         if(data.P1 && data.P2) {
             const winner = getWinner(data.P1, data.P2);
             result.innerText = `${data.P1} vs ${data.P2}`;
-            
-            if(winner === 'Tie') {
-                status.innerText = "It's a Tie! 🤝";
-            } else {
-                status.innerText = (winner === player) ? "You Won! 🎉" : "Opponent Won! 💀";
-            }
+            status.innerText = (winner === 'Tie') ? "It's a Tie! 🤝" : (winner === player ? "You Won! 🎉" : "Opponent Won! 💀");
             resetBtn.style.display = 'block';
         } else {
-            // Waiting phase
             result.innerText = "";
             resetBtn.style.display = 'none';
-            
-            if (data[player]) {
-                status.innerText = "Waiting for Opponent... ⏳";
-            } else {
-                status.innerText = "Make your choice!";
-            }
+            status.innerText = data[player] ? "Waiting for Opponent... ⏳" : "Make your choice!";
         }
+    }
+
+    function showLocalResult() {
+        const winner = getWinner(localData.P1, localData.P2);
+        document.getElementById('result').innerText = `${localData.P1} vs ${localData.P2}`;
+        document.getElementById('status').innerText = winner === 'Tie' ? "Tie! 🤝" : (winner === 'P1' ? "P1 Wins! 🎉" : "P2 Wins! 💀");
+        document.getElementById('resetBtn').style.display = 'block';
+        history.push(localData.P1); // Bot learns from P1
     }
 
     function getWinner(p1, p2) {
@@ -154,9 +215,18 @@
     }
 
     function resetRound() {
-        // Clear choices in DB
-        gRef.update({ P1: null, P2: null });
-        // UI Cleanup
+        if(gameMode === 'online') {
+            gRef.update({ P1: null, P2: null });
+        } else {
+            localData = { P1: null, P2: null };
+            document.getElementById('result').innerText = "";
+            document.getElementById('status').innerText = "P1: Choose your move";
+            document.getElementById('resetBtn').style.display = 'none';
+        }
+        clearButtons();
+    }
+
+    function clearButtons() {
         document.querySelectorAll('.btn-choice').forEach(b => b.classList.remove('selected'));
     }
 </script>
